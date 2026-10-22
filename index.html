@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Jimbonio · Agenda</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topo">
+    <h1 class="marca">Jimbonio</h1>
+    <nav class="navegacao" aria-label="Navegar entre meses">
+      <button type="button" id="mes-anterior" class="btn-icone" aria-label="Mês anterior">‹</button>
+      <h2 id="titulo-mes" aria-live="polite"></h2>
+      <button type="button" id="mes-seguinte" class="btn-icone" aria-label="Próximo mês">›</button>
+      <button type="button" id="ir-hoje" class="btn">Hoje</button>
+    </nav>
+  </header>
+
+  <main class="layout">
+    <section class="calendario" aria-label="Calendário">
+      <div class="semana" aria-hidden="true">
+        <span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span>
+      </div>
+      <div id="grade" class="grade"></div>
+    </section>
+
+    <aside class="painel">
+      <section class="cartao">
+        <h3 id="titulo-dia"></h3>
+        <ul id="lista-dia" class="lista"></ul>
+      </section>
+
+      <section class="cartao">
+        <h3 id="titulo-form">Novo compromisso</h3>
+        <form id="form-evento" class="form">
+          <label>Título
+            <input name="titulo" required maxlength="120" placeholder="Ex.: Dentista">
+          </label>
+          <div class="linha">
+            <label>Data
+              <input name="data" type="date" required>
+            </label>
+            <label>Hora
+              <input name="hora" type="time">
+            </label>
+          </div>
+          <label>Notas
+            <textarea name="notas" rows="3" maxlength="1000" placeholder="Opcional"></textarea>
+          </label>
+          <div class="acoes">
+            <button type="submit" class="btn btn-primario" id="btn-salvar">Adicionar</button>
+            <button type="button" class="btn" id="btn-cancelar" hidden>Cancelar</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="cartao">
+        <h3>Próximos</h3>
+        <ul id="lista-proximos" class="lista"></ul>
+      </section>
+
+      <section class="cartao backup">
+        <button type="button" class="btn" id="btn-exportar">Exportar backup</button>
+        <label class="btn">
+          Importar backup
+          <input type="file" id="input-importar" accept="application/json,.json" hidden>
+        </label>
+      </section>
+    </aside>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
