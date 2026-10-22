@@ -26,6 +26,23 @@
     </section>
 
     <aside class="painel">
+      <section class="cartao conta" id="cartao-conta" hidden>
+        <div id="conta-saida">
+          <h3>Sincronizar entre aparelhos</h3>
+          <form id="form-login" class="form">
+            <label>Seu email
+              <input name="email" type="email" required autocomplete="email" placeholder="voce@exemplo.com">
+            </label>
+            <button type="submit" class="btn btn-primario">Receber link de acesso</button>
+          </form>
+        </div>
+        <div id="conta-entrada" class="conta-linha" hidden>
+          <span>Conectado como <strong id="conta-email"></strong></span>
+          <button type="button" class="btn" id="btn-sair">Sair</button>
+        </div>
+        <p id="conta-status" class="status" aria-live="polite"></p>
+      </section>
+
       <section class="cartao">
         <h3 id="titulo-dia"></h3>
         <ul id="lista-dia" class="lista"></ul>
@@ -70,6 +87,8 @@
     </aside>
   </main>
 
+  <script src="config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

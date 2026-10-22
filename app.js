@@ -4,14 +4,24 @@ const CHAVE = 'jimbonio.eventos';
 const MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
   'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
 const MAX_CHIPS = 3;
+const CAMPOS = 'id,titulo,data,hora,notas';
+const RE_UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const $ = (sel) => document.querySelector(sel);
 const pad = (n) => String(n).padStart(2, '0');
 const paraTexto = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 const paraData = (s) => { const [a, m, d] = s.split('-').map(Number); return new Date(a, m - 1, d); };
 const hojeTexto = () => paraTexto(new Date());
-const novoId = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
 const porDataHora = (a, b) => (a.data + (a.hora || '')).localeCompare(b.data + (b.hora || ''));
+
+function novoId() {
+  if (crypto.randomUUID) return crypto.randomUUID();
+  const b = crypto.getRandomValues(new Uint8Array(16));
+  b[6] = (b[6] & 0x0f) | 0x40;
+  b[8] = (b[8] & 0x3f) | 0x80;
+  const h = [...b].map((x) => x.toString(16).padStart(2, '0')).join('');
+  return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20)}`;
+}
 
 function el(tag, classe, texto) {
   const e = document.createElement(tag);
@@ -20,7 +30,11 @@ function el(tag, classe, texto) {
   return e;
 }
 
-function carregar() {
+// ---------- Armazenamento: navegador ou nuvem (Supabase) ----------
+
+const nuvem = { cliente: null, usuario: null };
+
+function carregarLocal() {
   try {
     const dados = JSON.parse(localStorage.getItem(CHAVE));
     return Array.isArray(dados) ? dados : [];
@@ -29,7 +43,7 @@ function carregar() {
   }
 }
 
-function salvar() {
+function salvarLocal() {
   try {
     localStorage.setItem(CHAVE, JSON.stringify(eventos));
   } catch {
@@ -37,7 +51,134 @@ function salvar() {
   }
 }
 
-let eventos = carregar();
+async function recarregarNuvem() {
+  const { data, error } = await nuvem.cliente.from('eventos').select(CAMPOS);
+  if (error) {
+    statusConta(`Erro ao carregar: ${error.message}`);
+    return;
+  }
+  eventos = data;
+  statusConta('');
+  render();
+}
+
+// Aplica a mudança na tela na hora e depois grava; se a nuvem falhar, recarrega de lá.
+async function persistir(consulta) {
+  render();
+  if (!nuvem.usuario) {
+    salvarLocal();
+    return;
+  }
+  const { error } = await consulta();
+  if (error) {
+    alert(`Não foi possível sincronizar: ${error.message}`);
+    await recarregarNuvem();
+  }
+}
+
+function adicionar(ev) {
+  eventos.push(ev);
+  return persistir(() => nuvem.cliente.from('eventos').insert(ev));
+}
+
+function atualizar(id, dados) {
+  eventos = eventos.map((ev) => (ev.id === id ? { ...ev, ...dados } : ev));
+  return persistir(() => nuvem.cliente.from('eventos').update(dados).eq('id', id));
+}
+
+function remover(id) {
+  eventos = eventos.filter((ev) => ev.id !== id);
+  return persistir(() => nuvem.cliente.from('eventos').delete().eq('id', id));
+}
+
+function gravarVarios(lista) {
+  const porId = new Map(eventos.map((ev) => [ev.id, ev]));
+  lista.forEach((ev) => porId.set(ev.id, ev));
+  eventos = [...porId.values()];
+  return persistir(() => nuvem.cliente.from('eventos').upsert(lista));
+}
+
+// ---------- Conta ----------
+
+function statusConta(texto) {
+  $('#conta-status').textContent = texto;
+}
+
+function renderConta() {
+  $('#cartao-conta').hidden = !nuvem.cliente;
+  $('#conta-saida').hidden = !!nuvem.usuario;
+  $('#conta-entrada').hidden = !nuvem.usuario;
+  $('#conta-email').textContent = nuvem.usuario ? nuvem.usuario.email : '';
+}
+
+async function definirUsuario(usuario) {
+  if ((usuario && usuario.id) === (nuvem.usuario && nuvem.usuario.id)) return;
+  nuvem.usuario = usuario;
+  renderConta();
+  limparForm();
+
+  if (!usuario) {
+    eventos = carregarLocal();
+    render();
+    return;
+  }
+
+  statusConta('Carregando…');
+  const locais = carregarLocal();
+  if (locais.length && confirm(`Enviar ${locais.length} compromisso(s) deste aparelho para sua conta?`)) {
+    const lista = locais.map(normalizar).filter(Boolean);
+    const { error } = await nuvem.cliente.from('eventos').upsert(lista);
+    if (error) {
+      alert(`Não foi possível enviar: ${error.message}`);
+    } else {
+      try { localStorage.removeItem(CHAVE); } catch { /* sem acesso ao armazenamento */ }
+    }
+  }
+  await recarregarNuvem();
+}
+
+function iniciarNuvem() {
+  const cfg = window.JIMBONIO_CONFIG || {};
+  if (!cfg.supabaseUrl || !cfg.supabaseAnonKey) return;
+  if (!window.supabase) {
+    $('#cartao-conta').hidden = false;
+    statusConta('Sem conexão com o servidor de sincronização. Usando dados deste navegador.');
+    return;
+  }
+  nuvem.cliente = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+  renderConta();
+  nuvem.cliente.auth.onAuthStateChange((_evento, sessao) => {
+    // Chamadas ao Supabase dentro deste callback podem travar; adia para depois.
+    setTimeout(() => definirUsuario(sessao ? sessao.user : null), 0);
+  });
+
+  // Pega mudanças feitas em outro aparelho quando a aba volta ao foco.
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && nuvem.usuario) recarregarNuvem();
+  });
+}
+
+$('#form-login').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = e.target.email.value.trim();
+  statusConta('Enviando…');
+  const { error } = await nuvem.cliente.auth.signInWithOtp({
+    email,
+    options: { emailRedirectTo: location.origin + location.pathname },
+  });
+  statusConta(error
+    ? `Erro: ${error.message}`
+    : `Enviamos um link para ${email}. Abra-o neste aparelho para entrar.`);
+});
+
+$('#btn-sair').addEventListener('click', async () => {
+  await nuvem.cliente.auth.signOut();
+  statusConta('');
+});
+
+// ---------- Calendário e listas ----------
+
+let eventos = carregarLocal();
 const agora = new Date();
 const estado = { ano: agora.getFullYear(), mes: agora.getMonth(), selecionado: hojeTexto(), editandoId: null };
 
@@ -148,6 +289,8 @@ function render() {
   renderProximos();
 }
 
+// ---------- Formulário ----------
+
 function limparForm() {
   estado.editandoId = null;
   form.reset();
@@ -174,10 +317,8 @@ function iniciarEdicao(id) {
 function excluirEvento(id) {
   const ev = eventos.find((e) => e.id === id);
   if (!ev || !confirm(`Excluir "${ev.titulo}"?`)) return;
-  eventos = eventos.filter((e) => e.id !== id);
-  salvar();
   if (estado.editandoId === id) limparForm();
-  render();
+  remover(id);
 }
 
 form.addEventListener('submit', (e) => {
@@ -190,15 +331,12 @@ form.addEventListener('submit', (e) => {
   };
   if (!dados.titulo || !dados.data) return;
 
-  if (estado.editandoId) {
-    eventos = eventos.map((ev) => (ev.id === estado.editandoId ? { ...ev, ...dados } : ev));
-  } else {
-    eventos.push({ id: novoId(), ...dados });
-  }
-  salvar();
+  const id = estado.editandoId;
   estado.selecionado = dados.data;
   limparForm();
   selecionar(dados.data);
+  if (id) atualizar(id, dados);
+  else adicionar({ id: novoId(), ...dados });
 });
 
 $('#btn-cancelar').addEventListener('click', limparForm);
@@ -214,6 +352,19 @@ function mudarMes(delta) {
   renderCalendario();
 }
 
+// ---------- Backup ----------
+
+function normalizar(ev) {
+  if (!ev || typeof ev.titulo !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(ev.data)) return null;
+  return {
+    id: RE_UUID.test(ev.id) ? ev.id : novoId(),
+    titulo: ev.titulo,
+    data: ev.data,
+    hora: ev.hora || '',
+    notas: ev.notas || '',
+  };
+}
+
 $('#btn-exportar').addEventListener('click', () => {
   const blob = new Blob([JSON.stringify(eventos, null, 2)], { type: 'application/json' });
   const link = el('a');
@@ -227,24 +378,21 @@ $('#input-importar').addEventListener('change', async (e) => {
   const arquivo = e.target.files[0];
   e.target.value = '';
   if (!arquivo) return;
+  let validos;
   try {
     const dados = JSON.parse(await arquivo.text());
-    const validos = (Array.isArray(dados) ? dados : []).filter((ev) =>
-      ev && typeof ev.titulo === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(ev.data));
-    if (!validos.length) throw new Error('vazio');
-    if (!confirm(`Importar ${validos.length} compromisso(s)? Itens com o mesmo id serão substituídos.`)) return;
-    const porId = new Map(eventos.map((ev) => [ev.id, ev]));
-    validos.forEach((ev) => {
-      const id = ev.id || novoId();
-      porId.set(id, { id, titulo: ev.titulo, data: ev.data, hora: ev.hora || '', notas: ev.notas || '' });
-    });
-    eventos = [...porId.values()];
-    salvar();
-    render();
+    validos = (Array.isArray(dados) ? dados : []).map(normalizar).filter(Boolean);
   } catch {
-    alert('Arquivo inválido. Use um backup exportado por esta agenda.');
+    validos = [];
   }
+  if (!validos.length) {
+    alert('Arquivo inválido. Use um backup exportado por esta agenda.');
+    return;
+  }
+  if (!confirm(`Importar ${validos.length} compromisso(s)? Itens com o mesmo id serão substituídos.`)) return;
+  gravarVarios(validos);
 });
 
 limparForm();
 render();
+iniciarNuvem();
