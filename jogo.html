@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Jimbonio · Jogo</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topo">
+    <h1 class="marca">Jimbonio</h1>
+    <nav class="navegacao">
+      <a class="btn" href="./">← Agenda</a>
+    </nav>
+  </header>
+
+  <main class="jogo">
+    <canvas id="tela" aria-label="Jogo de plataforma"></canvas>
+
+    <div class="controles" aria-hidden="true">
+      <div class="controles-grupo">
+        <button type="button" data-tecla="esq">◀</button>
+        <button type="button" data-tecla="dir">▶</button>
+      </div>
+      <button type="button" data-tecla="pulo" class="pulo">Pular</button>
+    </div>
+
+    <p class="instrucoes">
+      <kbd>←</kbd> <kbd>→</kbd> andar · <kbd>Espaço</kbd> ou <kbd>↑</kbd> pular (segure para ir mais alto) ·
+      pise nos bichinhos, pegue moedas e chegue à bandeira.
+    </p>
+  </main>
+
+  <script src="jogo.js"></script>
+</body>
+</html>

@@ -193,7 +193,56 @@ button, input, textarea { font: inherit; color: inherit; }
 .status { margin: 8px 0 0; font-size: 0.85rem; color: var(--texto-suave); }
 .status:empty { display: none; }
 
+a.btn { color: inherit; text-decoration: none; }
+
+.jogo {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+#tela {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--raio);
+  border: 1px solid var(--borda);
+  touch-action: none;
+}
+.instrucoes { margin: 0; color: var(--texto-suave); font-size: 0.9rem; }
+kbd {
+  font: inherit;
+  font-size: 0.8rem;
+  padding: 1px 6px;
+  border: 1px solid var(--borda);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  background: var(--superficie);
+}
+
+.controles { display: none; justify-content: space-between; gap: 12px; user-select: none; -webkit-user-select: none; }
+.controles-grupo { display: flex; gap: 12px; }
+.controles button {
+  width: 72px;
+  height: 72px;
+  font-size: 1.5rem;
+  border-radius: 50%;
+  border: 1px solid var(--borda);
+  background: var(--superficie);
+  touch-action: none;
+}
+.controles button:active { background: var(--destaque-suave); }
+.controles .pulo { width: 96px; font-size: 1rem; font-weight: 600; background: var(--destaque); color: var(--destaque-texto); border-color: var(--destaque); }
+
+@media (pointer: coarse) {
+  .controles { display: flex; }
+  .instrucoes { display: none; }
+}
+
 @media (max-width: 860px) {
+  .jogo { padding: 16px; }
   .topo { padding: 12px 16px; }
   .layout { grid-template-columns: 1fr; padding: 16px; gap: 16px; }
   .dia { min-height: 56px; padding: 4px; align-items: center; }
