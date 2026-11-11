@@ -1,20 +1,25 @@
 # Guia de PS
 
-Site em HTML, em português do Brasil, que conduz o atendimento no pronto-socorro passo a passo: queixa ou doença → perguntas → conduta → medicação já calculada → reavaliação → destino. É apoio à decisão do médico, não substituto. O dono do projeto vai usar em plantão e, mais tarde, talvez compartilhar com colegas.
+Site em HTML, em português do Brasil, que acompanha o atendimento no pronto-socorro como um fluxograma vivo: quadro → manejo inicial → achados e exames → classificação e conduta → medicamento com cálculo → reavaliação → destino → passagem de caso. É apoio à decisão do médico, não substituto. O dono do projeto vai usar em plantão e, mais tarde, talvez compartilhar com colegas.
 
-**Estado atual:** v0.3 com quatro temas: insuficiência cardíaca e edema agudo de pulmão (piloto) e o lote 1 (parada cardiorrespiratória, taquiarritmia com pulso, bradiarritmia). O formato de uma decisão por tela ainda não recebeu um "aprovado" explícito. O lote 1 foi escrito só com AHA 2025, MED e PSZ1; falta conferir contra PSZ2, CNP e DRG. Próximo: essa conferência e o lote 2.
+**Estado atual:** v0.4. O formato de "uma pergunta por tela" (v0.2 e v0.3) foi rejeitado em 11/11/2026: ficou cru, com pouca informação, "parecendo um jogo". O formato atual é o **fluxograma vivo por paciente**, descrito abaixo. Quatro quadros: parada cardiorrespiratória, taquiarritmia com pulso, bradiarritmia, IC e edema agudo de pulmão. O v0.4 ainda não recebeu "aprovado". Falta o PS Zerado 2ª edição para conferir o lote 1. Próximo: lote 2.
 
 ## Regras de produto (valem acima de tudo)
 
-O usuário foi enfático; estas regras substituem o que o prompt original (`docs/01-prompt-original.txt`) dizia sobre mostrar fontes e alternativas na tela.
+O pedido do usuário de 11/11/2026 (roteiro completo em `docs/08-pedido-v04.md`) substitui as regras antigas de "uma decisão por tela" e "referências só no rodapé".
 
-1. **É para usar com pressa, batendo o olho.** Não é material de estudo. Pouco texto: título e, no máximo, duas ou três linhas curtas por tela.
-2. **Uma decisão por tela.** Pergunta grande, botões grandes, barra "Etapa n de 5". Nada de formulário longo. Referência visual: `docs/referencias-visuais/exemplo-2-uma-pergunta-por-tela.png`.
-3. **Uma conduta só.** Nunca mostrar opções lado a lado nem dizer de que fonte veio. Escolher a melhor e manter. Ordem de escolha: resolução já registrada em `docs/02-decisoes.md` → na dúvida, **PS Zerado 2ª edição**.
-4. **Referências escondidas.** Nenhuma citação no meio do fluxo. Ficam no "Referências" do rodapé, visíveis só ao tocar.
-5. **Medicação = "Dei" / "Não vou dar" / "Não tem aqui"**, e o fluxo segue. A dose aparece calculada (mL ou mL/h); só pede o peso quando o cálculo precisa.
-6. **Amigável.** Um médico de 60 anos tem que entender sem explicação. Nada com cara de sistema corporativo.
-7. **Não parar para pedir aprovação de cada fonte ou conflito.** Decidir, registrar em `docs/`, e listar no fim do lote o que foi escolhido.
+1. **Guia de bolso interativo e integrado**, da chegada à passagem de caso. Limpo e rápido, mas **completo**: cara de aplicativo hospitalar, não de jogo.
+2. **Manejo inicial visível assim que o quadro abre.** Nada de questionário antes. Ações urgentes continuam à vista enquanto se investiga.
+3. **Mostrar não é executar.** Cada ação tem estado: pendente, feita, não feita (com motivo). Cada medicamento: consultado, prescrito, administrado, em registros separados.
+4. **"Ausente" é diferente de "não avaliado".** Campo vazio nunca vale "não". Exame sem resultado nunca é presumido normal ("Não sei interpretar" existe).
+5. **Cada orientação abre "como fazer" e "fonte"** ao toque. A fonte não aparece no meio do texto, só ao tocar.
+6. **O fluxo se adapta.** Achados, sinais vitais e resultados atualizam classificação e conduta. Corrigir um dado revisa o que depende dele e avisa o que mudou.
+7. **Uma conduta só** por situação (não listar alternativas lado a lado). Ordem de escolha: decisão em `docs/02-decisoes.md` → diretriz mais recente → PS Zerado 2ª edição.
+8. **Medicamento abre pop-up** com dose, via, intervalo, preparo, cuidados e calculadora. A calculadora não presume ampola, concentração nem dose: o médico toca na apresentação ou no preparo do documento. Mostra dose, volume a aspirar, concentração final, velocidade e a fórmula, separando diluente de volume final.
+9. **Hipótese sugerida não é diagnóstico.** Troca de fluxo só com confirmação do médico, no mesmo paciente, preservando o histórico.
+10. **Passagem de caso a qualquer momento**, curta e detalhada, editável, só com o que foi registrado.
+11. **Vários pacientes** ("Paciente 01" enquanto não houver nome), sem misturar dados.
+12. **Não parar para pedir aprovação de cada fonte ou conflito.** Decidir, registrar em `docs/`, listar no fim.
 
 ## Regras de segurança (invisíveis para o usuário, mas obrigatórias)
 
@@ -31,8 +36,8 @@ O usuário foi enfático; estas regras substituem o que o prompt original (`docs
 
 ```bash
 python3 build.py                  # gera dist/guia-ps.html (arquivo único, abre offline)
-node testes/calc.test.js          # 78 contas das calculadoras conferidas à mão
-python3 testes/e2e.py             # 96 casos simulados no navegador (precisa de playwright)
+node testes/calc.test.js          # 91 contas das calculadoras conferidas à mão
+python3 testes/e2e.py             # 104 casos simulados no navegador (precisa de playwright)
 CHROME=/caminho/do/chrome python3 testes/e2e.py   # se não houver Chromium do Playwright
 ```
 
@@ -44,30 +49,31 @@ Rodar os três depois de qualquer mudança. Ao acrescentar medicamento ou tema, 
 | --- | --- |
 | `src/fluxo.js` | Conteúdo clínico: temas, nós do fluxo, medicamentos, notas. Único lugar com números. |
 | `src/calc.js` | Funções puras de cálculo (bolus, infusão, inverso, faixa de PAS). |
-| `src/ui.js` | Interface: motor do fluxo, telas, registro, busca. |
-| `src/estilo.css` | Visual (fundo claro quente, verde, botões de 66 px). |
+| `src/ui.js` | Interface: pacientes, fluxo por blocos, pendências, pop-up do medicamento com calculadora, passagem de caso. |
+| `src/estilo.css` | Visual (fundo claro quente, verde; barra de pacientes, blocos numerados, painel lateral). |
 | `dist/guia-ps.html` | Saída do build. É o que o usuário abre. |
 | `testes/` | Testes de cálculo e de navegador. |
-| `legado/` | Piloto v0.1 (rejeitado pelo excesso de texto). `conteudo.js` continua útil: tem o mapeamento detalhado conteúdo → fonte → página da IC e o registro das divergências. |
+| `legado/` | Piloto v0.1 (rejeitado pelo excesso de texto corrido). `conteudo.js` continua útil: tem o mapeamento detalhado conteúdo → fonte → página da IC e o registro das divergências. |
 | `pdfs/` | Os 11 PDFs-fonte. Não versionados (material licenciado). Ver `pdfs/LEIA-ME.md`. |
 | `docs/` | Contexto do projeto. Ler `02`, `03` e `07` antes de começar um lote. |
 
-## Como o fluxo é descrito (`src/fluxo.js`)
+## Como o conteúdo é descrito (`src/fluxo.js`)
 
-Cada tema tem `nome`, `curto`, `etapas` (5 rótulos), `inicio` e `nos` (`perfil: 1` só na IC). Tipos de nó:
+Cada quadro (tema) tem:
 
-- `pergunta`: `t`, `ops[{t, set, log, ir, sec, sug}]`
-- `acao`: `t`, `linhas[]`, `chips[]` (estáticos), `ops[]`
-- `sinais`: lista de sinais tocáveis; um ou mais marcados destacam o botão "sim" como sugerido; `irSim` e `irNao` separam os caminhos
-- `numero`: grava um valor (hoje só PAS)
-- `med`: abre o cartão do medicamento e segue para `ir`; com `sem`, "Não tem aqui" vai para outro nó (ex.: amiodarona → lidocaína)
-- `reav`: só aparece se o medicamento `gatilho` foi dado; mostra o horário (+`horas`)
-- `rota`: desvio sem tela, por `perfil`, `pasMin`, `pasMax`
-- `fim`: resumo copiável
+- `agora`: ações do manejo inicial (`t`, `como[]`, `ref`).
+- `gravidade`: sinais de instabilidade ou risco imediato (presente / ausente / não avaliado).
+- `investigar`: achados. `tipo: "tri"` (com `sinais[]` opcionais para tocar) ou `tipo: "opc"` (uma opção, ex.: ritmo).
+- `exames`: `res[]` (opções de resultado) ou `num` (valor com corte, quando a decisão depende do número).
+- `classificar(P)`: devolve `itens` (classificação sugerida, com o porquê) e `falta` (o que ainda precisa ser avaliado).
+- `passos`: condutas; cada uma aparece quando `se(P)` é verdadeiro. Itens: `acao` (com `rep` para ações repetidas, como choque), `med`, `info`. `dica(P)` escreve o "Agora:".
+- `reav`: reavaliações com opções e "como seguir" (`prox`); `quando` gera horário a partir de um medicamento.
+- `alertas`: sugestão de outro fluxo (`ir`) ou aviso de fluxo ainda inexistente (`ir: null`), sempre com `porque`.
+- `destino`.
 
-Medicamentos: `modo: "furo"` (bolus com escolha de dose), `modo: "fixo"` (dose fixa em mg; `ap` é a ampola e o site calcula mL e ampolas), `modo: "kg"` (bolus em mg/kg; pede o peso) ou `modo: "inf"` (infusão; `conc` em mcg/mL ou `mgMl` para dose em mg/h; `ini`, `manter`, `max`, `porKg`). `lembra` mostra no topo o horário da próxima dose.
+`P` é o leitor dos dados do paciente: `P.a(id)`, `P.o(id)`, `P.n(sinalVital)`, `P.ex(id)`, `P.adm(med)`, `P.cont(acao)`, `P.r(reav)`.
 
-O algoritmo de PCR é um laço: os nós repetidos são montados pelas funções `pcrRitmo` e `pcrChoque` no começo de `fluxo.js`.
+Medicamentos: `ind`, `dose[]`, `prep[]`, `cuid[]`, `ref` e o cálculo por `modo`: `fixo` (`doses[]`, `aps[]`), `kg` (`faixas[]`), `furo`, `inf` (`preps[]`, `un`, `ini`, `max`, `porKg`; `mgMl` para mg/h; `fator` para mg/min), `txt` (sem cálculo). `conc` é a concentração do primeiro preparo e é conferida no teste.
 
 ## Onde paramos e o que falta
 
@@ -76,5 +82,5 @@ Ver `docs/07-roteiro.md`. Resumo:
 - Feito: inventário dos PDFs, cobertura por tema, decisões, busca externa da IC, piloto v0.2 testado, lote 1 testado.
 - Falta no tema IC: terapia oral do perfil A e prescrição de alta (CNP p. 72-74, ainda não conferidas por imagem); confirmar no bulário da Anvisa a bula de dobutamina.
 - Falta no site: senha opcional para os atendimentos (foi retirada no v0.2), teste em iPhone e Android, hospedagem, modo offline da versão hospedada, pediatria e gestantes.
-- Falta no lote 1: conferir contra PSZ2, CNP e DRG; dose de magnésio na torsades; cuidados pós-PCR; sedação da cardioversão; ampola de atropina do serviço. Ver `docs/05`.
+- Falta no lote 1: conferir contra o PSZ2 (não enviado); cuidados pós-PCR. CNP e DRG já conferidos. Ver `docs/05`.
 - Próximo: lote 2.

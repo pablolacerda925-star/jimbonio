@@ -26,7 +26,12 @@ Só o tema IC foi comparado dose a dose em todos os PDFs. Nos outros temas, espe
 | 16 | Amiodarona, manutenção | PSZ1 8: 3 ampolas + 230 mL a 16 e 8 mL/h; PSZ1 10: 6 ampolas + 482 mL a 33 e 16,6 mL/h; MED 38: 6 ampolas + 250 mL a 16,6 e 8,3 mL/h (a conta não fecha com 268 mL) | Resolvido: preparo do PSZ1 p. 10 (1,8 mg/mL), doses da AHA 2025 |
 | 17 | Atropina, ampola | MED 39 e PSZ1: 0,5 mg/mL. Existe também 0,25 mg/mL | Ficou 0,5 mg/mL; **confirmar a ampola do serviço** |
 
-Pendências do lote 1 (PSZ2, CNP e DRG não estavam disponíveis na sessão): conferir os temas contra PSZ2 p. 8-15 e 194, CNP p. 77-117 e DRG p. 62-67 e 88; dose de magnésio na torsades; cuidados pós-PCR; sedação para cardioversão.
+| 18 | Adrenalina em bomba | MED 11: 6 ampolas + 94 mL (60 mcg/mL). CNP 115: 10 ampolas + 90 mL (100 mcg/mL), iniciar 2 mL/h | Os dois preparos ficam para escolher; dose da AHA 2025 (2 a 10 mcg/min) |
+| 19 | TV monomórfica estável, 1º passo | CNP 100: cardioversão 100-200 J se baixo risco de sedação. AHA 2025: antiarrítmico; cardioversão se falhar | Resolvido: AHA 2025 |
+| 20 | Amiodarona, ataque na FA com IC | CNP 107: 150 mg em 10 min. DRG 62 e AHA Tabela 2: 300 mg em 1 h | Resolvido: 300 mg em 1 h |
+| 21 | TV polimórfica, energia | CNP 102-103: 200 J. AHA 2025: energia máxima do aparelho | Resolvido: AHA 2025 |
+
+Lote 1 conferido contra CNP p. 77-117 e DRG p. 62-67 e 88 (leitura por OCR e conferência pela imagem das páginas com números usados: CNP 82, 84, 88, 103 e 115; DRG 62). Ainda pendente: conferir contra PSZ2 p. 8-15 e 194 (não enviado); cuidados pós-PCR; pontos de corte do CHA₂DS₂-VASc (CNP 109) e dose de fentanil no marca-passo (CNP 116), não conferidos pela imagem e por isso fora da tela.
 
 ## Valores e trechos suspeitos no próprio PDF
 
@@ -34,6 +39,7 @@ Regra: não deduzir. Buscar o valor correto em diretriz ou bula e usar esse.
 
 | Onde | O que está escrito | Problema |
 | --- | --- | --- |
+| CNP 115 | Dopamina "Ampola: 200 mg/5ml" e "50ml (5 Ampolas)" | Não fecham entre si; usada a ampola de 50 mg/10 mL (MED 12) |
 | PSZ1 87 | Dopamina "50 mcg / 10 ml" | Erro de unidade: a ampola é de 50 mg/10 mL (MED 12) |
 | CNP 82 | Cardioversão de TPSV, monofásico: "50-1000" J | As outras linhas vão até 360 J |
 | CNP 17 e 27 | Estreptoquinase "1.500.000 milhões de UI" | Unidade duplicada (lido por OCR; confirmar na imagem) |

@@ -1,207 +1,309 @@
-// CONTEÚDO DO FLUXO — separado da interface. Uma conduta por passo.
-// Regra de escolha: resolução já aprovada por você; na dúvida, PS Zerado 2ª edição.
-// ---------- Lote 1: peças repetidas do algoritmo de PCR (AHA 2025) ----------
-var R_PCR = "AHA 2025, Figura 2 (ACLS-F p. 2)";
-function pcrRitmo(choc, nao) {
-  return { e: 1, tipo: "pergunta", t: "Depois de 2 min de RCP: ritmo chocável?", ops: [
-    { t: "Sim · FV ou TV sem pulso", log: "Ritmo chocável", ir: choc },
-    { t: "Não · assistolia ou AESP", sec: 1, log: "Ritmo não chocável", ir: nao },
-    { t: "Voltou o pulso", sec: 1, log: "Retorno da circulação espontânea", ir: "rosc" },
-    { t: "Encerrar os esforços", sec: 1, log: "Avaliado encerrar os esforços", ir: "parar" }], ref: R_PCR };
-}
-function pcrChoque(primeiro, ir) {
-  return { e: 2, tipo: "acao", t: "Choque", linhas: [primeiro ? "Bifásico: 120 a 200 J (não sabe? o máximo)" : "Bifásico: mesma energia ou maior", "Monofásico: 360 J", "Voltar à RCP na hora, por 2 min"],
-    ops: [{ t: "Choquei", log: "Choque", ir: ir }], ref: R_PCR };
-}
+// CONTEÚDO CLÍNICO — separado da interface. Todo número, critério e texto clínico mora aqui, com a fonte (ref).
+// Uma conduta por situação. Regra de escolha: decisão registrada em docs/02 → diretriz mais recente → PS Zerado 2ª edição.
+// Condições (se, classificar, dica) recebem P: P.a(id) achado "p"/"a"; P.o(id) opção; P.n(k) sinal vital;
+// P.ex(id) exame {st,r,val}; P.adm(med) nº de doses dadas; P.cont(id) nº de registros; P.r(id) resposta da reavaliação.
+var TRI_INST = [
+  { id: "hipo", t: "Hipotensão" }, { id: "conf", t: "Alteração aguda da consciência" }, { id: "choque", t: "Sinais de choque" },
+  { id: "dor", t: "Dor torácica isquêmica" }, { id: "ica", t: "Insuficiência cardíaca aguda (dispneia)" }];
+function instavel(P) { return TRI_INST.some(function (s) { return P.a(s.id) === "p"; }); }
+function estavel(P) { return TRI_INST.every(function (s) { return P.a(s.id) === "a"; }); }
+var CAUSAS_PCR = ["Hipovolemia", "Hipóxia", "Acidose (H⁺)", "Hipo ou hipercalemia", "Hipotermia", "Pneumotórax hipertensivo", "Tamponamento cardíaco", "Toxinas", "Trombose pulmonar", "Trombose coronária"];
+var OSASCO = ["Orientar o paciente sobre o procedimento.", "Sedar: sedoanalgesia leve e de curta duração.", "Ambuzar: via aérea e ventilação com bolsa-válvula-máscara.", "Sincronizar: apertar a tecla Sync do desfibrilador.", "Cardioverter: escolher a carga conforme o ritmo.", "Observar: não tirar as pás do tórax até voltar o ritmo sinusal.",
+  "Pás em posição anterolateral ou anteroposterior, com gel, pressionadas com firmeza. Avisar a equipe antes do choque.", "Marca-passo ou CDI: pás a pelo menos 10 cm do aparelho.", "Gestante: a cardioversão é segura para o feto e não deve atrasar."];
+
 var FLUXO = {
-  versao: "0.3.0-lote1", data: "2026-11-11",
-  temas: [{
+  versao: "0.4.0", data: "2026-11-11",
+  vitais: [{ k: "pas", t: "PAS", un: "mmHg", min: 30, max: 300 }, { k: "pad", t: "PAD", un: "mmHg", min: 10, max: 200 }, { k: "fc", t: "FC", un: "bpm", min: 10, max: 300 },
+    { k: "fr", t: "FR", un: "irpm", min: 2, max: 80 }, { k: "sat", t: "SpO₂", un: "%", min: 30, max: 100 }, { k: "temp", t: "Temp.", un: "°C", min: 25, max: 45 }, { k: "peso", t: "Peso", un: "kg", min: 20, max: 300 }],
+  temas: [
+  // ============================== PARADA CARDIORRESPIRATÓRIA ==============================
+  {
     id: "pcr", nome: "Parada cardiorrespiratória", curto: "PCR",
-    busca: ["pcr", "parada", "parada cardiaca", "parada cardiorrespiratoria", "rcp", "fv", "fibrilacao ventricular", "tv sem pulso", "assistolia", "aesp", "sem pulso", "desfibrilacao", "choque"],
-    imediato: 1,
-    etapas: ["RCP", "Ritmo", "Choque e drogas", "Causas", "Depois"],
-    inicio: "rcp",
-    nos: {
-      rcp: { e: 0, tipo: "acao", t: "Comece a RCP", linhas: ["100 a 120 por minuto, 5 cm de profundidade", "30 compressões : 2 ventilações, com O₂", "Monitor e desfibrilador"], ops: [{ t: "Comecei", log: "RCP iniciada", ir: "ritmo1" }], ref: R_PCR },
-      ritmo1: { e: 1, tipo: "pergunta", t: "Ritmo chocável?", ops: [{ t: "Sim · FV ou TV sem pulso", log: "Ritmo inicial chocável", ir: "ch1" }, { t: "Não · assistolia ou AESP", sec: 1, log: "Ritmo inicial não chocável", ir: "adrN" }], ref: R_PCR },
-      // ramo chocável
-      ch1: pcrChoque(1, "acesso"),
-      acesso: { e: 2, tipo: "acao", t: "RCP por 2 min", linhas: ["Acesso EV ou IO", "Trocar quem comprime a cada 2 min"], ops: [{ t: "Passou 2 min", ir: "ritmo2" }], ref: R_PCR },
-      ritmo2: pcrRitmo("ch2", "adrN"),
-      ch2: pcrChoque(0, "adrA"),
-      adrA: { e: 2, tipo: "med", med: "adrenalinaPcr", ir: "ritmo3" },
-      ritmo3: pcrRitmo("ch3", "adrN"),
-      ch3: pcrChoque(0, "amio1"),
-      amio1: { e: 2, tipo: "med", med: "amiodaronaPcr1", sem: "lido1", ir: "causasC" },
-      lido1: { e: 2, tipo: "med", med: "lidocainaPcr1", ir: "causasC" },
-      causasC: { e: 3, tipo: "acao", t: "Procure a causa", chips: ["Hipovolemia", "Hipóxia", "Acidose", "Potássio alto ou baixo", "Hipotermia", "Pneumotórax hipertensivo", "Tamponamento", "Intoxicação", "Embolia pulmonar", "Infarto"],
-        ops: [{ t: "Continuar", ir: "ritmo4" }], ref: R_PCR },
-      ritmo4: pcrRitmo("ch4", "adrN"),
-      ch4: pcrChoque(0, "adrB"),
-      adrB: { e: 2, tipo: "med", med: "adrenalinaPcr", ir: "ritmo5" },
-      ritmo5: pcrRitmo("ch5", "adrN"),
-      ch5: pcrChoque(0, "amio2"),
-      amio2: { e: 2, tipo: "med", med: "amiodaronaPcr2", sem: "lido2", ir: "ritmo6" },
-      lido2: { e: 2, tipo: "med", med: "lidocainaPcr2", ir: "ritmo6" },
-      // daqui em diante: adrenalina ciclo sim, ciclo não
-      ritmo6: pcrRitmo("ch6", "adrN"),
-      ch6: pcrChoque(0, "adrC"),
-      adrC: { e: 2, tipo: "med", med: "adrenalinaPcr", ir: "ritmo7" },
-      ritmo7: pcrRitmo("ch7", "adrN"),
-      ch7: pcrChoque(0, "causasL"),
-      causasL: { e: 3, tipo: "acao", t: "Procure a causa", chips: ["Hipovolemia", "Hipóxia", "Acidose", "Potássio alto ou baixo", "Hipotermia", "Pneumotórax hipertensivo", "Tamponamento", "Intoxicação", "Embolia pulmonar", "Infarto"],
-        ops: [{ t: "Continuar", ir: "ritmo6" }], ref: R_PCR },
-      // ramo não chocável
-      adrN: { e: 2, tipo: "med", med: "adrenalinaPcr", ir: "ritmoN1" },
-      ritmoN1: pcrRitmo("ch2", "causasN"),
-      causasN: { e: 3, tipo: "acao", t: "Procure a causa", linhas: ["Seguir a RCP por 2 min"], chips: ["Hipovolemia", "Hipóxia", "Acidose", "Potássio alto ou baixo", "Hipotermia", "Pneumotórax hipertensivo", "Tamponamento", "Intoxicação", "Embolia pulmonar", "Infarto"],
-        ops: [{ t: "Continuar", ir: "ritmoN2" }], ref: R_PCR },
-      ritmoN2: pcrRitmo("ch2", "adrN"),
-      // saídas
-      rosc: { e: 4, tipo: "acao", t: "Voltou a circulação", linhas: ["Cuidados pós-PCR", "Acionar UTI"], ops: [{ t: "Continuar", log: "Encaminhado para cuidados pós-PCR", ir: "fim" }], ref: R_PCR },
-      parar: { e: 4, tipo: "acao", t: "Encerrar os esforços?", linhas: ["Sem pulso e sem causa reversível"], ops: [{ t: "Sim, encerrar", log: "Esforços encerrados", ir: "fim" }], ref: R_PCR },
-      fim: { e: 4, tipo: "fim", t: "Atendimento registrado" }
-    }
-  }, {
+    busca: ["pcr", "parada", "parada cardiaca", "parada cardiorrespiratoria", "rcp", "fv", "fibrilacao ventricular", "tv sem pulso", "assistolia", "aesp", "sem pulso", "nao respira", "inconsciente", "desfibrilacao"],
+    sobre: "RCP de qualidade sem interrupção, choque precoce no ritmo chocável, adrenalina a cada 3 a 5 minutos e busca da causa reversível. O ritmo é checado a cada 2 minutos.", refSobre: "AHA 2025, Figura 2 (ACLS-F p. 2) · DRG p. 88",
+    agora: [
+      { id: "rcp", t: "Iniciar RCP", como: ["Comprimir forte (pelo menos 5 cm) e rápido (100 a 120 por minuto), deixando o tórax voltar.", "Minimizar as interrupções. Evitar ventilação excessiva.", "Trocar quem comprime a cada 2 minutos, ou antes se cansar.", "Sem via aérea avançada: 30 compressões para 2 ventilações.", "Capnografia em onda: se o ETCO₂ estiver baixo ou caindo, rever a qualidade da RCP."], ref: "AHA 2025, Figura 2 (ACLS-F p. 2)" },
+      { id: "vent", t: "Ventilar com bolsa-válvula-máscara e oxigênio", ref: "AHA 2025, Figura 2 (ACLS-F p. 2)" },
+      { id: "monitor", t: "Colocar monitor e desfibrilador", ref: "AHA 2025, Figura 2 (ACLS-F p. 2)" },
+      { id: "acesso", t: "Acesso EV ou IO", ref: "AHA 2025, Figura 2 (ACLS-F p. 2)" },
+      { id: "via", t: "Considerar via aérea avançada e capnografia", como: ["Tubo endotraqueal ou dispositivo supraglótico.", "Capnografia em onda para confirmar e monitorar a posição do tubo.", "Com via aérea avançada: 1 ventilação a cada 6 segundos (10 por minuto), com compressões contínuas."], ref: "AHA 2025, Figura 2 (ACLS-F p. 2)" }],
+    investigar: [
+      { id: "ritmo", tipo: "opc", t: "Ritmo", ops: [{ v: "choc", t: "Chocável · FV ou TV sem pulso" }, { v: "nchoc", t: "Não chocável · assistolia ou AESP" }], como: ["Checar o ritmo a cada 2 minutos de RCP e atualizar aqui."], ref: "AHA 2025, Figura 2 (ACLS-F p. 2)" },
+      { id: "causas", tipo: "tri", t: "Causa reversível identificada", sinais: CAUSAS_PCR, como: ["Procurar e tratar durante a RCP os 5 H e os 5 T. Toque na causa encontrada."], ref: "AHA 2025, Figura 2 (ACLS-F p. 2) · DRG p. 88" }],
+    exames: [
+      { id: "gaso", t: "Gasometria e potássio", por: "acidose e distúrbio do potássio são causas reversíveis", res: [{ v: "acid", t: "Acidose" }, { v: "kalto", t: "Potássio alto" }, { v: "kbaixo", t: "Potássio baixo" }, { v: "normal", t: "Sem alteração" }], ref: "AHA 2025, Figura 2 (ACLS-F p. 2)" }],
+    classificar: function (P) {
+      var r = P.o("ritmo"), it = [], falta = [];
+      if (P.r("ritmo2") === "rosc") it.push({ t: "Situação", v: "Retorno da circulação espontânea" });
+      else if (r) it.push({ t: "Ritmo", v: r === "choc" ? "Chocável (FV ou TV sem pulso)" : "Não chocável (assistolia ou AESP)" });
+      else falta.push("Ritmo no monitor");
+      return { itens: it, falta: falta };
+    },
+    passos: [
+      { id: "choc", t: "Ritmo chocável: choque e RCP", se: function (P) { return P.o("ritmo") === "choc" && P.r("ritmo2") !== "rosc"; }, porque: "FV ou TV sem pulso.", ref: "AHA 2025, Figura 2 (ACLS-F p. 2)",
+        dica: function (P) { var c = P.cont("choque"), a = P.adm("adrenalinaPcr"), am = P.adm("amiodaronaPcr") + P.adm("lidocainaPcr");
+          if (c === 0) return "Dar o 1º choque e voltar à RCP por 2 minutos. Pegar acesso EV ou IO.";
+          if (c === 1) return "RCP por 2 minutos. Se seguir chocável: 2º choque e, depois dele, adrenalina.";
+          if (c === 2 && a === 0) return "Depois do 2º choque: adrenalina 1 mg. Considerar via aérea avançada.";
+          if (c >= 3 && am === 0) return "Depois do 3º choque: amiodarona 300 mg. Tratar causas reversíveis.";
+          if (c >= 5 && am === 1) return "Segunda dose do antiarrítmico: amiodarona 150 mg. Adrenalina a cada 3 a 5 minutos.";
+          return "Seguir: choque a cada 2 minutos se chocável, adrenalina a cada 3 a 5 minutos, tratar causas."; },
+        itens: [
+          { id: "choque", tipo: "acao", rep: "Registrar choque", t: "Choque", como: ["Bifásico: energia recomendada pelo fabricante (por exemplo, 120 a 200 J). Se não souber, usar a máxima.", "Choques seguintes: energia igual; pode-se considerar maior.", "Monofásico: 360 J.", "Voltar à RCP logo depois do choque, por 2 minutos."], ref: "AHA 2025, Figura 2 (ACLS-F p. 2)" },
+          { tipo: "med", med: "adrenalinaPcr", nota: "depois do 2º choque; repetir a cada 3 a 5 min" },
+          { tipo: "med", med: "amiodaronaPcr", nota: "depois do 3º choque: 300 mg; segunda dose: 150 mg" },
+          { tipo: "med", med: "lidocainaPcr", nota: "só se não houver amiodarona" }] },
+      { id: "nchoc", t: "Ritmo não chocável: adrenalina e RCP", se: function (P) { return P.o("ritmo") === "nchoc" && P.r("ritmo2") !== "rosc"; }, porque: "Assistolia ou atividade elétrica sem pulso.", ref: "AHA 2025, Figura 2 (ACLS-F p. 2)",
+        dica: function (P) { return P.adm("adrenalinaPcr") === 0 ? "Adrenalina 1 mg o quanto antes. RCP por 2 minutos e checar o ritmo." : "RCP por 2 minutos, tratar causas reversíveis, adrenalina a cada 3 a 5 minutos."; },
+        itens: [
+          { tipo: "med", med: "adrenalinaPcr", nota: "o quanto antes; repetir a cada 3 a 5 min" },
+          { id: "causa", tipo: "acao", t: "Procurar e tratar causas reversíveis", como: CAUSAS_PCR, ref: "AHA 2025, Figura 2 (ACLS-F p. 2) · DRG p. 88" }] },
+      { id: "rosc", t: "Voltou a circulação", se: function (P) { return P.r("ritmo2") === "rosc"; }, porque: "Pulso presente.", ref: "AHA 2025, Figura 2 (ACLS-F p. 2)",
+        itens: [{ id: "pos", tipo: "acao", t: "Iniciar cuidados pós-PCR e acionar a UTI", ref: "AHA 2025, Figura 2 (ACLS-F p. 2)" }] }],
+    reav: [
+      { id: "ritmo2", t: "Checagem do ritmo (a cada 2 minutos)", se: function (P) { return !!P.o("ritmo"); }, ref: "AHA 2025, Figura 2 (ACLS-F p. 2)", repete: 1,
+        ops: [{ v: "choc", t: "Chocável", prox: "Choque e RCP por 2 minutos.", set: { ritmo: "choc" } }, { v: "nchoc", t: "Não chocável", prox: "Seguir a RCP por 2 minutos. Adrenalina a cada 3 a 5 minutos e tratar causas.", set: { ritmo: "nchoc" } },
+          { v: "rosc", t: "Voltou o pulso", prox: "Cuidados pós-PCR." }, { v: "fim", t: "Esforços encerrados", prox: "Registrar o horário e comunicar a família." }] }],
+    alertas: [],
+    destino: { ops: [{ v: "uti", t: "UTI" }, { v: "obito", t: "Óbito" }], ref: "AHA 2025, Figura 2 (ACLS-F p. 2)" }
+  },
+  // ============================== TAQUIARRITMIA COM PULSO ==============================
+  {
     id: "taqui", nome: "Taquiarritmia com pulso", curto: "Taquiarritmias",
     busca: ["taquicardia", "taquiarritmia", "palpitacao", "coracao acelerado", "fa", "fibrilacao atrial", "flutter", "tsv", "tpsv", "supraventricular", "tv", "taquicardia ventricular", "torsades", "cardioversao", "wpw"],
-    imediato: 1,
-    etapas: ["Avaliação", "Ritmo", "Conduta", "Reavaliação", "Destino"],
-    inicio: "suporte",
-    nos: {
-      suporte: { e: 0, tipo: "acao", t: "Primeiro", chips: ["Monitor", "O₂ se hipoxemia", "Acesso venoso", "Pressão e oximetria", "ECG de 12 derivações"], ops: [{ t: "Feito", log: "Monitorização, acesso e ECG", ir: "inst" }, { t: "Depois", sec: 1, ir: "inst" }], ref: "AHA 2025, Figura 6 (ACLS-F p. 4)" },
-      inst: { e: 0, tipo: "sinais", t: "Instável por causa da taquicardia?", var: "inst", chips: ["Hipotensão", "Confusão aguda", "Sinais de choque", "Dor no peito isquêmica", "IC aguda"], sim: "Sim, instável", nao: "Não, estável", irSim: "iRitmo", irNao: "qrs", ref: "AHA 2025, Figura 6 (ACLS-F p. 4)" },
-      // instável: cardioversão
-      iRitmo: { e: 1, tipo: "pergunta", t: "Qual o ritmo?", ops: [
-        { t: "FA ou flutter", log: "Ritmo: FA ou flutter", ir: "cv200" }, { t: "QRS estreito regular", sec: 1, log: "Ritmo: QRS estreito regular", ir: "cv100" },
-        { t: "TV monomórfica", sec: 1, log: "Ritmo: TV monomórfica", ir: "cv100" }, { t: "TV polimórfica", sec: 1, log: "Ritmo: TV polimórfica", ir: "desf" }], ref: "AHA 2025, Figura 7 (ACLS-F p. 5)" },
-      cv200: { e: 2, tipo: "acao", t: "Cardioversão sincronizada: 200 J", linhas: ["Sedar se der", "Sincronizar de novo a cada choque"], ops: [{ t: "Reverteu", log: "Cardioversão sincronizada 200 J: reverteu", ir: "destino" }, { t: "Não reverteu", sec: 1, log: "Cardioversão sincronizada 200 J: não reverteu", ir: "cvMais" }], ref: "AHA 2025, Figura 7 (ACLS-F p. 5) · ACLS-T p. 6" },
-      cv100: { e: 2, tipo: "acao", t: "Cardioversão sincronizada: 100 J", linhas: ["Sedar se der", "Sincronizar de novo a cada choque"], ops: [{ t: "Reverteu", log: "Cardioversão sincronizada 100 J: reverteu", ir: "destino" }, { t: "Não reverteu", sec: 1, log: "Cardioversão sincronizada 100 J: não reverteu", ir: "cvMais" }], ref: "AHA 2025, Figura 7 (ACLS-F p. 5)" },
-      cvMais: { e: 3, tipo: "acao", t: "Aumente a energia e repita", linhas: ["Procurar a causa", "Chamar o cardiologista"], ops: [{ t: "Reverteu", log: "Reverteu com energia maior", ir: "destino" }, { t: "Segue em taquicardia", sec: 1, log: "Refratária à cardioversão", ir: "destino" }], ref: "AHA 2025, Figura 6 (ACLS-F p. 4)" },
-      desf: { e: 2, tipo: "acao", t: "Desfibrilar agora", linhas: ["Choque não sincronizado", "Energia máxima do aparelho"], ops: [{ t: "Choquei", log: "TV polimórfica: desfibrilação", ir: "qt" }], ref: "AHA 2025, TV polimórfica (ACLS-T p. 3-4)" },
-      qt: { e: 3, tipo: "pergunta", t: "Volta a repetir. QT longo?", ops: [{ t: "Sim · torsades", log: "TV polimórfica com QT longo", ir: "torsades" }, { t: "Não", sec: 1, log: "TV polimórfica sem QT longo", ir: "poliIsq" }, { t: "Não repetiu", sec: 1, log: "TV polimórfica não recorreu", ir: "destino" }], ref: "AHA 2025, TV polimórfica (ACLS-T p. 3-4)" },
-      torsades: { e: 3, tipo: "acao", t: "Torsades", linhas: ["Sulfato de magnésio EV", "Corrigir o potássio", "Suspender droga que alonga o QT"], ops: [{ t: "Feito", log: "Torsades: magnésio, potássio e revisão de drogas", ir: "destino" }], ref: "AHA 2025, TV polimórfica (ACLS-T p. 3-4)" },
-      poliIsq: { e: 3, tipo: "acao", t: "Pense em isquemia", linhas: ["Tratar a isquemia", "Não usar magnésio de rotina"], ops: [{ t: "Continuar", ir: "amioPoli" }], ref: "AHA 2025, TV polimórfica (ACLS-T p. 3-4)" },
-      amioPoli: { e: 3, tipo: "med", med: "amiodaronaTv", ir: "destino" },
-      // estável
-      qrs: { e: 1, tipo: "pergunta", t: "Como é o QRS?", ops: [
-        { t: "Estreito e regular", log: "QRS estreito e regular", ir: "vagal" }, { t: "Estreito e irregular · FA", sec: 1, log: "QRS estreito e irregular (FA ou flutter)", ir: "wpw" },
-        { t: "Largo, regular, monomórfico", sec: 1, log: "QRS largo, regular e monomórfico", ir: "largo" }, { t: "Largo e irregular", sec: 1, log: "QRS largo e irregular", ir: "largoIrr" }, { t: "Largo e polimórfico", sec: 1, log: "TV polimórfica", ir: "desf" }], ref: "AHA 2025, Figura 6 (ACLS-F p. 4)" },
-      // estreito regular
-      vagal: { e: 2, tipo: "acao", t: "Manobra vagal", linhas: ["Soprar uma seringa de 10 mL", "Logo depois: deitar e elevar as pernas"], ops: [{ t: "Reverteu", log: "Manobra vagal: reverteu", ir: "destino" }, { t: "Não reverteu", sec: 1, log: "Manobra vagal: não reverteu", ir: "ade6" }], ref: "AHA 2025, QRS estreito (ACLS-T p. 4-5)" },
-      ade6: { e: 2, tipo: "med", med: "adenosina6", ir: "rev1" },
-      rev1: { e: 3, tipo: "pergunta", t: "Reverteu?", ops: [{ t: "Sim", log: "Adenosina 6 mg: reverteu", ir: "destino" }, { t: "Não", sec: 1, log: "Adenosina 6 mg: não reverteu", ir: "ade12" }], ref: "AHA 2025, Figura 6 (ACLS-F p. 4)" },
-      ade12: { e: 2, tipo: "med", med: "adenosina12", ir: "rev2" },
-      rev2: { e: 3, tipo: "pergunta", t: "Reverteu?", ops: [{ t: "Sim", log: "Adenosina 12 mg: reverteu", ir: "destino" }, { t: "Não", sec: 1, log: "Adenosina 12 mg: não reverteu", ir: "metoTsv" }], ref: "AHA 2025, Figura 6 (ACLS-F p. 4)" },
-      metoTsv: { e: 2, tipo: "med", med: "metoprolol", ir: "rev3" },
-      rev3: { e: 3, tipo: "pergunta", t: "Reverteu?", ops: [{ t: "Sim", log: "Reverteu com betabloqueador", ir: "destino" }, { t: "Não", sec: 1, log: "Não reverteu com remédio", ir: "cv100" }], ref: "AHA 2025, QRS estreito (ACLS-T p. 4-5)" },
-      // estreito irregular: FA e flutter
-      wpw: { e: 1, tipo: "pergunta", t: "Pré-excitação (WPW) no ECG?", ops: [{ t: "Não", log: "FA ou flutter sem pré-excitação", ir: "faIc" }, { t: "Sim", sec: 1, log: "FA ou flutter com pré-excitação", ir: "faWpw" }], ref: "AHA 2025, FA e flutter parte 2 (ACLS-T p. 10-11)" },
-      faWpw: { e: 2, tipo: "acao", t: "Não bloquear o nó AV", linhas: ["Sem betabloqueador, verapamil, diltiazem, digoxina ou amiodarona", "Fazer cardioversão elétrica"], ops: [{ t: "Continuar", ir: "cv200" }], ref: "AHA 2025, FA e flutter parte 2 (ACLS-T p. 10-11)" },
-      faIc: { e: 1, tipo: "pergunta", t: "IC descompensada?", ops: [{ t: "Não", log: "Sem IC descompensada", ir: "metoFa" }, { t: "Sim", sec: 1, log: "Com IC descompensada", ir: "amioFa" }], ref: "AHA 2025, FA e flutter parte 2 (ACLS-T p. 10-11)" },
-      metoFa: { e: 2, tipo: "med", med: "metoprolol", ir: "fa48" },
-      amioFa: { e: 2, tipo: "med", med: "amiodaronaFa", ir: "amioFaM" },
-      amioFaM: { e: 2, tipo: "med", med: "amiodaronaFaManut", ir: "fa48" },
-      fa48: { e: 3, tipo: "acao", t: "FA ou flutter", linhas: ["Mais de 48 h ou tempo incerto:", "não reverter sem anticoagular"], ops: [{ t: "Entendi", ir: "destino" }], ref: "AHA 2025, FA e flutter parte 1 (ACLS-T p. 6-8)" },
-      // largo
-      largo: { e: 2, tipo: "med", med: "amiodaronaTv", ir: "rev4" },
-      rev4: { e: 3, tipo: "pergunta", t: "Reverteu?", ops: [{ t: "Sim", log: "Amiodarona: reverteu", ir: "amioTvM" }, { t: "Não", sec: 1, log: "Amiodarona: não reverteu", ir: "cv100" }], ref: "AHA 2025, QRS largo (ACLS-T p. 1-2)" },
-      amioTvM: { e: 3, tipo: "med", med: "amiodaronaTvManut", ir: "destino" },
-      largoIrr: { e: 2, tipo: "acao", t: "Pode ser FA com pré-excitação", linhas: ["Sem adenosina, verapamil nem diltiazem", "Fazer cardioversão elétrica"], ops: [{ t: "Continuar", ir: "cv200" }], ref: "AHA 2025, QRS largo (ACLS-T p. 1-2) · FA parte 2 (p. 10-11)" },
-      destino: { e: 4, tipo: "pergunta", t: "Para onde vai?", ops: [{ t: "UTI", log: "Destino: UTI", ir: "fim", sug: { v: { inst: 1 } } }, { t: "Observação ou enfermaria", log: "Destino: observação ou enfermaria", ir: "fim" }, { t: "Alta", log: "Destino: alta", ir: "fim" }], ref: "Registro do destino (as fontes do lote não trazem critério)" },
-      fim: { e: 4, tipo: "fim", t: "Atendimento registrado" }
-    }
-  }, {
-    id: "bradi", nome: "Bradiarritmia", curto: "Bradiarritmias",
-    busca: ["bradicardia", "bradiarritmia", "coracao lento", "bav", "bavt", "bloqueio atrioventricular", "sincope", "desmaio", "marca-passo", "marcapasso"],
-    imediato: 1,
-    etapas: ["Avaliação", "Atropina", "Marca-passo e drogas", "Causa", "Destino"],
-    inicio: "inst",
-    nos: {
-      inst: { e: 0, tipo: "sinais", t: "Bradicardia com instabilidade?", var: "inst", chips: ["Hipotensão", "Confusão aguda", "Sinais de choque", "Dor no peito isquêmica", "IC aguda"], sim: "Sim, instável", nao: "Não, estável", irSim: "suporte", irNao: "obs", ref: "AHA 2025, Figura 8 (ACLS-F p. 3)" },
-      obs: { e: 0, tipo: "acao", t: "Observar", chips: ["Monitor", "O₂ se precisar", "ECG de 12 derivações"], ops: [{ t: "Continuar", log: "Bradicardia estável: observação", ir: "causa" }], ref: "AHA 2025, Figura 8 (ACLS-F p. 3)" },
-      suporte: { e: 0, tipo: "acao", t: "Primeiro", chips: ["Via aérea e O₂", "Monitor", "Acesso venoso", "ECG de 12 derivações"], ops: [{ t: "Feito", log: "Suporte inicial", ir: "atro1" }, { t: "Depois", sec: 1, ir: "atro1" }], ref: "AHA 2025, Figura 8 (ACLS-F p. 3)" },
-      atro1: { e: 1, tipo: "med", med: "atropina", ir: "r1" },
-      r1: { e: 1, tipo: "pergunta", t: "Melhorou?", ops: [{ t: "Sim", log: "Melhorou com atropina", ir: "causa" }, { t: "Não · repetir atropina", sec: 1, log: "Sem resposta à 1ª atropina", ir: "atro2" }, { t: "Não · ir para o marca-passo", sec: 1, log: "Sem resposta à atropina", ir: "mp" }], ref: "AHA 2025, Figura 8 (ACLS-F p. 3)" },
-      atro2: { e: 1, tipo: "med", med: "atropina", ir: "r2" },
-      r2: { e: 1, tipo: "pergunta", t: "Melhorou?", ops: [{ t: "Sim", log: "Melhorou com atropina", ir: "causa" }, { t: "Não · repetir atropina", sec: 1, log: "Sem resposta à 2ª atropina", ir: "atro3" }, { t: "Não · ir para o marca-passo", sec: 1, log: "Sem resposta à atropina", ir: "mp" }], ref: "AHA 2025, Figura 8 (ACLS-F p. 3)" },
-      atro3: { e: 1, tipo: "med", med: "atropina", ir: "r3" },
-      r3: { e: 1, tipo: "pergunta", t: "Melhorou?", ops: [{ t: "Sim", log: "Melhorou com atropina", ir: "causa" }, { t: "Não · já são 3 mg", sec: 1, log: "Sem resposta a 3 mg de atropina", ir: "mp" }], ref: "AHA 2025, Figura 8 (ACLS-F p. 3)" },
-      mp: { e: 2, tipo: "acao", t: "Marca-passo transcutâneo", linhas: ["Confirmar a captura pelo pulso"], ops: [{ t: "Capturou", log: "Marca-passo transcutâneo com captura", ir: "tv" }, { t: "Não capturou", sec: 1, log: "Marca-passo transcutâneo sem captura", ir: "adr" }, { t: "Não tem aqui", sec: 1, log: "Marca-passo transcutâneo indisponível", ir: "adr" }], ref: "AHA 2025, Figura 8 (ACLS-F p. 3) · ACLS-B p. 1-3" },
-      adr: { e: 2, tipo: "med", med: "adrenalinaInf", sem: "dopa", ir: "tv" },
-      dopa: { e: 2, tipo: "med", med: "dopamina", ir: "tv" },
-      tv: { e: 2, tipo: "acao", t: "Chame o cardiologista", linhas: ["Marca-passo transvenoso"], ops: [{ t: "Chamei", log: "Cardiologia acionada para marca-passo transvenoso", ir: "causa" }], ref: "AHA 2025, Figura 8 (ACLS-F p. 3)" },
-      causa: { e: 3, tipo: "acao", t: "Procure a causa", chips: ["Isquemia ou infarto", "Betabloqueador", "Bloqueador de cálcio", "Digoxina", "Hipóxia", "Potássio alto"], ops: [{ t: "Continuar", ir: "destino" }], ref: "AHA 2025, Figura 8 (ACLS-F p. 3)" },
-      destino: { e: 4, tipo: "pergunta", t: "Para onde vai?", ops: [{ t: "UTI", log: "Destino: UTI", ir: "fim", sug: { v: { inst: 1 } } }, { t: "Observação ou enfermaria", log: "Destino: observação ou enfermaria", ir: "fim" }, { t: "Alta", log: "Destino: alta", ir: "fim" }], ref: "Registro do destino (as fontes do lote não trazem critério)" },
-      fim: { e: 4, tipo: "fim", t: "Atendimento registrado" }
-    }
-  }, {
-    id: "ic", nome: "Insuficiência cardíaca e edema agudo de pulmão", curto: "IC e EAP", perfil: 1,
-    busca: ["ic", "icad", "eap", "icc", "insuficiencia cardiaca", "edema agudo de pulmao", "falta de ar", "dispneia", "ortopneia", "inchaco", "edema", "congestao"],
-    imediato: 1, frequente: 1,
-    etapas: ["Avaliação", "Perfil", "Conduta", "Reavaliação", "Destino"],
-    inicio: "risco",
-    nos: {
-      risco: { e: 0, tipo: "pergunta", t: "Choque ou insuficiência respiratória?", ops: [{ t: "Sim", set: { risco: 1 }, ir: "riscoAcao" }, { t: "Não", set: { risco: 0 }, ir: "exames" }], ref: "SBC 2026, 7.4.1" },
-      riscoAcao: { e: 0, tipo: "acao", t: "Risco imediato", linhas: ["VNI ou via aérea", "Acionar UTI"], ops: [{ t: "Feito", log: "Risco imediato: medidas iniciadas", ir: "exames" }], ref: "SBC 2026, 7.4.1 · PSZ2 p. 20" },
-      exames: { e: 0, tipo: "acao", t: "Peça os exames", chips: ["ECG", "RX de tórax", "US pulmonar", "Eco", "BNP ou NT-proBNP", "Troponina", "Na e K", "Creatinina", "Lactato", "Gasometria"],
-        ops: [{ t: "Pedidos", log: "Exames solicitados", ir: "cong" }, { t: "Depois", sec: 1, ir: "cong" }], ref: "SBC 2026, Quadro 7.1" },
-      cong: { e: 1, tipo: "sinais", t: "Tem congestão?", var: "cong", chips: ["Ortopneia", "Estertores", "Jugular túrgida", "Ascite", "Edema"], sim: "Sim, congesto", nao: "Não", ir: "perf", ref: "SBC 2026, Figura 7.3" },
-      perf: { e: 1, tipo: "sinais", t: "Tem baixa perfusão?", var: "perf", chips: ["Pressão de pulso reduzida", "Sonolência", "Extremidades frias", "Pouca diurese"], sim: "Sim, está frio", nao: "Não, está quente", ir: "pas", ref: "SBC 2026, Figura 7.3" },
-      pas: { e: 1, tipo: "numero", t: "Qual a PAS?", var: "pas", un: "mmHg", ir: "rota" },
-      rota: { tipo: "rota", regras: [{ se: { perfil: "A" }, ir: "a1" }, { se: { perfil: "B" }, ir: "bFuro" }, { se: { perfil: "C", pasMax: 90 }, ir: "cDobu" }, { se: { perfil: "C" }, ir: "cFuro" }, { se: { perfil: "L" }, ir: "lVol" }] },
-      a1: { e: 2, tipo: "acao", t: "Compensado", linhas: ["Ajustar a medicação oral"], ops: [{ t: "Continuar", ir: "destino" }], ref: "CNP p. 72" },
-      bFuro: { e: 2, tipo: "med", med: "furosemida", ir: "bVni" },
-      bVni: { e: 2, tipo: "acao", t: "VNI", linhas: ["PS 12 cmH₂O", "PEEP 6 a 7 cmH₂O"], ops: [{ t: "Coloquei", log: "VNI iniciada", ir: "bRota" }, { t: "Não vou usar", sec: 1, log: "VNI não usada", ir: "bRota" }], ref: "PSZ2 p. 20 e 22" },
-      bRota: { tipo: "rota", regras: [{ se: { pasMin: 111 }, ir: "bNtg" }, { se: {}, ir: "reav" }] },
-      bNtg: { e: 2, tipo: "med", med: "nitroglicerina", ir: "reav" },
-      cDobu: { e: 2, tipo: "med", med: "dobutamina", ir: "cNora", faixa: "UTI" },
-      cNora: { e: 2, tipo: "med", med: "noradrenalina", ir: "cFuro2", faixa: "UTI" },
-      cFuro2: { e: 2, tipo: "med", med: "furosemida", ir: "reav", faixa: "UTI" },
-      cFuro: { e: 2, tipo: "med", med: "furosemida", ir: "cNps", faixa: "UTI" },
-      cNps: { e: 2, tipo: "med", med: "nitroprussiato", ir: "reav", faixa: "UTI" },
-      lVol: { e: 2, tipo: "acao", t: "Ringer lactato 250 mL EV", linhas: ["Devagar, reavaliando"], ops: [{ t: "Feito", log: "Ringer lactato 250 mL EV", ir: "lReav" }], ref: "CNP p. 75" },
-      lReav: { e: 3, tipo: "pergunta", t: "E depois do volume?", ops: [{ t: "Perfusão melhorou", log: "Perfusão melhorou após volume", ir: "destino" }, { t: "Congestionou e segue frio", log: "Congestão e má perfusão após volume", ir: "lDobu" }], ref: "CNP p. 75" },
-      lDobu: { e: 2, tipo: "med", med: "dobutamina", ir: "destino" },
-      reav: { e: 3, tipo: "reav", t: "Diurese acima de 100 mL/h?", horas: 6, gatilho: "furosemida", pular: "destino",
-        ops: [{ t: "Sim", msg: "Repetir a mesma dose a cada 12 h", log: "Diurese adequada em 6 h: repetir a dose a cada 12 h", ir: "destino" },
-          { t: "Não", msg: "Dobrar a dose e reavaliar em 6 h", log: "Diurese insuficiente em 6 h: dobrar a dose", ir: "destino" },
-          { t: "Ainda não deu 6 h", sec: 1, ir: "destino" }], ref: "SBC 2026, Figura 7.5" },
-      destino: { e: 4, tipo: "pergunta", t: "Para onde vai?", ops: [{ t: "UTI", log: "Destino: UTI", ir: "fim", sug: { perfil: "C" }, sug2: "risco" }, { t: "Enfermaria", log: "Destino: enfermaria", ir: "fim" }, { t: "Alta", log: "Destino: alta", ir: "alta" }], ref: "SBC 2026, 7.4.1 e Quadro 7.7" },
-      alta: { e: 4, tipo: "acao", t: "Antes da alta", linhas: ["Sem congestão", "Peso e diurético oral estáveis há 48 h", "Sem droga EV há 48 h", "Retorno em 7 a 14 dias"], ops: [{ t: "Confere", log: "Critérios de alta conferidos", ir: "fim" }, { t: "Voltar", sec: 1, ir: "destino" }], ref: "SBC 2026, 7.17" },
-      fim: { e: 4, tipo: "fim", t: "Atendimento registrado" }
-    }
-  }],
-  meds: {
-    // ----- Lote 1 -----
-    adrenalinaPcr: { nome: "Adrenalina EV ou IO", busca: ["adrenalina", "epinefrina"], modo: "fixo", mg: 1, ap: { mg: 1, ml: 1 }, apTxt: "1 mg/mL", linhas: ["Repetir a cada 3 a 5 min", "Pensar em via aérea avançada e capnografia"],
-      lembra: { min: 3, t: "Adrenalina de novo a partir das" }, ref: "AHA 2025, Figura 2 (ACLS-F p. 2) · MED p. 11" },
-    amiodaronaPcr1: { nome: "Amiodarona EV ou IO · 1ª dose", busca: ["amiodarona", "ancoron"], modo: "fixo", mg: 300, ap: { mg: 150, ml: 3 }, apTxt: "150 mg/3 mL", linhas: ["Em bolus, durante a RCP"], ref: "AHA 2025, Figura 2 (ACLS-F p. 2) · MED p. 37-38" },
-    amiodaronaPcr2: { nome: "Amiodarona EV ou IO · 2ª dose", busca: [], modo: "fixo", mg: 150, ap: { mg: 150, ml: 3 }, apTxt: "150 mg/3 mL", linhas: ["Em bolus, durante a RCP"], ref: "AHA 2025, Figura 2 (ACLS-F p. 2) · MED p. 37-38" },
-    lidocainaPcr1: { nome: "Lidocaína 2% EV ou IO · 1ª dose", busca: ["lidocaina", "xylocaina"], modo: "kg", mgKg: [1, 1.5], mgMl: 20, linhas: ["Sem vasoconstritor, em bolus"], ref: "AHA 2025, Figura 2 (ACLS-F p. 2) · MED p. 38" },
-    lidocainaPcr2: { nome: "Lidocaína 2% EV ou IO · 2ª dose", busca: [], modo: "kg", mgKg: [0.5, 0.75], mgMl: 20, linhas: ["Sem vasoconstritor, em bolus"], ref: "AHA 2025, Figura 2 (ACLS-F p. 2) · MED p. 38" },
-    adenosina6: { nome: "Adenosina EV · 1ª dose", busca: ["adenosina", "adenocard"], modo: "fixo", mg: 6, ap: { mg: 6, ml: 2 }, apTxt: "6 mg/2 mL", linhas: ["Bolus rápido em veia do braço", "Logo depois: 20 mL de SF e elevar o braço"], evitar: "Não usar na asma nem em ritmo irregular", ref: "AHA 2025, Figura 6 (ACLS-F p. 4) · ACLS-T p. 5 · PSZ1 p. 7" },
-    adenosina12: { nome: "Adenosina EV · 2ª dose", busca: [], modo: "fixo", mg: 12, ap: { mg: 6, ml: 2 }, apTxt: "6 mg/2 mL", linhas: ["Bolus rápido em veia do braço", "Logo depois: 20 mL de SF e elevar o braço"], evitar: "Não usar na asma nem em ritmo irregular", ref: "AHA 2025, Figura 6 (ACLS-F p. 4) · ACLS-T p. 5 · PSZ1 p. 8" },
-    metoprolol: { nome: "Metoprolol EV", busca: ["metoprolol", "seloken", "betabloqueador"], modo: "fixo", mg: 5, ap: { mg: 5, ml: 5 }, apTxt: "5 mg/5 mL", linhas: ["Correr em 2 min", "Pode repetir a cada 5 min, até 3 doses"], evitar: "Não usar: IC descompensada, hipotensão, pré-excitação", ref: "AHA 2025, Tabela 2 (ACLS-T p. 11) · PSZ1 p. 10" },
-    amiodaronaTv: { nome: "Amiodarona EV · ataque", busca: [], modo: "fixo", mg: 150, ap: { mg: 150, ml: 3 }, apTxt: "150 mg/3 mL", linhas: ["Diluir em 100 mL de SG 5%", "Correr em 10 min · repetir se a TV voltar"], ref: "AHA 2025, Figura 6 (ACLS-F p. 4) · MED p. 38" },
-    amiodaronaTvManut: { nome: "Amiodarona EV · manutenção", busca: [], modo: "inf", porKg: 0, un: "mcg/min", prep: "6 ampolas (150 mg/3 mL) + 482 mL SG 5%", conc: 1800, ini: [1000, 1000], passo: "1 mg/min nas primeiras 6 h", ref: "AHA 2025, Figura 6 (ACLS-F p. 4) · PSZ1 p. 10" },
-    amiodaronaFa: { nome: "Amiodarona EV · ataque", busca: [], modo: "fixo", mg: 300, ap: { mg: 150, ml: 3 }, apTxt: "150 mg/3 mL", linhas: ["Diluir em 100 mL de SG 5%", "Correr em 1 hora"], evitar: "Não usar na pré-excitação", ref: "AHA 2025, Tabela 2 (ACLS-T p. 11) · PSZ1 p. 10" },
-    amiodaronaFaManut: { nome: "Amiodarona EV · manutenção", busca: [], modo: "inf", porKg: 0, un: "mg/h", prep: "6 ampolas (150 mg/3 mL) + 482 mL SG 5%", mgMl: 1.8, ini: [10, 50], max: 50, passo: "Ajustar pela frequência, por 24 h", ref: "AHA 2025, Tabela 2 (ACLS-T p. 11) · PSZ1 p. 10" },
-    atropina: { nome: "Atropina EV", busca: ["atropina"], modo: "fixo", mg: 1, ap: { mg: 0.5, ml: 1 }, apTxt: "0,5 mg/mL", linhas: ["Em bolus", "Repetir a cada 3 a 5 min · máximo 3 mg"], lembra: { min: 3, t: "Atropina de novo a partir das" }, ref: "AHA 2025, Figura 8 (ACLS-F p. 3) · MED p. 39" },
-    adrenalinaInf: { nome: "Adrenalina EV em bomba", busca: ["adrenalina em bomba", "epinefrina em bomba"], modo: "inf", porKg: 0, un: "mcg/min", prep: "6 ampolas (1 mg/mL) + 94 mL SF 0,9%", conc: 60, ini: [2, 2], max: 10, passo: "Ajustar pela resposta", ref: "AHA 2025, Figura 8 (ACLS-F p. 3) · MED p. 11 e 16" },
-    dopamina: { nome: "Dopamina EV em bomba", busca: ["dopamina", "revivan"], modo: "inf", porKg: 1, un: "mcg/kg/min", prep: "5 ampolas (50 mg/10 mL) + 200 mL SF 0,9%", conc: 1000, ini: [5, 5], max: 20, passo: "Ajustar pela resposta · reduzir devagar", ref: "AHA 2025, Figura 8 (ACLS-F p. 3) · PSZ1 p. 87 · MED p. 12 e 16" },
-    // ----- IC e EAP -----
-    furosemida: { nome: "Furosemida EV", busca: ["furosemida", "lasix", "diuretico"], modo: "furo", mg: 20, ml: 2, linha: "Bolus, sem diluir", semUso: [20, 40], fator: [1, 2], teto: 600, ref: "SBC 2026, 7.5.1 · DRG p. 60" },
-    nitroglicerina: { nome: "Nitroglicerina EV", busca: ["nitroglicerina", "tridil"], modo: "inf", porKg: 0, un: "mcg/min", prep: "1 ampola (50 mg/10 mL) + 240 mL SF 0,9%", conc: 200, ini: [10, 20], max: 200, passo: "Subir 3 a 6 mL/h a cada 15 min",
-      bolus: { pasMin: 160, t: "Hiperagudo, sem excesso de líquido (SCAPE)?", faixas: [{ de: 160, ate: 179, ml: 3 }, { de: 180, ate: 199, ml: 4 }, { de: 201, ate: 999, ml: 5 }], depois: "Depois: 30 mL/h. Se a PAS não cair, +6 mL/h a cada 10 min" },
-      evitar: "Não usar: sildenafila < 24 h, tadalafila < 48 h, IAM de VD", ref: "SBC 2018, Tabela 2.2 · PSZ2 p. 20-21 · DRG p. 52" },
-    nitroprussiato: { nome: "Nitroprussiato EV", busca: ["nitroprussiato", "nipride"], modo: "inf", porKg: 1, un: "mcg/kg/min", prep: "1 ampola (50 mg/2 mL) + 248 mL SG 5%", extra: "Proteger da luz", conc: 200, ini: [0.3, 0.3], max: 5, passo: "Subir 0,3 a 0,5 mcg/kg/min a cada 15 min", ref: "SBC 2018, Tabela 2.2 · PSZ2 p. 21 · bula" },
-    dobutamina: { nome: "Dobutamina EV", busca: ["dobutamina", "dobutrex"], modo: "inf", porKg: 1, un: "mcg/kg/min", prep: "4 ampolas (250 mg/20 mL) + 170 mL SF 0,9%", conc: 4000, ini: [0.5, 1], manter: [2, 20], max: 20, passo: "Ajustar a cada 10 min", ref: "SBC 2026, Quadro 7.5 · PSZ2 p. 22" },
-    noradrenalina: { nome: "Noradrenalina EV", busca: ["noradrenalina", "norepinefrina"], modo: "inf", porKg: 1, un: "mcg/kg/min", prep: "4 ampolas (4 mg/4 mL) + 234 mL SG 5%", extra: "Sempre junto com inotrópico", conc: 64, ini: [0.1, 0.2], max: 1, passo: "Ajustar a cada 15 min · meta PAM 65 a 70", ref: "SBC 2018, Tabela 2.3 · DRG p. 43 · PSZ2 p. 194 · bula" }
+    sobre: "Primeiro decidir se o paciente está instável por causa da taquicardia. Instável: cardioversão elétrica sincronizada. Estável: tratar conforme o ritmo no ECG.", refSobre: "AHA 2025, Figura 6 (ACLS-F p. 4) · CNP p. 77",
+    agora: [
+      { id: "monitor", t: "Monitorizar (ritmo, pressão e oximetria)", ref: "AHA 2025, Figura 6 (ACLS-F p. 4) · CNP p. 77" },
+      { id: "o2", t: "Oxigênio se saturação abaixo de 90%", ref: "CNP p. 77 · AHA 2025, Figura 6" },
+      { id: "acesso", t: "Acesso venoso periférico", ref: "AHA 2025, Figura 6 (ACLS-F p. 4)" },
+      { id: "ecg", t: "ECG de 12 derivações", ref: "AHA 2025, Figura 6 (ACLS-F p. 4)" }],
+    gravidade: { t: "Sinais de instabilidade", itens: TRI_INST, como: ["Um sinal presente já define instabilidade, desde que a taquicardia seja a causa (a frequência costuma ser de 150 por minuto ou mais).", "Se a taquicardia for consequência de outro problema (por exemplo, sepse), tratar o problema de base."], ref: "AHA 2025, Figura 6 (ACLS-F p. 4) · ACLS-T p. 5" },
+    investigar: [
+      { id: "ritmo", tipo: "opc", t: "Ritmo no ECG", ops: [{ v: "sinusal", t: "Sinusal" }, { v: "estreito", t: "QRS estreito e regular (TPSV)" }, { v: "fa", t: "FA ou flutter" }, { v: "tv", t: "QRS largo, regular, monomórfico" }, { v: "largoirr", t: "QRS largo e irregular" }, { v: "poli", t: "TV polimórfica" }],
+        como: ["QRS largo: 0,12 segundo ou mais.", "Sinusal: onda P positiva em D1, D2 e aVF e negativa em aVR.", "TV polimórfica: o QRS muda de forma a cada batimento."], ref: "AHA 2025, Figura 6 (ACLS-F p. 4) · CNP p. 87" },
+      { id: "wpw", tipo: "tri", t: "Pré-excitação (WPW)", se: function (P) { return P.o("ritmo") === "fa"; }, como: ["Na FA ou flutter com pré-excitação, bloquear o nó AV pode acelerar a resposta ventricular e levar à fibrilação ventricular."], ref: "AHA 2025 (ACLS-T p. 10-11)" },
+      { id: "ic", tipo: "tri", t: "IC descompensada ou fração de ejeção reduzida", se: function (P) { return P.o("ritmo") === "fa"; }, como: ["Betabloqueador EV e bloqueador de canal de cálcio não devem ser usados na disfunção sistólica com IC descompensada."], ref: "AHA 2025 (ACLS-T p. 10-11) · DRG p. 64" },
+      { id: "t48", tipo: "tri", t: "Início há mais de 48 h ou tempo incerto", se: function (P) { return P.o("ritmo") === "fa"; }, como: ["Reverter FA ou flutter com mais de 48 h sem anticoagulação traz risco de embolia."], ref: "AHA 2025 (ACLS-T p. 6-8) · DRG p. 62" },
+      { id: "qt", tipo: "tri", t: "QT longo", se: function (P) { return P.o("ritmo") === "poli"; }, como: ["Torsades de pointes: TV polimórfica com QT prolongado (QT corrigido em geral acima de 500 ms)."], ref: "CNP p. 103 · AHA 2025 (ACLS-T p. 3)" }],
+    exames: [
+      { id: "k", t: "Potássio", por: "hipocalemia favorece arritmia ventricular e torsades", res: [{ v: "alto", t: "Alto" }, { v: "normal", t: "Normal" }, { v: "baixo", t: "Baixo" }], ref: "CNP p. 102-103" },
+      { id: "mg", t: "Magnésio", por: "hipomagnesemia pode estar associada a torsades", res: [{ v: "alto", t: "Alto" }, { v: "normal", t: "Normal" }, { v: "baixo", t: "Baixo" }], ref: "CNP p. 103" },
+      { id: "tropo", t: "Troponina", por: "síndrome coronariana é causa de TV", res: [{ v: "elev", t: "Elevada" }, { v: "normal", t: "Normal" }], ref: "CNP p. 101" }],
+    classificar: function (P) {
+      var it = [], falta = [], r = P.o("ritmo"), N = { sinusal: "Taquicardia sinusal", estreito: "QRS estreito e regular", fa: "FA ou flutter", tv: "QRS largo regular monomórfico", largoirr: "QRS largo e irregular", poli: "TV polimórfica" };
+      if (instavel(P)) it.push({ t: "Estabilidade", v: "Instável", porque: "Há sinal de instabilidade marcado como presente." });
+      else if (estavel(P)) it.push({ t: "Estabilidade", v: "Estável", porque: "Todos os sinais de instabilidade avaliados e ausentes." });
+      else falta.push("Sinais de instabilidade (marcar presente ou ausente)");
+      if (r) it.push({ t: "Ritmo", v: N[r] }); else falta.push("Ritmo no ECG");
+      if (r === "fa" && !instavel(P)) { if (!P.a("wpw")) falta.push("Pré-excitação (WPW)"); if (!P.a("ic")) falta.push("IC descompensada"); }
+      if (r === "poli" && !P.a("qt")) falta.push("QT longo");
+      return { itens: it, falta: falta };
+    },
+    passos: [
+      { id: "cve", t: "Cardioversão elétrica sincronizada", se: function (P) { var r = P.o("ritmo"); return r !== "poli" && r !== "sinusal" && (instavel(P) || r === "largoirr" || (r === "fa" && P.a("wpw") === "p")); },
+        porque: "Instabilidade, ou FA com pré-excitação (cardioversão independentemente da estabilidade).", ref: "AHA 2025, Figura 7 (ACLS-F p. 5) · CNP p. 78-83 e 104",
+        dica: function (P) { var r = P.o("ritmo"); return r === "fa" || r === "largoirr" ? "Carga inicial: 200 J, sincronizado." : r === "estreito" || r === "tv" ? "Carga inicial: 100 J, sincronizado." : "Carga inicial: FA e flutter 200 J; QRS estreito regular e TV monomórfica 100 J."; },
+        itens: [
+          { id: "prep", tipo: "acao", t: "Preparar a cardioversão (OSASCO)", como: OSASCO, ref: "CNP p. 79-80" },
+          { tipo: "med", med: "midazolam", nota: "sedação leve" }, { tipo: "med", med: "fentanil", nota: "analgesia" },
+          { id: "choque", tipo: "acao", rep: "Registrar choque", t: "Choque sincronizado", como: ["FA: 200 J. Flutter: 200 J. QRS estreito regular: 100 J. TV monomórfica: 100 J.", "Se não reverter: apertar Sync de novo e aumentar a carga.", "Se a sincronização atrasar e o quadro for crítico: choque não sincronizado."], ref: "AHA 2025, Figura 7 (ACLS-F p. 5) · CNP p. 82" },
+          { tipo: "info", t: "Com pré-excitação: não usar adenosina, betabloqueador, verapamil, diltiazem, digital nem amiodarona.", se: function (P) { return P.o("ritmo") === "largoirr" || P.a("wpw") === "p"; } }] },
+      { id: "poli", t: "TV polimórfica: desfibrilar", se: function (P) { return P.o("ritmo") === "poli"; }, porque: "O aparelho não consegue sincronizar com QRS de formas diferentes.", ref: "AHA 2025 (ACLS-T p. 3-4) · CNP p. 102-103",
+        itens: [
+          { id: "desf", tipo: "acao", rep: "Registrar choque", t: "Desfibrilação (choque não sincronizado)", como: ["Energia máxima do aparelho.", "Sedar antes se o estado de consciência exigir."], ref: "AHA 2025 (ACLS-T p. 3-4)" },
+          { tipo: "med", med: "magnesio", nota: "QT longo (torsades)", se: function (P) { return P.a("qt") === "p"; } },
+          { id: "k", tipo: "acao", t: "Corrigir o potássio (alvo 4,5 mEq/L) e suspender droga que alonga o QT", se: function (P) { return P.a("qt") === "p"; }, ref: "CNP p. 103 · AHA 2025 (ACLS-T p. 4)" },
+          { id: "isq", tipo: "acao", t: "Tratar isquemia miocárdica", se: function (P) { return P.a("qt") === "a"; }, ref: "AHA 2025 (ACLS-T p. 3-4)" },
+          { tipo: "med", med: "amiodaronaTvManut", nota: "prevenir recorrência sem QT longo", se: function (P) { return P.a("qt") === "a"; } },
+          { tipo: "info", t: "Sem QT longo, magnésio de rotina não é recomendado.", se: function (P) { return P.a("qt") === "a"; } }] },
+      { id: "sinusal", t: "Taquicardia sinusal: tratar a causa", se: function (P) { return P.o("ritmo") === "sinusal"; }, porque: "A taquicardia é resposta a outro problema.", ref: "CNP p. 87",
+        itens: [{ id: "causa", tipo: "acao", t: "Procurar a causa", como: ["Isquemia coronária, embolia pulmonar, sepse, pneumonia.", "Hipervolemia, hipovolemia, anemia.", "Hipertireoidismo, febre, dor ou ansiedade."], ref: "CNP p. 87" }] },
+      { id: "tpsv", t: "QRS estreito e regular, estável", se: function (P) { return P.o("ritmo") === "estreito" && !instavel(P); }, porque: "Taquicardia paroxística supraventricular provável.", ref: "AHA 2025 (ACLS-T p. 4-5) · CNP p. 88-89",
+        dica: function (P) { return P.cont("vagal") === 0 ? "Começar pela manobra vagal modificada." : P.adm("adenosina") === 0 ? "Sem reversão: adenosina 6 mg." : P.adm("adenosina") === 1 ? "Sem reversão: adenosina 12 mg." : "Sem reversão: metoprolol. Se persistir, rever o diagnóstico e avaliar cardioversão sincronizada."; },
+        itens: [
+          { id: "vagal", tipo: "acao", rep: "Registrar manobra", t: "Manobra vagal modificada", como: ["Sentado a 45°, soprar uma seringa vazia de 20 mL por 15 segundos, tentando empurrar o êmbolo.", "Em seguida deitar a 0° e elevar as pernas a 45° por 15 segundos.", "Observar o monitor.", "Massagem do seio carotídeo: cautela, pode causar AVC em quem tem doença carotídea."], ref: "CNP p. 88 · AHA 2025 (ACLS-T p. 5)" },
+          { tipo: "med", med: "adenosina", nota: "6 mg; se não reverter, 12 mg" },
+          { tipo: "med", med: "metoprolol", nota: "se persistir depois da adenosina" },
+          { id: "cv", tipo: "acao", t: "Persistiu: rever o diagnóstico e avaliar cardioversão sincronizada (100 J)", ref: "AHA 2025 (ACLS-T p. 4-5) · CNP p. 89" }] },
+      { id: "fa", t: "FA ou flutter estável: controle da frequência", se: function (P) { return P.o("ritmo") === "fa" && !instavel(P) && P.a("wpw") === "a"; }, porque: "Sem instabilidade e sem pré-excitação.", ref: "AHA 2025, Tabela 2 (ACLS-T p. 10-11) · DRG p. 62 e 64",
+        itens: [
+          { tipo: "med", med: "metoprolol", nota: "primeira escolha sem IC descompensada", se: function (P) { return P.a("ic") === "a"; } },
+          { tipo: "med", med: "amiodaronaFa", nota: "com IC descompensada: ataque", se: function (P) { return P.a("ic") === "p"; } },
+          { tipo: "med", med: "amiodaronaFaManut", nota: "depois do ataque", se: function (P) { return P.a("ic") === "p"; } },
+          { tipo: "info", t: "Mais de 48 h ou tempo incerto: não reverter o ritmo sem anticoagulação.", se: function (P) { return P.a("t48") !== "a"; } },
+          { id: "antic", tipo: "acao", t: "Avaliar anticoagulação (CHA₂DS₂-VASc)", ref: "CNP p. 109" }] },
+      { id: "tv", t: "QRS largo regular monomórfico, estável", se: function (P) { return P.o("ritmo") === "tv" && !instavel(P); }, porque: "Taquicardia ventricular monomórfica provável.", ref: "AHA 2025, Figura 6 (ACLS-F p. 4) · CNP p. 100-101",
+        itens: [
+          { tipo: "med", med: "amiodaronaTv", nota: "ataque" }, { tipo: "med", med: "amiodaronaTvManut", nota: "manutenção depois de reverter" },
+          { id: "cv", tipo: "acao", t: "Não reverteu: cardioversão sincronizada (100 J)", ref: "AHA 2025 (ACLS-T p. 1-2)" },
+          { id: "causa", tipo: "acao", t: "Investigar a causa", como: ["Síndrome coronariana aguda, doença cardíaca estrutural, doença de Chagas, miocardite.", "QT longo congênito ou por medicação, síndrome de Brugada.", "Hipocalemia e remédios que a causam (hidroclorotiazida, furosemida)."], ref: "CNP p. 101" },
+          { tipo: "info", t: "Não usar verapamil nem diltiazem em taquicardia de QRS largo." }] }],
+    reav: [
+      { id: "rev", t: "Depois da intervenção: reverteu?", se: function (P) { return !!P.o("ritmo"); }, ref: "AHA 2025, Figura 6 (ACLS-F p. 4)", repete: 1,
+        ops: [{ v: "sim", t: "Reverteu", prox: "Manter monitorizado, repetir o ECG e definir o destino." }, { v: "nao", t: "Não reverteu", prox: "Seguir para o próximo item da conduta. Se refratária: procurar a causa, aumentar a energia, associar antiarrítmico e chamar o cardiologista." },
+          { v: "piorou", t: "Ficou instável", prox: "Atualizar os sinais de instabilidade: a conduta passa a ser cardioversão sincronizada." }, { v: "sempulso", t: "Perdeu o pulso", prox: "Iniciar RCP." }] }],
+    alertas: [{ id: "pcr", se: function (P) { return P.r("rev") === "sempulso"; }, t: "Sem pulso: seguir o fluxo de parada cardiorrespiratória", porque: "Foi registrado que o paciente perdeu o pulso.", ir: "pcr" }],
+    destino: { ops: [{ v: "uti", t: "UTI" }, { v: "obs", t: "Observação ou enfermaria" }, { v: "alta", t: "Alta" }], notas: ["TPSV revertida e estável: pode ter alta com betabloqueador oral e encaminhamento ao cardiologista para avaliar ablação."], ref: "CNP p. 89" }
   },
-  notas: ["Uma conduta por passo. Quando os documentos divergiam, vale a resolução que você aprovou; na dúvida, PS Zerado 2ª edição.",
-    "Perfil: um ou mais sinais marcados sugerem “sim”. A decisão é sua.", "PAS até 90 mmHg no perfil C segue pelo caminho do inotrópico.",
-    "Nitroglicerina no perfil B só entra com PAS acima de 110 mmHg.",
-    "PCR, taquiarritmias e bradiarritmias seguem os algoritmos da AHA de 2025."]
+  // ============================== BRADIARRITMIA ==============================
+  {
+    id: "bradi", nome: "Bradiarritmia", curto: "Bradiarritmias",
+    busca: ["bradicardia", "bradiarritmia", "coracao lento", "bav", "bavt", "bloqueio atrioventricular", "sincope", "desmaio", "tontura", "marca-passo", "marcapasso"],
+    sobre: "Frequência em geral abaixo de 50 por minuto. Tratar só se houver instabilidade causada pela bradicardia, e procurar a causa ao mesmo tempo.", refSobre: "AHA 2025, Figura 8 (ACLS-F p. 3) · ACLS-B p. 1",
+    agora: [
+      { id: "via", t: "Via aérea pérvia e oxigênio se necessário", ref: "AHA 2025, Figura 8 (ACLS-F p. 3)" },
+      { id: "monitor", t: "Monitor cardíaco, pressão e oximetria", ref: "AHA 2025, Figura 8 (ACLS-F p. 3)" },
+      { id: "acesso", t: "Acesso venoso", ref: "AHA 2025, Figura 8 (ACLS-F p. 3)" },
+      { id: "ecg", t: "ECG de 12 derivações", ref: "AHA 2025, Figura 8 (ACLS-F p. 3)" }],
+    gravidade: { t: "Sinais de instabilidade", itens: TRI_INST, como: ["Um sinal presente, causado pela bradicardia, define instabilidade."], ref: "AHA 2025, Figura 8 (ACLS-F p. 3)" },
+    investigar: [
+      { id: "causas", tipo: "tri", t: "Causa provável identificada", sinais: ["Isquemia ou infarto", "Betabloqueador", "Bloqueador de canal de cálcio", "Digoxina", "Hipóxia", "Hipercalemia"], como: ["A bradicardia pode não resolver sem tratar a causa. Toque na causa encontrada."], ref: "AHA 2025, Figura 8 (ACLS-F p. 3) · ACLS-B p. 1" }],
+    exames: [
+      { id: "k", t: "Potássio", por: "hipercalemia é causa de bradicardia", res: [{ v: "alto", t: "Alto" }, { v: "normal", t: "Normal" }, { v: "baixo", t: "Baixo" }], ref: "AHA 2025, Figura 8 (ACLS-F p. 3)" },
+      { id: "tropo", t: "Troponina", por: "isquemia ou infarto é causa de bradicardia", res: [{ v: "elev", t: "Elevada" }, { v: "normal", t: "Normal" }], ref: "AHA 2025, Figura 8 (ACLS-F p. 3)" }],
+    classificar: function (P) {
+      if (instavel(P)) return { itens: [{ t: "Estabilidade", v: "Instável", porque: "Há sinal de instabilidade marcado como presente." }], falta: [] };
+      if (estavel(P)) return { itens: [{ t: "Estabilidade", v: "Estável", porque: "Todos os sinais de instabilidade avaliados e ausentes." }], falta: [] };
+      return { itens: [], falta: ["Sinais de instabilidade (marcar presente ou ausente)"] };
+    },
+    passos: [
+      { id: "est", t: "Bradicardia estável: observar", se: function (P) { return estavel(P); }, porque: "Sem sinal de instabilidade.", ref: "AHA 2025, Figura 8 (ACLS-F p. 3)",
+        itens: [{ id: "obs", tipo: "acao", t: "Manter monitorizado e tratar a causa", ref: "AHA 2025, Figura 8 (ACLS-F p. 3)" }] },
+      { id: "inst", t: "Bradicardia instável", se: function (P) { return instavel(P); }, porque: "Comprometimento cardiopulmonar pela bradicardia.", ref: "AHA 2025, Figura 8 (ACLS-F p. 3) · CNP p. 115-116",
+        dica: function (P) { var a = P.adm("atropina"); return a === 0 ? "Atropina 1 mg em bolus." : P.r("resp") === "sim" ? "Respondeu: manter monitorizado e tratar a causa." : a < 3 ? "Sem resposta: repetir atropina a cada 3 a 5 minutos (máximo 3 mg) ou passar ao marca-passo transcutâneo e à adrenalina." : "Atropina no máximo (3 mg): marca-passo transcutâneo e/ou adrenalina em bomba."; },
+        itens: [
+          { tipo: "med", med: "atropina", nota: "1 mg; repetir a cada 3 a 5 min; máximo 3 mg" },
+          { id: "mptc", tipo: "acao", t: "Marca-passo transcutâneo, se a atropina não resolver", como: ["Confirmar a captura elétrica e mecânica (pulso).", "Fazer analgesia: o estímulo é doloroso.", "Sem acesso venoso e com choque: pode ser iniciado de imediato."], ref: "AHA 2025, Figura 8 (ACLS-F p. 3) · ACLS-B p. 1-3 · CNP p. 116" },
+          { tipo: "med", med: "adrenalinaInf", nota: "se a atropina não resolver" },
+          { tipo: "med", med: "dopamina", nota: "só se não houver adrenalina" },
+          { id: "tv", tipo: "acao", t: "Chamar o cardiologista e providenciar marca-passo transvenoso", ref: "AHA 2025, Figura 8 (ACLS-F p. 3) · CNP p. 116" }] }],
+    reav: [
+      { id: "resp", t: "Depois da intervenção: melhorou?", se: function (P) { return instavel(P); }, ref: "AHA 2025, Figura 8 (ACLS-F p. 3)", repete: 1,
+        ops: [{ v: "sim", t: "Melhorou", prox: "Manter monitorizado, tratar a causa e definir o destino." }, { v: "nao", t: "Sem resposta", prox: "Seguir para o próximo item: repetir atropina até 3 mg, marca-passo transcutâneo, adrenalina em bomba." },
+          { v: "sempulso", t: "Perdeu o pulso", prox: "Iniciar RCP." }] }],
+    alertas: [{ id: "pcr", se: function (P) { return P.r("resp") === "sempulso"; }, t: "Sem pulso: seguir o fluxo de parada cardiorrespiratória", porque: "Foi registrado que o paciente perdeu o pulso.", ir: "pcr" }],
+    destino: { ops: [{ v: "uti", t: "UTI" }, { v: "obs", t: "Observação ou enfermaria" }, { v: "alta", t: "Alta" }], ref: "AHA 2025, Figura 8 (ACLS-F p. 3)" }
+  },
+  // ============================== IC E EDEMA AGUDO DE PULMÃO ==============================
+  {
+    id: "ic", nome: "Insuficiência cardíaca descompensada e edema agudo de pulmão", curto: "IC e EAP",
+    busca: ["ic", "icad", "eap", "icc", "insuficiencia cardiaca", "edema agudo de pulmao", "falta de ar", "dispneia", "ortopneia", "inchaco", "edema", "congestao", "cansaco"],
+    sobre: "Três etapas, idealmente em até 60 minutos: tratar o risco imediato (choque ou insuficiência respiratória), procurar causa que exija tratamento específico e definir a terapia pelo perfil de congestão e perfusão.", refSobre: "SBC 2026, 7.4.1 (p. 65)",
+    agora: [
+      { id: "monitor", t: "Monitorizar: FC, FR, pressão, ECG e saturação", ref: "SBC 2018, Quadro 1.7 (p. 490)" },
+      { id: "acesso", t: "Acesso venoso", como: ["O diurético vai por via endovenosa: na hipervolemia a absorção oral é imprevisível."], ref: "PSZ2 p. 20" },
+      { id: "vni", t: "VNI se desconforto respiratório ou edema agudo de pulmão", como: ["Começar com pressão de suporte de 12 cmH₂O e PEEP de 6 a 7 cmH₂O.", "FiO₂ conforme a saturação.", "Morfina não é mais usada no edema agudo de pulmão."], ref: "PSZ2 p. 20 e 22" }],
+    gravidade: { t: "Risco imediato", itens: [{ id: "choque", t: "Choque cardiogênico" }, { id: "irpa", t: "Insuficiência respiratória" }], como: ["Presente: VNI ou via aérea, e acionar a UTI."], ref: "SBC 2026, 7.4.1" },
+    investigar: [
+      { id: "cong", tipo: "tri", t: "Congestão", sinais: ["Ortopneia", "Estertores", "Turgência jugular", "Ascite", "Edema", "Refluxo hepatojugular", "Terceira bulha (B3)", "Taquipneia (FR > 22) ou esforço respiratório"], como: ["Um ou mais sinais já sugerem congestão. Toque nos sinais encontrados."], ref: "SBC 2026, Figura 7.3 (p. 68) · SBC 2018, Quadro 1.2" },
+      { id: "perf", tipo: "tri", t: "Baixa perfusão", sinais: ["Pressão de pulso reduzida", "Sonolência ou obnubilação", "Extremidades frias", "Baixa diurese", "Sudorese fria", "Lactato elevado"], como: ["Um ou mais sinais já sugerem baixa perfusão. Toque nos sinais encontrados."], ref: "SBC 2026, Figura 7.3 (p. 68) · SBC 2018, Quadro 1.2" },
+      { id: "scape", tipo: "tri", t: "Edema agudo hiperagudo, sem excesso de líquido (SCAPE)", como: ["Forma hiperaguda: o paciente não tem excesso de líquido; trata-se com VNI e vasodilatador.", "Forma subaguda (com hipervolemia): a base é a furosemida."], ref: "PSZ2 p. 19" }],
+    exames: [
+      { id: "ecg", t: "ECG", por: "afastar síndrome coronariana e arritmia", res: [{ v: "isq", t: "Supra de ST ou isquemia" }, { v: "taqui", t: "FA ou outra taquiarritmia" }, { v: "bradi", t: "Bradiarritmia ou bloqueio" }, { v: "sem", t: "Sem alteração aguda" }], ref: "SBC 2026, Quadro 7.1 (p. 64)" },
+      { id: "rx", t: "Radiografia de tórax", res: [{ v: "cong", t: "Congestão" }, { v: "cons", t: "Consolidação" }, { v: "normal", t: "Normal" }], ref: "SBC 2026, Quadro 7.1 (p. 64)" },
+      { id: "usp", t: "Ultrassom pulmonar", res: [{ v: "b", t: "Linhas B difusas" }, { v: "normal", t: "Sem linhas B" }], ref: "SBC 2026, Quadro 7.1 (p. 64)" },
+      { id: "eco", t: "Ecocardiograma", res: [{ v: "fer", t: "FE reduzida" }, { v: "fep", t: "FE preservada" }], ref: "SBC 2026, Quadro 7.1 (p. 64)" },
+      { id: "bnp", t: "BNP", num: { un: "pg/mL", corte: 100, txt: "abaixo de 100 pg/mL afasta IC descompensada" }, ref: "SBC 2026, 7.2 (p. 63)" },
+      { id: "ntbnp", t: "NT-proBNP", num: { un: "pg/mL", corte: 300, txt: "abaixo de 300 pg/mL afasta IC descompensada" }, ref: "SBC 2026, 7.2 (p. 63)" },
+      { id: "tropo", t: "Troponina", por: "afastar síndrome coronariana", res: [{ v: "elev", t: "Elevada" }, { v: "normal", t: "Normal" }], ref: "SBC 2026, Quadro 7.1 (p. 64)" },
+      { id: "ele", t: "Sódio e potássio", res: [{ v: "alt", t: "Alterados" }, { v: "normal", t: "Normais" }], ref: "SBC 2026, Quadro 7.1 (p. 64)" },
+      { id: "cr", t: "Creatinina", res: [{ v: "elev", t: "Elevada" }, { v: "normal", t: "Normal" }], ref: "SBC 2026, Quadro 7.1 (p. 64)" },
+      { id: "lac", t: "Lactato", res: [{ v: "elev", t: "Elevado" }, { v: "normal", t: "Normal" }], ref: "SBC 2026, Quadro 7.1 (p. 64)" },
+      { id: "gas", t: "Gasometria", res: [{ v: "alt", t: "Alterada" }, { v: "normal", t: "Normal" }], ref: "SBC 2026, Quadro 7.1 (p. 64)" }],
+    classificar: function (P) {
+      var c = P.a("cong"), f = P.a("perf"), it = [], falta = [], pas = P.n("pas");
+      if (!c) falta.push("Congestão (presente ou ausente)"); if (!f) falta.push("Perfusão (presente ou ausente)");
+      if (c && f) { var pf = c === "p" ? (f === "p" ? "C · frio e úmido" : "B · quente e úmido") : (f === "p" ? "L · frio e seco" : "A · quente e seco");
+        it.push({ t: "Perfil", v: pf, porque: "Congestão " + (c === "p" ? "presente" : "ausente") + " e baixa perfusão " + (f === "p" ? "presente" : "ausente") + "." });
+        if (c === "p" && pas == null) falta.push("PAS (define o vasodilatador ou o inotrópico)"); }
+      if (P.a("choque") === "p" || P.a("irpa") === "p") it.push({ t: "Risco imediato", v: "Presente" });
+      return { itens: it, falta: falta };
+    },
+    passos: [
+      { id: "risco", t: "Risco imediato à vida", se: function (P) { return P.a("choque") === "p" || P.a("irpa") === "p"; }, porque: "Choque ou insuficiência respiratória.", ref: "SBC 2026, 7.4.1 · PSZ2 p. 20",
+        itens: [{ id: "suporte", tipo: "acao", t: "VNI ou via aérea definitiva", ref: "SBC 2026, 7.4.1 · PSZ2 p. 20" }, { id: "uti", tipo: "acao", t: "Acionar a UTI", ref: "SBC 2026, 7.4.1" }] },
+      { id: "A", t: "Perfil A: compensado", se: function (P) { return P.a("cong") === "a" && P.a("perf") === "a"; }, porque: "Sem congestão e com perfusão adequada.", ref: "CNP p. 72",
+        itens: [{ id: "oral", tipo: "acao", t: "Ajustar a terapia oral", ref: "CNP p. 72" }] },
+      { id: "B", t: "Perfil B: descongestionar", se: function (P) { return P.a("cong") === "p" && P.a("perf") === "a"; }, porque: "Congestão com perfusão adequada.", ref: "SBC 2026, 7.5.1 e 7.8 · PSZ2 p. 20-22",
+        itens: [
+          { tipo: "med", med: "furosemida", nota: "idealmente em até 1 hora" },
+          { tipo: "med", med: "nitroglicerina", nota: "PAS acima de 110 mmHg", se: function (P) { return P.n("pas") > 110; } },
+          { tipo: "info", t: "Vasodilatador só com PAS acima de 110 mmHg.", se: function (P) { return P.n("pas") != null && !(P.n("pas") > 110); } }] },
+      { id: "Cb", t: "Perfil C com PAS até 90: inotrópico e vasopressor", se: function (P) { return P.a("cong") === "p" && P.a("perf") === "p" && P.n("pas") != null && P.n("pas") <= 90; }, porque: "Congestão, baixa perfusão e PAS até 90 mmHg.", ref: "SBC 2026, Tabela 7.3 · CNP p. 61 · DRG p. 43",
+        itens: [
+          { tipo: "med", med: "dobutamina" }, { tipo: "med", med: "noradrenalina", nota: "sempre junto com o inotrópico; meta PAM 65 a 70" }, { tipo: "med", med: "furosemida", nota: "se muito congesto" },
+          { id: "uti", tipo: "acao", t: "Acionar a UTI", ref: "SBC 2026, Quadro 7.7 (p. 82)" }] },
+      { id: "Ca", t: "Perfil C com PAS acima de 90: diurético e vasodilatador", se: function (P) { return P.a("cong") === "p" && P.a("perf") === "p" && P.n("pas") > 90; }, porque: "Congestão, baixa perfusão e PAS acima de 90 mmHg.", ref: "SBC 2026, Tabela 7.3 · DRG p. 51",
+        itens: [{ tipo: "med", med: "furosemida" }, { tipo: "med", med: "nitroprussiato" }, { id: "uti", tipo: "acao", t: "Acionar a UTI", ref: "SBC 2026, Quadro 7.7 (p. 82)" }] },
+      { id: "L", t: "Perfil L: volume com cautela", se: function (P) { return P.a("cong") === "a" && P.a("perf") === "p"; }, porque: "Baixa perfusão sem congestão.", ref: "CNP p. 75",
+        itens: [
+          { id: "rl", tipo: "acao", t: "Ringer lactato 250 mL EV, devagar", como: ["Reavaliar depois da infusão: melhora da perfusão ou sinais de congestão."], ref: "CNP p. 75" },
+          { tipo: "med", med: "dobutamina", nota: "se congestionar e seguir frio", se: function (P) { return P.r("vol") === "cong"; } }] }],
+    reav: [
+      { id: "diur", t: "Diurese acima de 100 mL/h?", se: function (P) { return P.adm("furosemida") > 0; }, quando: { med: "furosemida", h: 6 }, ref: "SBC 2026, Figura 7.5 (p. 71)", repete: 1,
+        como: ["Reavaliar 6 horas depois do diurético.", "Objetivo: perda de cerca de 1 litro nas primeiras 6 horas."],
+        ops: [{ v: "sim", t: "Sim", prox: "Repetir a mesma dose a cada 12 horas." }, { v: "nao", t: "Não", prox: "Dobrar a dose e reavaliar em mais 6 horas (teto de 600 mg por dia)." }] },
+      { id: "vol", t: "Depois do volume", se: function (P) { return P.a("cong") === "a" && P.a("perf") === "p"; }, ref: "CNP p. 75",
+        ops: [{ v: "melhor", t: "Perfusão melhorou", prox: "Manter e definir o destino." }, { v: "cong", t: "Congestionou e segue frio", prox: "Parar o volume e iniciar dobutamina." }] },
+      { id: "geral", t: "Evolução", se: function (P) { return !!P.a("cong"); }, ref: "SBC 2018, Quadro 1.7 (p. 490)", repete: 1,
+        como: ["Vasodilatador: pressão a cada 15 minutos durante o ajuste, depois a cada 30.", "Balanço hídrico a cada 6 horas.", "Ureia, creatinina e eletrólitos a cada 6 a 12 horas durante a descongestão intensa."],
+        ops: [{ v: "melhor", t: "Melhorou", prox: "Manter a conduta e definir o destino." }, { v: "igual", t: "Sem mudança", prox: "Rever a dose do diurético, a pressão e os achados de perfusão." }, { v: "pior", t: "Piorou", prox: "Reavaliar perfusão, PAS e risco imediato; atualizar os achados para rever a conduta." }] }],
+    alertas: [
+      { id: "taqui", se: function (P) { return P.ex("ecg").r === "taqui" || P.n("fc") >= 150; }, t: "Taquiarritmia pode ser a causa da descompensação", porque: "ECG com taquiarritmia ou FC de 150 por minuto ou mais.", ir: "taqui" },
+      { id: "bradi", se: function (P) { return P.ex("ecg").r === "bradi" || (P.n("fc") != null && P.n("fc") < 50); }, t: "Bradiarritmia pode ser a causa da descompensação", porque: "ECG com bradiarritmia ou FC abaixo de 50 por minuto.", ir: "bradi" },
+      { id: "sca", se: function (P) { return P.ex("ecg").r === "isq" || P.ex("tropo").r === "elev"; }, t: "Suspeita de síndrome coronariana aguda", porque: "ECG com isquemia ou troponina elevada.", ir: null },
+      { id: "cc", se: function (P) { return P.a("cong") === "p" && P.a("perf") === "p" && P.n("pas") != null && P.n("pas") <= 90; }, t: "Quadro compatível com choque cardiogênico", porque: "Congestão, baixa perfusão e PAS até 90 mmHg.", ir: null }],
+    destino: { ops: [{ v: "uti", t: "UTI" }, { v: "enf", t: "Enfermaria" }, { v: "alta", t: "Alta" }], notas: ["UTI: instabilidade hemodinâmica ou insuficiência respiratória; o perfil C costuma ser tratado em terapia intensiva.", "Antes da alta: sem congestão; peso e diurético oral estáveis há 48 h; sem droga EV há 48 h; retorno em 7 a 14 dias."], ref: "SBC 2026, 7.4.1, Quadro 7.7 e 7.17" }
+  }],
+  // ============================== MEDICAMENTOS ==============================
+  // modo: "fixo" (dose em mg, escolhe a ampola), "kg" (mg/kg), "furo" (furosemida), "inf" (infusão), "txt" (sem cálculo).
+  // aps = ampolas documentadas; preps = preparos documentados (amp = nº de ampolas, ap = índice em aps, dil = mL de diluente).
+  meds: {
+    adrenalinaPcr: { nome: "Adrenalina", ind: "Parada cardiorrespiratória", modo: "fixo", doses: [1], aps: [{ t: "1 mg/1 mL", mg: 1, ml: 1 }], busca: ["adrenalina", "epinefrina"],
+      dose: ["1 mg EV ou IO a cada 3 a 5 minutos."], prep: ["Sem diluir, seguida de flush."], cuid: ["Ritmo chocável: depois do 2º choque. Não chocável: o quanto antes."], lembra: { min: 3, t: "Adrenalina de novo a partir das" }, ref: "AHA 2025, Figura 2 (ACLS-F p. 2) · DRG p. 88 · MED p. 11" },
+    amiodaronaPcr: { nome: "Amiodarona", ind: "PCR em FV ou TV sem pulso refratária", modo: "fixo", doses: [300, 150], aps: [{ t: "150 mg/3 mL", mg: 150, ml: 3 }], busca: ["amiodarona", "ancoron"],
+      dose: ["Primeira dose: 300 mg EV ou IO em bolus.", "Segunda dose: 150 mg."], prep: ["Em bolus, durante a RCP."], cuid: ["Depois do 3º choque."], ref: "AHA 2025, Figura 2 (ACLS-F p. 2) · DRG p. 88" },
+    lidocainaPcr: { nome: "Lidocaína 2% sem vasoconstritor", ind: "PCR em FV ou TV sem pulso, se não houver amiodarona", modo: "kg", faixas: [{ t: "1ª dose", mgKg: [1, 1.5] }, { t: "2ª dose", mgKg: [0.5, 0.75] }], aps: [{ t: "2% · 20 mg/mL", mg: 20, ml: 1 }], busca: ["lidocaina", "xylocaina"],
+      dose: ["Primeira dose: 1 a 1,5 mg/kg EV ou IO.", "Segunda dose: 0,5 a 0,75 mg/kg."], prep: ["Em bolus, sem diluir."], cuid: [], ref: "AHA 2025, Figura 2 (ACLS-F p. 2) · DRG p. 63 e 88" },
+    adenosina: { nome: "Adenosina", ind: "Taquicardia de QRS estreito e regular, estável", modo: "fixo", doses: [6, 12], aps: [{ t: "6 mg/2 mL", mg: 6, ml: 2 }], busca: ["adenosina", "adenocard"],
+      dose: ["6 mg EV em bolus rápido.", "Se não reverter: 12 mg."], prep: ["Veia calibrosa do braço, seguida de flush de 20 mL e elevação do membro."], cuid: ["Contraindicada na asma (broncoespasmo grave).", "Não usar em ritmo irregular nem em QRS largo polimórfico.", "Avisar o paciente: rubor e sensação de morte iminente por segundos.", "Cateter central ou transplante cardíaco: dose menor pode bastar."], ref: "AHA 2025, Figura 6 (ACLS-F p. 4) · ACLS-T p. 5 · CNP p. 88" },
+    metoprolol: { nome: "Metoprolol", ind: "Controle da frequência (TPSV que persiste; FA ou flutter)", modo: "fixo", doses: [5], aps: [{ t: "5 mg/5 mL", mg: 5, ml: 5 }], busca: ["metoprolol", "seloken", "betabloqueador"],
+      dose: ["5 mg EV lento (1 mg por minuto).", "Pode repetir até 3 doses (máximo 15 mg)."], prep: ["Sem diluir."], cuid: ["Não usar: IC descompensada com fração de ejeção reduzida, hipotensão, bradicardia ou bloqueio AV, asma grave, pré-excitação."], ref: "AHA 2025, Tabela 2 (ACLS-T p. 11) · CNP p. 89 · DRG p. 64" },
+    amiodaronaTv: { nome: "Amiodarona · ataque", ind: "Taquicardia ventricular monomórfica estável", modo: "fixo", doses: [150], aps: [{ t: "150 mg/3 mL", mg: 150, ml: 3 }], busca: [],
+      dose: ["150 mg EV em 10 minutos.", "Repetir se a TV voltar."], prep: ["Diluir em 100 mL de SG 5%."], cuid: ["Pode causar hipotensão.", "Não associar a outro antiarrítmico sem especialista."], ref: "AHA 2025, Figura 6 (ACLS-F p. 4) · CNP p. 101" },
+    amiodaronaTvManut: { nome: "Amiodarona · manutenção", ind: "Prevenir recorrência de taquicardia ventricular", modo: "inf", porKg: 0, un: "mg/min", fator: 1000, busca: [], aps: [{ t: "150 mg/3 mL", mg: 150, ml: 3 }], preps: [{ t: "6 ampolas (900 mg) + 482 mL SG 5%", amp: 6, ap: 0, dil: 482 }],
+      conc: 1800, ini: [1, 1], rapidas: [{ t: "1 mg/min (primeiras 6 h)", v: 1 }, { t: "0,5 mg/min (18 h seguintes)", v: 0.5 }], max: 1,
+      dose: ["1 mg/min nas primeiras 6 horas.", "0,5 mg/min nas 18 horas seguintes."], prep: ["900 mg (6 ampolas) em SG 5% até 500 mL."], cuid: ["Depois de 24 a 48 h, passar para a via oral."], ref: "AHA 2025, Figura 6 (ACLS-F p. 4) · CNP p. 101 · PSZ1 p. 10" },
+    amiodaronaFa: { nome: "Amiodarona · ataque", ind: "FA ou flutter com IC descompensada (controle da frequência)", modo: "fixo", doses: [300], aps: [{ t: "150 mg/3 mL", mg: 150, ml: 3 }], busca: [],
+      dose: ["300 mg EV em 1 hora."], prep: ["Diluir em 200 mL de SG 5%."], cuid: ["Não usar se houver pré-excitação."], ref: "AHA 2025, Tabela 2 (ACLS-T p. 11) · DRG p. 62" },
+    amiodaronaFaManut: { nome: "Amiodarona · manutenção", ind: "FA ou flutter com IC descompensada (controle da frequência)", modo: "inf", porKg: 0, un: "mg/h", mgMl: 1.8, busca: [], aps: [{ t: "150 mg/3 mL", mg: 150, ml: 3 }], preps: [{ t: "6 ampolas (900 mg) + 482 mL SG 5%", amp: 6, ap: 0, dil: 482 }],
+      ini: [10, 50], max: 50, dose: ["10 a 50 mg/h por 24 horas, ajustando pela frequência."], prep: ["900 mg (6 ampolas) em SG 5% até 500 mL."], cuid: ["Depois de 24 horas, passar para a via oral."], ref: "AHA 2025, Tabela 2 (ACLS-T p. 11) · DRG p. 62 · PSZ1 p. 10" },
+    magnesio: { nome: "Sulfato de magnésio", ind: "Torsades de pointes (TV polimórfica com QT longo)", modo: "fixo", doses: [1000, 2000], rot: { 1000: "1 g", 2000: "2 g" }, aps: [{ t: "10% · 1 g/10 mL", mg: 1000, ml: 10 }, { t: "50% · 5 g/10 mL", mg: 5000, ml: 10 }], busca: ["magnesio", "sulfato de magnesio"],
+      dose: ["Ataque: 1 a 2 g EV em 15 minutos.", "Pode seguir com infusão contínua de 1 a 4 g por hora."], prep: [], cuid: ["Funciona mesmo sem hipomagnesemia.", "Na infusão contínua: dosar o magnésio a cada 6 horas e parar se passar de 7 mg/dL.", "Não fazer infusão contínua com clearance de creatinina abaixo de 30 mL/min.", "Corrigir o potássio (alvo 4,5 mEq/L)."], ref: "CNP p. 103 · MED p. 38 · AHA 2025 (ACLS-T p. 3-4)" },
+    midazolam: { nome: "Midazolam", ind: "Sedação para cardioversão elétrica", modo: "txt", busca: ["midazolam", "dormonid"],
+      dose: ["1 a 2 mL da solução EV, até sedação leve."], prep: ["1 ampola (15 mg/3 mL) + 7 mL de água destilada = 10 mL com 1,5 mg/mL."], cuid: ["Objetivo: sedação leve e de curta duração, com ventilação preservada.", "Ter material de via aérea, aspirador e oxímetro à mão."], ref: "CNP p. 83-84" },
+    fentanil: { nome: "Fentanil", ind: "Analgesia para cardioversão elétrica", modo: "txt", busca: ["fentanil"],
+      dose: ["1 mL (50 mcg) EV lento."], prep: ["Ampola de 50 mcg/mL, sem diluir."], cuid: ["Infundir devagar."], ref: "CNP p. 83-84" },
+    atropina: { nome: "Atropina", ind: "Bradicardia instável", modo: "fixo", doses: [1], aps: [{ t: "0,25 mg/1 mL", mg: 0.25, ml: 1 }, { t: "0,5 mg/1 mL", mg: 0.5, ml: 1 }], busca: ["atropina"],
+      dose: ["1 mg EV em bolus.", "Repetir a cada 3 a 5 minutos.", "Dose total máxima: 3 mg."], prep: ["Sem diluir."], cuid: ["Conferir a ampola do serviço: existem 0,25 mg/mL e 0,5 mg/mL."], maxDoses: 3, lembra: { min: 3, t: "Atropina de novo a partir das" }, ref: "AHA 2025, Figura 8 (ACLS-F p. 3) · CNP p. 115 · MED p. 39" },
+    adrenalinaInf: { nome: "Adrenalina em bomba", ind: "Bradicardia instável sem resposta à atropina", modo: "inf", porKg: 0, un: "mcg/min", busca: ["adrenalina em bomba", "epinefrina em bomba"], aps: [{ t: "1 mg/1 mL", mg: 1, ml: 1 }],
+      preps: [{ t: "6 ampolas + 94 mL SF 0,9%", amp: 6, ap: 0, dil: 94 }, { t: "10 ampolas + 90 mL SF 0,9%", amp: 10, ap: 0, dil: 90 }], conc: 60, ini: [2, 2], max: 10,
+      dose: ["2 a 10 mcg/min, ajustando pela resposta."], prep: ["6 ampolas + 94 mL de SF 0,9% (60 mcg/mL), ou 10 ampolas + 90 mL (100 mcg/mL)."], cuid: [], ref: "AHA 2025, Figura 8 (ACLS-F p. 3) · MED p. 11 e 16 · CNP p. 115" },
+    dopamina: { nome: "Dopamina em bomba", ind: "Bradicardia instável sem resposta à atropina, se não houver adrenalina", modo: "inf", porKg: 1, un: "mcg/kg/min", busca: ["dopamina", "revivan"], aps: [{ t: "50 mg/10 mL", mg: 50, ml: 10 }],
+      preps: [{ t: "5 ampolas + 200 mL SF 0,9%", amp: 5, ap: 0, dil: 200 }], conc: 1000, ini: [5, 5], max: 20,
+      dose: ["5 a 20 mcg/kg/min, ajustando pela resposta.", "Reduzir devagar."], prep: ["5 ampolas (250 mg) + 200 mL de SF 0,9% ou SG 5% (1.000 mcg/mL)."], cuid: [], ref: "AHA 2025, Figura 8 (ACLS-F p. 3) · PSZ1 p. 87 · MED p. 12 e 16" },
+    // ----- IC e EAP -----
+    furosemida: { nome: "Furosemida", ind: "Congestão na IC descompensada e no edema agudo de pulmão", busca: ["furosemida", "lasix", "diuretico"], modo: "furo", mg: 20, ml: 2, aps: [{ t: "20 mg/2 mL", mg: 20, ml: 2 }], semUso: [20, 40], fator: [1, 2], teto: 600,
+      dose: ["Sem uso prévio de diurético: 20 ou 40 mg EV em bolus.", "Usuário crônico: 1 a 2 vezes a dose oral diária, em bolus.", "Teto: 600 mg por dia."], prep: ["Em bolus, sem diluir."], cuid: ["Reavaliar a diurese em 6 horas.", "Efeitos: hipocalemia, hipomagnesemia, surdez."], ref: "SBC 2026, 7.5.1 (p. 70) · DRG p. 60" },
+    nitroglicerina: { nome: "Nitroglicerina", ind: "Vasodilatador na IC com PAS acima de 110 mmHg e no edema agudo hipertensivo", busca: ["nitroglicerina", "tridil"], modo: "inf", porKg: 0, un: "mcg/min", aps: [{ t: "50 mg/10 mL", mg: 50, ml: 10 }], preps: [{ t: "1 ampola + 240 mL SF 0,9%", amp: 1, ap: 0, dil: 240 }], conc: 200, ini: [10, 20], max: 200,
+      bolus: { pasMin: 160, t: "Bolus no edema hiperagudo (SCAPE), da solução de 200 mcg/mL", faixas: [{ de: 160, ate: 179, ml: 3 }, { de: 180, ate: 199, ml: 4 }, { de: 201, ate: 999, ml: 5 }], depois: "Depois do bolus: 30 mL/h. Se a PAS não cair, aumentar 6 mL/h a cada 10 minutos." },
+      dose: ["Começar com 10 a 20 mcg/min.", "Aumentar 10 a 20 mcg/min a cada 15 minutos.", "Máximo: 200 mcg/min."], prep: ["1 ampola (50 mg/10 mL) + 240 mL de SF 0,9% = 200 mcg/mL."], cuid: ["Não usar: sildenafila nas últimas 24 h, tadalafila nas últimas 48 h, infarto de ventrículo direito, hipotensão.", "Efeitos: cefaleia, hipotensão."], ref: "SBC 2018, Tabela 2.2 (p. 494) · PSZ2 p. 20-21 · DRG p. 52" },
+    nitroprussiato: { nome: "Nitroprussiato de sódio", ind: "Vasodilatador no perfil C com PAS acima de 90 mmHg", busca: ["nitroprussiato", "nipride"], modo: "inf", porKg: 1, un: "mcg/kg/min", aps: [{ t: "50 mg/2 mL", mg: 50, ml: 2 }], preps: [{ t: "1 ampola + 248 mL SG 5%", amp: 1, ap: 0, dil: 248 }], conc: 200, ini: [0.3, 0.3], max: 5,
+      dose: ["Começar com 0,3 mcg/kg/min.", "Aumentar 0,3 a 0,5 mcg/kg/min a cada 15 minutos.", "Máximo: 5 mcg/kg/min."], prep: ["1 ampola (50 mg/2 mL) + 248 mL de SG 5% = 200 mcg/mL.", "Proteger da luz."], cuid: ["Pressão a cada 15 minutos durante o ajuste.", "Efeitos: cefaleia, intoxicação por cianeto."], ref: "SBC 2018, Tabela 2.2 (p. 494) · PSZ2 p. 21 · bula" },
+    dobutamina: { nome: "Dobutamina", ind: "Baixa perfusão com PAS até 90 mmHg (perfil C) ou perfil L que congestionou", busca: ["dobutamina", "dobutrex"], modo: "inf", porKg: 1, un: "mcg/kg/min", aps: [{ t: "250 mg/20 mL", mg: 250, ml: 20 }], preps: [{ t: "4 ampolas + 170 mL SF 0,9%", amp: 4, ap: 0, dil: 170 }], conc: 4000, ini: [0.5, 1], manter: [2, 20], max: 20,
+      dose: ["Começar com 0,5 a 1 mcg/kg/min.", "Manter entre 2 e 20 mcg/kg/min.", "Ajustar a cada 10 minutos."], prep: ["4 ampolas (250 mg/20 mL) + 170 mL de SF 0,9% = 4 mg/mL."], cuid: ["Menor dose pelo menor tempo.", "Efeitos: arritmia, hipotensão, isquemia."], ref: "SBC 2026, Quadro 7.5 (p. 77) · PSZ2 p. 22 · DRG p. 46" },
+    noradrenalina: { nome: "Noradrenalina", ind: "Hipotensão no perfil C, sempre junto com inotrópico", busca: ["noradrenalina", "norepinefrina"], modo: "inf", porKg: 1, un: "mcg/kg/min", aps: [{ t: "4 mg/4 mL", mg: 4, ml: 4 }], preps: [{ t: "4 ampolas + 234 mL SG 5%", amp: 4, ap: 0, dil: 234 }], conc: 64, ini: [0.1, 0.2], max: 1,
+      dose: ["Começar com 0,1 a 0,2 mcg/kg/min.", "Ajustar a cada 15 minutos.", "Máximo: 1 mcg/kg/min."], prep: ["4 ampolas (4 mg/4 mL) + 234 mL de SG 5% = 64 mcg/mL."], cuid: ["Meta: PAM de 65 a 70 mmHg."], ref: "SBC 2018, Tabela 2.3 · DRG p. 43 · PSZ2 p. 194 · bula" }
+  }
 };
 if (typeof module !== "undefined") module.exports = FLUXO;

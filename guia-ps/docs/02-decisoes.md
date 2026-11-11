@@ -79,6 +79,28 @@ Feitas pelo assistente. **Nesta sessão só havia 8 dos 11 PDFs: faltaram PSZ2, 
 | Dopamina | 5 ampolas (50 mg/10 mL) + 200 mL SF 0,9% (1.000 mcg/mL). | PSZ1 p. 87 (que imprime "50 mcg/10 ml", erro de unidade) e MED p. 12 e 16. |
 | Destino em taquiarritmia e bradiarritmia | Pergunta simples; UTI sugerida se instável. | As fontes do lote não trazem critério de internação ou alta. Sugestão é regra do site. |
 
+## 11/11/2026 (tarde) — v0.4: novo formato e conferência com CNP e DRG — **substitui** "uma decisão por tela" e "referências só no rodapé"
+
+O usuário rejeitou o v0.3 (ver `08-pedido-v04.md`) e enviou o CNP e o DRG (versões comprimidas: cada página do arquivo novo traz duas páginas do original; as páginas citadas continuam sendo as do arquivo original). O PSZ2 continua faltando.
+
+| Ponto | Escolha | Motivo |
+| --- | --- | --- |
+| Formato | Fluxograma vivo por paciente em cinco blocos (manejo inicial, investigar, classificação e conduta, reavaliação, destino), painel de pendências e linha do tempo. | Pedido do usuário. |
+| Fonte na tela | Aparece ao tocar em "Fonte", em cada item. | As telas de referência do usuário têm o botão. |
+| Calculadora | Não presume ampola nem preparo: o médico toca na apresentação ou no "preparo do documento", que preenche os campos (editáveis). Dose única documentada vem marcada. | Pedido do usuário; **substitui** "mostrar sempre a apresentação mais comum". |
+| Atropina, ampola | As duas documentadas ficam para escolher: 0,25 mg/mL (CNP p. 115) e 0,5 mg/mL (MED p. 39). | Não presumir. |
+| Adrenalina em bomba | Dois preparos para escolher: 6 ampolas + 94 mL (MED) e 10 ampolas + 90 mL (CNP p. 115). | Não presumir. |
+| Sedação da cardioversão | Midazolam (1 ampola 15 mg/3 mL + 7 mL de água destilada; 1 a 2 mL até sedação leve) e fentanil 1 mL EV lento. | CNP p. 83-84. Entre midazolam, etomidato e propofol ficou o midazolam: o CNP contraindica propofol na disfunção ventricular ou choque e põe ressalva no etomidato com instabilidade. |
+| Torsades | Sulfato de magnésio 1 a 2 g EV em 15 min; potássio alvo 4,5 mEq/L. | CNP p. 103 (conferido pela imagem). Resolve a pendência do v0.3. |
+| Manobra vagal | Descrição do CNP p. 88 (seringa de 20 mL, 15 s sentado a 45°, depois deitar e elevar as pernas por 15 s). | A AHA 2025 cita seringa de 10 mL sem descrever a técnica. |
+| Energia da cardioversão | Mantida a AHA 2025 (FA e flutter 200 J; QRS estreito e TV monomórfica 100 J). | CNP p. 82 traz 50-100 J para TPSV e flutter; vale a diretriz mais recente. |
+| TV monomórfica estável | Mantido amiodarona 150 mg em 10 min e, se não reverter, cardioversão. | CNP p. 100 põe a cardioversão como 1º passo "se baixo risco de sedoanalgesia"; a AHA 2025 põe o antiarrítmico. |
+| Amiodarona na FA com IC | Ataque de 300 mg em 1 h em 200 mL de SG 5% (DRG p. 62 e AHA Tabela 2). | O CNP p. 107 traz 150 mg em 10 min; DRG e AHA coincidem. |
+| Anticoagulação na FA | Só "Avaliar anticoagulação (CHA₂DS₂-VASc)", sem os pontos de corte. | Os cortes do CNP p. 109 não foram conferidos pela imagem. |
+| Dopamina, ampola | Mantida 50 mg/10 mL (MED, PSZ1). | CNP p. 115 imprime "200 mg/5 mL" e "50 mL (5 ampolas)", que não fecham. |
+| Regra de estabilidade | "Estável" só quando os cinco sinais foram marcados ausentes; um presente já define "instável"; senão o site diz o que falta. | Não avaliado não vale ausente. Regra do site. |
+| Sugestão de outro fluxo na IC | ECG com arritmia, FC ≥ 150 ou < 50 sugerem taqui ou bradiarritmia; ECG isquêmico ou troponina elevada e perfil C com PAS ≤ 90 avisam SCA e choque cardiogênico (fluxos ainda inexistentes). | Limiares de frequência da AHA 2025. Regra do site. |
+
 ## Arquitetura (aprovada em 10/11/2026)
 
 - Conteúdo clínico separado do código da interface, com identificação e fonte por item.

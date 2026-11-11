@@ -59,54 +59,68 @@ eq("PAS 150 não tem faixa", !!K.porPas("150", b).erro, true);
 eq("texto não é número", K.num("abc"), null); eq("zero não é aceito", K.num("0"), null); eq("negativo não é aceito", K.num("-5"), null);
 eq("unidade junto do número não é aceita", K.num("70kg"), null); eq("vírgula decimal", K.num("0,3"), 0.3); eq("vazio", K.num(""), null);
 eq("peso 500 kg bloqueia", !!K.infusao("1", "500", 200, 1, s).erro, true); eq("sem solução bloqueia", !!K.infusao("1", "70", null, 1, s).erro, true);
-// ---------- Lote 1 (PCR, taquiarritmias, bradiarritmias): números lidos de src/fluxo.js ----------
+// ---------- Medicamentos do lote 1: números lidos de src/fluxo.js ----------
 var F = require("../src/fluxo.js"), M = F.meds;
-function fx(id) { return K.bolus(M[id].mg, M[id].ap, null); }
+function fx(id, d, a) { return K.bolus(M[id].doses[d], M[id].aps[a || 0], null); }
 // Adrenalina na PCR: 1 mg ÷ 1 mg/mL = 1 mL = 1 ampola
-eq("adrenalina PCR 1 mg = 1 mL, 1 ampola", fx("adrenalinaPcr"), { doseMg: 1, volMl: 1, ampolas: 1 });
+eq("adrenalina PCR 1 mg = 1 mL, 1 ampola", fx("adrenalinaPcr", 0), { doseMg: 1, volMl: 1, ampolas: 1 });
 // Amiodarona 150 mg/3 mL = 50 mg/mL: 300 ÷ 50 = 6 mL = 2 ampolas; 150 ÷ 50 = 3 mL = 1 ampola
-eq("amiodarona PCR 1ª dose 300 mg = 6 mL, 2 ampolas", fx("amiodaronaPcr1"), { doseMg: 300, volMl: 6, ampolas: 2 });
-eq("amiodarona PCR 2ª dose 150 mg = 3 mL, 1 ampola", fx("amiodaronaPcr2"), { doseMg: 150, volMl: 3, ampolas: 1 });
-eq("amiodarona TV estável 150 mg = 3 mL, 1 ampola", fx("amiodaronaTv"), { doseMg: 150, volMl: 3, ampolas: 1 });
-eq("amiodarona FA 300 mg = 6 mL, 2 ampolas", fx("amiodaronaFa"), { doseMg: 300, volMl: 6, ampolas: 2 });
+eq("amiodarona PCR 300 mg = 6 mL, 2 ampolas", fx("amiodaronaPcr", 0), { doseMg: 300, volMl: 6, ampolas: 2 });
+eq("amiodarona PCR 150 mg = 3 mL, 1 ampola", fx("amiodaronaPcr", 1), { doseMg: 150, volMl: 3, ampolas: 1 });
+eq("amiodarona TV 150 mg = 3 mL, 1 ampola", fx("amiodaronaTv", 0), { doseMg: 150, volMl: 3, ampolas: 1 });
+eq("amiodarona FA 300 mg = 6 mL, 2 ampolas", fx("amiodaronaFa", 0), { doseMg: 300, volMl: 6, ampolas: 2 });
 // Adenosina 6 mg/2 mL = 3 mg/mL: 6 ÷ 3 = 2 mL; 12 ÷ 3 = 4 mL = 2 ampolas
-eq("adenosina 6 mg = 2 mL, 1 ampola", fx("adenosina6"), { doseMg: 6, volMl: 2, ampolas: 1 });
-eq("adenosina 12 mg = 4 mL, 2 ampolas", fx("adenosina12"), { doseMg: 12, volMl: 4, ampolas: 2 });
+eq("adenosina 6 mg = 2 mL, 1 ampola", fx("adenosina", 0), { doseMg: 6, volMl: 2, ampolas: 1 });
+eq("adenosina 12 mg = 4 mL, 2 ampolas", fx("adenosina", 1), { doseMg: 12, volMl: 4, ampolas: 2 });
 // Metoprolol 5 mg/5 mL = 1 mg/mL: 5 mL
-eq("metoprolol 5 mg = 5 mL, 1 ampola", fx("metoprolol"), { doseMg: 5, volMl: 5, ampolas: 1 });
-// Atropina 0,5 mg/mL: 1 ÷ 0,5 = 2 mL = 2 ampolas
-eq("atropina 1 mg = 2 mL, 2 ampolas", fx("atropina"), { doseMg: 1, volMl: 2, ampolas: 2 });
+eq("metoprolol 5 mg = 5 mL, 1 ampola", fx("metoprolol", 0), { doseMg: 5, volMl: 5, ampolas: 1 });
+// Atropina 1 mg: ampola 0,25 mg/mL -> 1 ÷ 0,25 = 4 mL = 4 ampolas; ampola 0,5 mg/mL -> 2 mL = 2 ampolas
+eq("atropina 1 mg com ampola 0,25 mg/mL = 4 mL, 4 ampolas", fx("atropina", 0, 0), { doseMg: 1, volMl: 4, ampolas: 4 });
+eq("atropina 1 mg com ampola 0,5 mg/mL = 2 mL, 2 ampolas", fx("atropina", 0, 1), { doseMg: 1, volMl: 2, ampolas: 2 });
+// Magnésio: 10% = 1 g/10 mL = 100 mg/mL: 1 g -> 10 mL (1 ampola), 2 g -> 20 mL (2 ampolas); 50% = 500 mg/mL: 2 g -> 4 mL
+eq("magnésio 1 g a 10% = 10 mL", fx("magnesio", 0, 0), { doseMg: 1000, volMl: 10, ampolas: 1 });
+eq("magnésio 2 g a 10% = 20 mL, 2 ampolas", fx("magnesio", 1, 0), { doseMg: 2000, volMl: 20, ampolas: 2 });
+eq("magnésio 2 g a 50% = 4 mL", fx("magnesio", 1, 1), { doseMg: 2000, volMl: 4, ampolas: 1 });
 // Lidocaína 2% = 20 mg/mL. 70 kg: 1 a 1,5 mg/kg = 70 a 105 mg = 3,5 a 5,25 (5,3) mL
-eq("lidocaína 1ª dose, 70 kg: 70 a 105 mg = 3,5 a 5,3 mL", K.bolusKg(M.lidocainaPcr1.mgKg, "70", M.lidocainaPcr1.mgMl), { mg: [70, 105], ml: [3.5, 5.3] });
+var li = M.lidocainaPcr, lmg = li.aps[0].mg / li.aps[0].ml;
+eq("lidocaína 1ª dose, 70 kg: 70 a 105 mg = 3,5 a 5,3 mL", K.bolusKg(li.faixas[0].mgKg, "70", lmg), { mg: [70, 105], ml: [3.5, 5.3] });
 // 2ª dose: 0,5 a 0,75 mg/kg = 35 a 52,5 mg = 1,75 (1,8) a 2,625 (2,6) mL
-eq("lidocaína 2ª dose, 70 kg: 35 a 52,5 mg = 1,8 a 2,6 mL", K.bolusKg(M.lidocainaPcr2.mgKg, "70", M.lidocainaPcr2.mgMl), { mg: [35, 52.5], ml: [1.8, 2.6] });
-eq("lidocaína sem peso bloqueia", !!K.bolusKg(M.lidocainaPcr1.mgKg, "", 20).erro, true);
-eq("lidocaína peso 10 kg bloqueia", !!K.bolusKg(M.lidocainaPcr1.mgKg, "10", 20).erro, true);
+eq("lidocaína 2ª dose, 70 kg: 35 a 52,5 mg = 1,8 a 2,6 mL", K.bolusKg(li.faixas[1].mgKg, "70", lmg), { mg: [35, 52.5], ml: [1.8, 2.6] });
+eq("lidocaína sem peso bloqueia", !!K.bolusKg(li.faixas[0].mgKg, "", 20).erro, true);
+eq("lidocaína peso 10 kg bloqueia", !!K.bolusKg(li.faixas[0].mgKg, "10", 20).erro, true);
+function prepDoc(id, i) { var m = M[id], x = m.preps[i || 0]; return K.preparo(m.aps[x.ap], x); }
 // Amiodarona manutenção: 6 ampolas (900 mg, 18 mL) + 482 mL = 500 mL -> 1,8 mg/mL = 1800 mcg/mL
-eq("amiodarona 6 amp + 482 mL = 500 mL, 1,8 mg/mL", [K.preparo({ mg: 150, ml: 3 }, { amp: 6, dil: 482 }).volFinal, K.preparo({ mg: 150, ml: 3 }, { amp: 6, dil: 482 }).mgMl], [500, 1.8]);
-eq("conteúdo usa 1800 mcg/mL e 1,8 mg/mL", [M.amiodaronaTvManut.conc, M.amiodaronaFaManut.mgMl], [1800, 1.8]);
-// TV: 1 mg/min = 1000 mcg/min × 60 ÷ 1800 = 33,3 mL/h
-eq("amiodarona 1 mg/min = 33,3 mL/h", K.infusao(M.amiodaronaTvManut.ini[0], null, M.amiodaronaTvManut.conc, 0, null).mlH, 33.3);
+eq("amiodarona 6 amp + 482 mL = 500 mL, 1,8 mg/mL", [prepDoc("amiodaronaTvManut").volFinal, prepDoc("amiodaronaTvManut").mgMl, prepDoc("amiodaronaFaManut").mcgMl], [500, 1.8, 1800]);
+// TV: 1 mg/min = 1000 mcg/min × 60 ÷ 1800 = 33,3 mL/h; 0,5 mg/min = 16,7 mL/h
+eq("amiodarona 1 mg/min = 33,3 mL/h", K.infusao(1 * M.amiodaronaTvManut.fator, null, 1800, 0, null).mlH, 33.3);
+eq("amiodarona 0,5 mg/min = 16,7 mL/h", K.infusao(0.5 * M.amiodaronaTvManut.fator, null, 1800, 0, null).mlH, 16.7);
 // FA: 10 mg/h ÷ 1,8 = 5,56 (5,6) mL/h; 50 ÷ 1,8 = 27,78 (27,8) mL/h
 eq("amiodarona FA 10 mg/h = 5,6 mL/h", K.infusaoMgH(M.amiodaronaFaManut.ini[0], 1.8, M.amiodaronaFaManut).mlH, 5.6);
 eq("amiodarona FA 50 mg/h = 27,8 mL/h", K.infusaoMgH(M.amiodaronaFaManut.ini[1], 1.8, M.amiodaronaFaManut).mlH, 27.8);
 eq("amiodarona FA 51 mg/h bloqueia", !!K.infusaoMgH("51", 1.8, M.amiodaronaFaManut).erro, true);
 // Adrenalina em bomba: 6 ampolas (6 mg, 6 mL) + 94 mL = 100 mL -> 60 mcg/mL; 2 mcg/min = 2 mL/h; 10 = 10 mL/h
-eq("adrenalina 6 amp + 94 mL = 60 mcg/mL", K.preparo({ mg: 1, ml: 1 }, { amp: 6, dil: 94 }).mcgMl, 60);
-eq("adrenalina 2 mcg/min = 2 mL/h", K.infusao(M.adrenalinaInf.ini[0], null, M.adrenalinaInf.conc, 0, M.adrenalinaInf).mlH, 2);
-eq("adrenalina 10 mcg/min = 10 mL/h", K.infusao(M.adrenalinaInf.max, null, M.adrenalinaInf.conc, 0, M.adrenalinaInf).mlH, 10);
+eq("adrenalina 6 amp + 94 mL = 60 mcg/mL", prepDoc("adrenalinaInf", 0).mcgMl, 60);
+// 10 ampolas (10 mg, 10 mL) + 90 mL = 100 mL -> 100 mcg/mL; 2 mcg/min × 60 ÷ 100 = 1,2 mL/h
+eq("adrenalina 10 amp + 90 mL = 100 mcg/mL", prepDoc("adrenalinaInf", 1).mcgMl, 100);
+eq("adrenalina 2 mcg/min a 60 mcg/mL = 2 mL/h", K.infusao(M.adrenalinaInf.ini[0], null, 60, 0, M.adrenalinaInf).mlH, 2);
+eq("adrenalina 2 mcg/min a 100 mcg/mL = 1,2 mL/h", K.infusao(M.adrenalinaInf.ini[0], null, 100, 0, M.adrenalinaInf).mlH, 1.2);
+eq("adrenalina 10 mcg/min a 60 mcg/mL = 10 mL/h", K.infusao(M.adrenalinaInf.max, null, 60, 0, M.adrenalinaInf).mlH, 10);
 eq("adrenalina 11 mcg/min bloqueia", !!K.infusao("11", null, 60, 0, M.adrenalinaInf).erro, true);
 // Dopamina: 5 ampolas (250 mg, 50 mL) + 200 mL = 250 mL -> 1000 mcg/mL. 70 kg: 5 × 70 = 350 mcg/min × 60 ÷ 1000 = 21 mL/h; 20 × 70 = 1400 -> 84 mL/h
-eq("dopamina 5 amp + 200 mL = 1000 mcg/mL", K.preparo({ mg: 50, ml: 10 }, { amp: 5, dil: 200 }).mcgMl, 1000);
-eq("dopamina 5 mcg/kg/min, 70 kg = 21 mL/h", K.infusao(M.dopamina.ini[0], "70", M.dopamina.conc, 1, M.dopamina).mlH, 21);
-eq("dopamina 20 mcg/kg/min, 70 kg = 84 mL/h", K.infusao(M.dopamina.max, "70", M.dopamina.conc, 1, M.dopamina).mlH, 84);
+eq("dopamina 5 amp + 200 mL = 1000 mcg/mL", prepDoc("dopamina").mcgMl, 1000);
+eq("dopamina 5 mcg/kg/min, 70 kg = 21 mL/h", K.infusao(M.dopamina.ini[0], "70", 1000, 1, M.dopamina).mlH, 21);
+eq("dopamina 20 mcg/kg/min, 70 kg = 84 mL/h", K.infusao(M.dopamina.max, "70", 1000, 1, M.dopamina).mlH, 84);
 eq("dopamina sem peso bloqueia", !!K.infusao("5", "", 1000, 1, M.dopamina).erro, true);
-// Estrutura: todo nó com tela e todo medicamento têm ref; todo destino existe
+// Preparos da IC conferem com a concentração declarada no conteúdo
+["nitroglicerina", "nitroprussiato", "dobutamina", "noradrenalina", "adrenalinaInf", "dopamina", "amiodaronaTvManut"].forEach(function (k) { eq(k + ": preparo do documento = " + M[k].conc + " mcg/mL", prepDoc(k).mcgMl, M[k].conc); });
+// Estrutura: tudo tem fonte; todo medicamento citado existe
 var falt = [];
-F.temas.forEach(function (t) { Object.keys(t.nos).forEach(function (k) { var n = t.nos[k];
-  if (!n.ref && ["med", "rota", "fim", "numero"].indexOf(n.tipo) < 0) falt.push(t.id + "." + k + " sem ref");
-  [].concat((n.ops || []).map(function (o) { return o.ir; }), n.ir || [], n.irSim || [], n.irNao || [], n.sem || [], n.pular || [], (n.regras || []).map(function (r) { return r.ir; })).forEach(function (x) { if (!t.nos[x]) falt.push(t.id + "." + k + " -> " + x); });
-  if (n.tipo === "med" && !M[n.med]) falt.push(t.id + "." + k + " med " + n.med); }); });
-Object.keys(M).forEach(function (k) { if (!M[k].ref) falt.push("med " + k + " sem ref"); });
-eq("todo nó tem ref e destino válido", falt, []);
+F.temas.forEach(function (t) {
+  if (!t.refSobre) falt.push(t.id + " sem refSobre");
+  t.agora.concat(t.investigar, t.exames, t.reav, t.passos).forEach(function (x) { if (!x.ref) falt.push(t.id + "." + x.id + " sem ref"); });
+  if (t.gravidade && !t.gravidade.ref) falt.push(t.id + " gravidade sem ref"); if (!t.destino.ref) falt.push(t.id + " destino sem ref");
+  t.passos.forEach(function (s) { s.itens.forEach(function (i) { if (i.tipo === "med" && !M[i.med]) falt.push(t.id + " med " + i.med); if (i.tipo === "acao" && !i.ref) falt.push(t.id + "." + s.id + "." + i.id + " sem ref"); }); });
+  t.alertas.forEach(function (a) { if (a.ir && !F.temas.some(function (x) { return x.id === a.ir; })) falt.push(t.id + " alerta -> " + a.ir); }); });
+Object.keys(M).forEach(function (k) { if (!M[k].ref) falt.push("med " + k + " sem ref"); if (!M[k].ind) falt.push("med " + k + " sem indicação"); });
+eq("todo item tem fonte e todo medicamento citado existe", falt, []);
 console.log("\n" + ok + " passaram, " + fail + " falharam");

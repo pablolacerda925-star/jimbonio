@@ -16,6 +16,8 @@ As páginas citadas no projeto são sempre as do arquivo PDF (não a numeração
 | ILAS-F | Fluxograma de triagem de sepse (ILAS) | Arquivo de 2018 | Fluxograma | 1 | Texto |
 | ILAS-A | Guia de terapia antimicrobiana empírica para sepse (ILAS) | Novembro de 2016 | Modelo que exige adaptação institucional; sem doses | 3 | Tabela só se lê bem pela imagem |
 
+Em 11/11/2026 o CNP e o DRG foram reenviados comprimidos, com duas páginas do original por página (89 e 59 páginas). A página original N está na folha (N+1)/2 arredondada para baixo. As citações do projeto continuam usando a página do arquivo original.
+
 ## Cuidados de leitura
 
 - **CNP e DRG:** qualquer OCR troca caracteres. Exemplos reais: "Img/kg" (1 mg/kg), "50Omg" (50 mg), "Smg/ml" (5 mg/mL), "SOmg/ml" (50 mg/mL). Rasterizar a página (`pdftoppm -r 80 -jpeg -f N -l N`) e ler a imagem antes de usar qualquer número.

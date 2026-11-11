@@ -9,12 +9,13 @@
 - Piloto v0.2 em `src/`: fluxo de IC e EAP com cinco medicamentos, testado (50 contas, 29 casos no Chrome de computador em largura de celular).
 - Lote 1 (v0.3): PCR, taquiarritmia com pulso (com cardioversão) e bradiarritmia, pelos algoritmos da AHA 2025. 15 medicamentos novos. Testes: 78 contas e 96 casos no navegador. "Novo atendimento" agora pergunta o tema; os medicamentos da busca e do rodapé são os do tema.
 
+- v0.4: interface refeita como fluxograma vivo por paciente (pedido em `08`); lote 1 conferido contra CNP e DRG. Testes: 91 contas e 104 casos no navegador.
+
 ## Em aberto com o usuário
 
-1. Confirmar que o formato v0.2 é o desejado.
+1. Confirmar que o formato v0.4 é o desejado (v0.2 e v0.3 foram rejeitados).
 2. Senha dos atendimentos: voltar como opção?
-3. Lote 1 entregue sem PSZ2, CNP e DRG (não vieram na sessão). Enviar os três para a conferência; ver pendências em `05`.
-4. Qual ampola de atropina o serviço usa (0,5 ou 0,25 mg/mL)?
+3. Falta o PSZ2 (PS Zerado 2ª edição) para conferir o lote 1 e para os próximos lotes.
 
 ## Ordem dos lotes
 
@@ -36,9 +37,9 @@ Os atalhos da tela inicial ficam em dois grupos separados: "Atendimento imediato
 1. Ler as páginas do lote. Nos PDFs de imagem (CNP, DRG) e em qualquer tabela ou fluxograma, olhar a página rasterizada.
 2. Listar o que falta para o fluxo andar (critérios, exames, reavaliação, destino) e buscar em diretriz de sociedade, Ministério da Saúde ou bula. Guardar a referência com seção e página.
 3. Onde os PDFs divergirem, escolher uma conduta: diretriz mais recente quando houver; na dúvida, PS Zerado 2ª edição. Anotar em `05`.
-4. Escrever o tema em `src/fluxo.js`: uma decisão por nó, texto mínimo, `ref` em cada nó e medicamento.
+4. Escrever o quadro em `src/fluxo.js` no formato descrito no `CLAUDE.md` (manejo inicial, gravidade, investigar, exames, classificar, passos, reavaliação, alertas, destino), com `como` e `ref` em cada item.
 5. Acrescentar em `testes/calc.test.js` as contas à mão de cada dose e, em `testes/e2e.py`, pelo menos um caminho completo por ramo.
-6. `python3 build.py`, rodar os dois testes, abrir `dist/guia-ps.html` em largura de celular e conferir que nenhuma tela tem mais de três linhas além do título.
+6. `python3 build.py`, rodar os dois testes, abrir `dist/guia-ps.html` no computador e em largura de celular.
 7. Entregar com um resumo curto: o que entrou, quais condutas foram escolhidas entre opções, o que ficou pendente.
 
 ## Funcionalidades ainda não feitas
