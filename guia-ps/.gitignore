@@ -1,0 +1,5 @@
+pdfs/*.pdf
+__pycache__/
+.DS_Store
+node_modules/
+legado/guia-ps-piloto-v0.1.html

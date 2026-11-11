@@ -1,0 +1,171 @@
+Prompt — Guia dinâmico de condutas para pronto-socorro
+10 de nov. de 2026 · @gustilo anderson
+1. Contexto e objetivo
+Quero construir com você um site em HTML que funcione como os PDFs anexados a esta conversa, só que dinâmico. Vou usar no dia a dia e, no futuro, como guia nos plantões de pronto-socorro.
+A ideia central: eu digito a doença, a queixa ou o medicamento e o site me acompanha enquanto conduzo o paciente, passo a passo. Fiz isso? E agora? Pediu esses exames? Veio alterado? E agora? Faz este medicamento, nesta posologia; informe o peso e a concentração da ampola e veja como administrar.
+O site deve cobrir, para cada tema, o que os documentos trouxerem: abordagem inicial, o que perguntar e examinar, exames, classificação, fluxograma de tratamento, medicamentos com dose e diluição, reavaliação e destino do paciente. O foco são as doenças mais prevalentes no pronto-socorro.
+O site é um apoio à minha decisão, não um substituto dela. Por isso o maior risco é um número, uma unidade ou uma etapa errada parecer confiável. Várias regras abaixo existem para evitar exatamente isso; quando alguma situação não estiver prevista, siga esse princípio.
+Todo o site deve estar em português do Brasil.
+2. Regra de fontes
+Todo o conteúdo clínico deve ser fundamentado exclusivamente nos documentos enviados. Isso inclui perguntas, critérios de classificação, exames, tratamentos, doses, contraindicações, reavaliações e mudanças de caminho. Não complete lacunas com conhecimento próprio.
+As duas únicas exceções
+Você só pode buscar fora dos documentos em duas situações:
+1. quando uma informação necessária não estiver nos documentos;
+2. quando as informações forem conflitantes entre os documentos.
+Nesses casos:
+• diga especificamente o que não está contemplado ou o que está em conflito;
+• pesquise apenas em fontes extremamente confiáveis, como diretrizes vigentes de sociedades de especialidade, Ministério da Saúde e bulas aprovadas pela Anvisa;
+• me mostre o que encontrou antes de incorporar;
+• marque no site, de forma visível, que aquele trecho veio de fonte externa, com a referência consultada.
+Divergências entre documentos
+• Antes de tratar como conflito, verifique se os trechos falam realmente do mesmo contexto clínico (população, gravidade, indicação, via).
+• Não presuma que o arquivo enviado por último traz a recomendação mais atual. Use a edição e o ano do próprio documento.
+• Registre cada divergência: quais informações divergiram, se era o mesmo contexto clínico, qual referência externa foi consultada e como foi resolvida. Esse registro deve ficar acessível no site.
+Rastreabilidade
+• Cada orientação deve mostrar sua origem: documento, edição ou versão e página.
+• Cada orientação deve ter um botão para abrir o trecho original.
+• Documentos que servem como modelo ou que exigem adaptação institucional devem aparecer identificados dessa forma.
+Documentado x pendente
+• O site deve distinguir conteúdo documentado de conteúdo ainda pendente. Conteúdo pendente nunca pode aparecer como se estivesse documentado.
+• Quando os documentos não trouxerem algo (por exemplo, um intervalo de reavaliação), isso deve ficar explícito na tela, em vez de o campo ficar vazio ou ser preenchido por suposição.
+• Alternativas clínicas só podem ser apresentadas quando estiverem fundamentadas nos documentos.
+3. Como trabalhar: fases e aprovações
+O projeto é grande, então trabalhe em fases e pare ao fim de cada uma para eu aprovar. Não comece a construir o site antes de eu aprovar as fases 1 a 3.
+1. Inventário dos documentos. Liste cada PDF com título, edição ou versão, ano, tipo (protocolo, guia de prescrição, modelo que exige adaptação institucional) e se é texto ou digitalizado. Aponte páginas ilegíveis.
+2. Levantamento de cobertura. Para cada tema, mostre quais documentos oferecem avaliação inicial, investigação, tratamento, doses, preparo dos medicamentos, reavaliação e critérios de destino do paciente. Entregue uma tabela tema x item, com documento e páginas, marcando cada célula como documentado, parcial, ausente ou conflitante.
+3. Estrutura do conteúdo e arquitetura. Proponha o formato padronizado dos dados clínicos (seção 9) e explique como ficarão armazenamento, backup e uso offline (seção 8), antes de preencher qualquer conteúdo.
+4. Piloto. Construa um tema completo, do início ao fim, com conferência contra as páginas originais. Sugiro a insuficiência cardíaca descompensada, se estiver bem coberta, porque exercita classificação, medicamentos e calculadoras. Eu aprovo o padrão antes de você seguir.
+5. Expansão. Acrescente os demais temas em lotes, na ordem que combinarmos, cada lote com seu relatório de conferência.
+6. Testes finais. Execute os testes da seção 10 e me mostre os resultados.
+Leitura dos PDFs
+• PDFs digitalizados, tabelas e fluxogramas precisam ser conferidos visualmente, olhando a página como imagem, e não só pelo texto extraído.
+• Confira principalmente números, unidades, símbolos (por exemplo ≥ e <, mg e mcg) e as conexões entre as etapas dos fluxogramas.
+• Se um trecho estiver ilegível ou ambíguo, marque como pendente e me pergunte. Não deduza o valor.
+• Se o volume de documentos não couber em uma única conversa, me diga como dividir o trabalho. Não resuma nem pule conteúdo para caber.
+4. Modos de uso, busca e página inicial
+Dois modos de uso
+• Consulta rápida: acesso ao conteúdo sem precisar cadastrar um paciente.
+• Acompanhamento de atendimento: informações, decisões e evolução salvas individualmente para cada paciente.
+Busca
+• Na página inicial, quero digitar e ver as opções aparecendo a cada letra, já clicáveis.
+• A busca deve aceitar nomes de doenças, sintomas, síndromes, medicamentos, siglas e sinônimos.
+• Deve funcionar mesmo sem acentos.
+• Preciso conseguir começar pela queixa do paciente, mesmo sem diagnóstico definido. A queixa deve levar à abordagem inicial documentada e aos caminhos possíveis.
+Favoritos e atalhos
+• Quero favoritos e atalhos para situações frequentes e para situações de atendimento imediato.
+• Os dois grupos devem ficar separados: frequência não é o mesmo que gravidade.
+5. Página da doença e condução do caso
+Ordem da página
+1. Primeiro, as informações necessárias para a abordagem inicial: conduta inicial e o que investigar. Elas devem aparecer sem que eu precise preencher formulário algum.
+2. Depois, as perguntas e opções clicáveis que conduzem o caso: o que perguntar ao paciente, o que examinar, que exames pedir, como interpretar o resultado e qual o próximo passo.
+Painel do caso
+Durante a condução, a interface deve mostrar sempre:
+• a situação atual;
+• as ações indicadas;
+• o que já foi realizado;
+• os dados pendentes;
+• a próxima decisão;
+• os critérios documentados para reavaliação.
+Cada orientação deve trazer uma explicação curta de por que aquela resposta levou até ela, com a possibilidade de abrir os detalhes e a fonte.
+Classificações automáticas
+• Use os critérios exatos presentes nas fontes.
+• Exemplo da insuficiência cardíaca: a classificação considera perfusão e congestão. O material traz os perfis A (quente e seco), B (quente e úmido), C (frio e úmido) e L (frio e seco). “Pulso presente” não pode ser interpretado como “perfusão adequada”.
+• O site deve me ajudar a identificar os critérios necessários, mostrar quais respostas sustentaram a classificação e permitir que eu a corrija.
+• Não atribua uma classificação quando faltarem informações indispensáveis. Mostre o que falta.
+• Definida a classificação, o site apresenta a conduta, os exames e os medicamentos correspondentes.
+Respostas
+• As perguntas devem oferecer, quando aplicável, as opções “sim”, “não”, “não sei”, “não avaliado” e “indisponível”.
+• Campo vazio nunca pode ser interpretado como resposta negativa ou resultado normal.
+• O site deve identificar respostas contraditórias e pedir esclarecimento apenas quando isso interferir na orientação. As informações que não dependem do esclarecimento continuam acessíveis.
+Voltar e corrigir
+• Quero poder voltar etapas, corrigir respostas e registrar melhora ou piora.
+• Quando uma informação for modificada, o site recalcula as classificações e orientações que dependem dela e marca os resultados anteriores que precisam de revisão. O histórico é preservado.
+6. Registros, horários e mudança de diagnóstico
+Sugerido x realizado
+Quero distinguir claramente uma orientação sugerida de uma ação efetivamente realizada. Cada item deve ter estados próprios:
+Item
+Estados
+Exames
+indicado, solicitado, coletado, resultado disponível
+Medicamentos
+sugerido, prescrito, administrado, suspenso
+Avaliações
+pendente, realizada, aguardando reavaliação
+Também quero poder registrar que um exame, medicamento ou recurso não está disponível no serviço.
+Horários
+• Os registros relevantes devem ter data e horário.
+• Quando necessário, diferencie o horário do acontecimento do horário em que foi registrado.
+• Informações antigas não podem aparecer como se fossem avaliações atuais.
+• Reavaliações e lembretes devem seguir os intervalos e critérios presentes nos documentos. Se não houver intervalo documentado, isso deve ficar explícito.
+Quando os dados sugerirem outro diagnóstico ou protocolo
+• O site apresenta um aviso explicando quais critérios motivaram essa possibilidade e eu confirmo a transição.
+• Não quero mudança silenciosa nem hipótese apresentada como diagnóstico confirmado.
+• Deve existir a opção de adicionar outro problema ao mesmo atendimento, porque condições diferentes podem coexistir.
+Depois que eu confirmar a mudança
+• Continuo na mesma área de atendimento, com informações, exames, medicamentos administrados e histórico preservados.
+• O site aproveita os dados pertinentes e destaca o que precisa ser reavaliado.
+• Medicamentos e procedimentos já realizados não são repetidos automaticamente.
+• Uma nova orientação não apaga o registro das condutas anteriores.
+7. Medicamentos e calculadoras
+Medicamento no contexto da doença
+• Ao clicar em um medicamento dentro de uma doença, quero abrir as informações dele naquela indicação específica: dose, diluição, via e modo de administrar.
+• O paciente, a indicação e a etapa do atendimento continuam visíveis.
+• A mesma droga pode ter esquemas diferentes conforme a situação. Não quero uma ficha genérica que misture indicações.
+• Quando eu chegar ao medicamento pela busca, o site pede que eu escolha a indicação.
+Calculadoras
+• A calculadora fica dentro da tela do medicamento, naquela indicação.
+• Ela pede somente os dados necessários àquele cálculo, como peso, dose selecionada, apresentação disponível, concentração e volume da ampola.
+• Quando houver faixa de doses, o site apresenta os critérios documentados ou me deixa selecionar dentro da faixa. Ele não escolhe um valor por conta própria.
+O resultado mostra, conforme aplicável
+• dose em massa ou unidades;
+• volume do medicamento a aspirar;
+• quantidade de ampolas utilizada;
+• volume de diluente;
+• volume final;
+• concentração final;
+• via;
+• tempo de administração;
+• velocidade de infusão.
+Regras de segurança do cálculo
+• Diferencie claramente “adicionar a determinado volume de soro” de “completar até determinado volume final”.
+• Mostre a fórmula, as unidades e os limites documentados.
+• Valores inválidos, unidades incompatíveis ou dados essenciais ausentes devem impedir a exibição de um resultado aparentemente válido.
+• Se eu alterar o peso, a apresentação ou a concentração, o cálculo anterior fica marcado para revisão.
+• Calcular uma dose não a registra como administrada.
+8. Pacientes, armazenamento e dispositivos
+Vários pacientes
+• Quero cadastrar e acompanhar vários pacientes ao mesmo tempo, usando nome ou identificador.
+• Cada atendimento tem um identificador próprio, inclusive quando houver pacientes com nomes iguais.
+• O paciente ativo fica claramente visível em todas as telas e calculadoras.
+• As informações de um atendimento nunca podem ser reutilizadas em outro por engano.
+Salvamento e passagem de caso
+• Salvamento automático e recuperação do atendimento depois de fechar a página.
+• Encerramento e arquivamento do atendimento.
+• Exportação de um resumo da evolução e das pendências, para passagem do caso.
+Proteção e armazenamento
+• Preveja proteção de acesso e dos dados armazenados, já que são dados de pacientes.
+• Explique com clareza como funcionam armazenamento local, backup e eventual sincronização entre dispositivos. Salvar em um navegador não disponibiliza automaticamente em outro.
+• Diga com franqueza o que o ambiente onde o site vai rodar permite e o que não permite, e proponha a alternativa mais segura.
+Dispositivos e offline
+• O site deve funcionar bem no computador, no tablet e no celular, com interface legível, botões fáceis de tocar e acesso rápido às informações essenciais.
+• O modo offline deve indicar quais conteúdos estão disponíveis e qual versão está sendo usada.
+9. Estrutura do conteúdo e atualizações futuras
+No futuro vou enviar guias de prescrição e informações novas, e quero que a integração seja simples. Para isso:
+• O conteúdo clínico e as regras dos fluxos ficam separados do código da interface, em uma estrutura padronizada.
+• Cada doença, medicamento, indicação e regra tem identificação própria e vínculo com suas fontes.
+• Ao incorporar um PDF novo, quero revisar o que foi acrescentado, alterado ou contradito antes de substituir o conteúdo existente.
+• A atualização preserva o histórico dos atendimentos e a versão das orientações usadas anteriormente.
+• O site mostra qual versão do conteúdo está em uso.
+10. Conferência e testes
+Inclua no planejamento, e me mostre os resultados, inclusive o que falhou:
+• Conferência contra as fontes: cada fluxo e cada calculadora conferidos contra as páginas originais, com atenção a números, unidades, símbolos e conexões entre etapas.
+• Calculadoras: exemplos calculados à mão para comparar, valores nos limites da faixa, entradas inválidas e unidades incompatíveis.
+• Casos simulados: dados ausentes, respostas contraditórias, correção de informações, mudança de diagnóstico e alternância entre pacientes.
+11. O que quero na sua primeira resposta
+Não construa o site ainda. Na primeira resposta, entregue:
+1. o inventário dos documentos (fase 1);
+2. o levantamento de cobertura por tema (fase 2);
+3. a lista do que está ausente, conflitante ou ilegível;
+4. as dúvidas que eu preciso resolver antes de você seguir;
+5. uma proposta de ordem dos temas e de tema para o piloto.
+Depois, aguarde minha aprovação para passar à fase seguinte.
