@@ -1,12 +1,12 @@
 # Guia de PS
 
-Site em HTML, em português do Brasil, que acompanha o atendimento no pronto-socorro como um fluxograma vivo: quadro → manejo inicial → achados e exames → classificação e conduta → medicamento com cálculo → reavaliação → destino → passagem de caso. É apoio à decisão do médico, não substituto. O dono do projeto vai usar em plantão e, mais tarde, talvez compartilhar com colegas.
+Site em HTML, em português do Brasil, que acompanha o atendimento no pronto-socorro como um fluxograma vivo: sinais e sintomas ou diagnóstico → manejo inicial → achados e exames → classificação e conduta → medicamento com cálculo → reavaliação → destino → passagem de caso. É apoio à decisão do médico, não substituto. O dono do projeto vai usar em plantão e, mais tarde, talvez compartilhar com colegas.
 
-**Estado atual:** v0.5 (v0.4 mais a entrada por sinais e sintomas com hipóteses, as perguntas ao paciente e à família e o plano de cada medicamento; pedido de 12/11/2026 em `docs/09-pedido-v05.md`). O formato de "uma pergunta por tela" (v0.2 e v0.3) foi rejeitado em 11/11/2026: ficou cru, com pouca informação, "parecendo um jogo". O formato atual é o **fluxograma vivo por paciente**, descrito abaixo. Quatro quadros: parada cardiorrespiratória, taquiarritmia com pulso, bradiarritmia, IC e edema agudo de pulmão. Ainda sem "aprovado" explícito. **Trauma não está em nenhum dos 11 PDFs** e a rede da sessão bloqueou o protocolo do Ministério da Saúde; ver `docs/09`. Próximo: trauma (quando houver fonte) e lote 2.
+**Estado atual:** v0.5 (v0.4 mais a entrada por sinais e sintomas com hipóteses, as perguntas ao paciente e à família e o plano de cada medicamento; pedido de 12/11/2026 em `docs/09-pedido-v05.md`). O formato de "uma pergunta por tela" (v0.2 e v0.3) foi rejeitado em 11/11/2026: ficou cru, com pouca informação, "parecendo um jogo". O formato atual é o **fluxograma vivo por paciente**, descrito abaixo. Quatro protocolos (parada cardiorrespiratória, taquiarritmia com pulso, bradiarritmia, IC e edema agudo de pulmão) e a entrada por sinais e sintomas, que leva a eles. Ainda sem "aprovado" explícito. **Trauma não está em nenhum dos 11 PDFs** e a rede da sessão bloqueou o protocolo do Ministério da Saúde; ver `docs/09`. Próximo: trauma (quando houver fonte) e lote 2.
 
 ## Regras de produto (valem acima de tudo)
 
-O pedido do usuário de 11/11/2026 (roteiro completo em `docs/08-pedido-v04.md`) substitui as regras antigas de "uma decisão por tela" e "referências só no rodapé".
+Os pedidos do usuário de 11/11/2026 (`docs/08-pedido-v04.md`) e de 12/11/2026 (`docs/09-pedido-v05.md`) substituem as regras antigas de "uma decisão por tela" e "referências só no rodapé".
 
 1. **Guia de bolso interativo e integrado**, da chegada à passagem de caso. Limpo e rápido, mas **completo**: cara de aplicativo hospitalar, não de jogo.
 2. **Manejo inicial visível assim que o quadro abre.** Nada de questionário antes. Ações urgentes continuam à vista enquanto se investiga.
@@ -27,7 +27,7 @@ O pedido do usuário de 11/11/2026 (roteiro completo em `docs/08-pedido-v04.md`)
 ## Regras de segurança (invisíveis para o usuário, mas obrigatórias)
 
 - Todo número clínico vem de `src/fluxo.js`. `src/ui.js` não contém dose, limiar nem texto clínico.
-- Cada nó e cada medicamento de `fluxo.js` tem um campo `ref` com documento e página. Sem `ref`, não entra.
+- Cada ação, achado, exame, pergunta, hipótese, conduta e medicamento de `fluxo.js` tem um campo `ref` com documento e página. Sem `ref`, não entra (o teste de cálculo confere).
 - Calculadora nunca mostra resultado com entrada inválida, peso ausente ou valor fora da faixa documentada. Faixas de tabela não são interpoladas nem estendidas (ex.: bolus por PAS não cobre PAS = 200).
 - Campo vazio nunca vale "não". Calcular não registra como dado.
 - Dados de um atendimento nunca aparecem em outro. Paciente ativo sempre visível.
@@ -50,7 +50,7 @@ Rodar os três depois de qualquer mudança. Ao acrescentar medicamento ou tema, 
 
 | Caminho | O que é |
 | --- | --- |
-| `src/fluxo.js` | Conteúdo clínico: temas, nós do fluxo, medicamentos, notas. Único lugar com números. |
+| `src/fluxo.js` | Conteúdo clínico: quadros, entrada por sinais e sintomas, perguntas, medicamentos e seus planos. Único lugar com números. |
 | `src/calc.js` | Funções puras de cálculo (bolus, infusão, inverso, faixa de PAS). |
 | `src/ui.js` | Interface: pacientes, fluxo por blocos, pendências, pop-up do medicamento com calculadora, passagem de caso. |
 | `src/estilo.css` | Visual (fundo claro quente, verde; barra de pacientes, blocos numerados, painel lateral). |
@@ -58,7 +58,7 @@ Rodar os três depois de qualquer mudança. Ao acrescentar medicamento ou tema, 
 | `testes/` | Testes de cálculo e de navegador. |
 | `legado/` | Piloto v0.1 (rejeitado pelo excesso de texto corrido). `conteudo.js` continua útil: tem o mapeamento detalhado conteúdo → fonte → página da IC e o registro das divergências. |
 | `pdfs/` | Os 11 PDFs-fonte. Não versionados (material licenciado). Ver `pdfs/LEIA-ME.md`. |
-| `docs/` | Contexto do projeto. Ler `02`, `03` e `07` antes de começar um lote. |
+| `docs/` | Contexto do projeto. Ler `02`, `03`, `07`, `08` e `09` antes de começar um lote. |
 
 ## Como o conteúdo é descrito (`src/fluxo.js`)
 
@@ -76,7 +76,7 @@ Cada quadro (tema) tem:
 - `perguntar`: `{ paciente: [], familia: [] }`, definido em `PERG` no fim do arquivo. `P.p(id)` lê a resposta ("s", "n", "ns").
 - Só no quadro `sind` (entrada por sinais e sintomas): `investigar` aceita `tipo: "lista"` (itens tocáveis, `P.tem(lista, k)`) e há `hipoteses`: cada uma com `favor(P)` e `contra(P)` (listas de motivos), `confirmar`, `enquanto`, `tema` (protocolo a abrir, ou `null`) e `levar(P)` (achados que seguem para o protocolo).
 
-`P` é o leitor dos dados do paciente: `P.a(id)`, `P.o(id)`, `P.n(sinalVital)`, `P.ex(id)`, `P.adm(med)`, `P.cont(acao)`, `P.r(reav)`.
+`P` é o leitor dos dados do paciente: `P.a(id)`, `P.o(id)`, `P.n(sinalVital)`, `P.ex(id)`, `P.adm(med)`, `P.cont(acao)`, `P.r(reav)`, `P.p(pergunta)`, `P.tem(lista, k)`.
 
 Medicamentos: `ind`, `dose[]`, `prep[]`, `cuid[]`, `ref` e o cálculo por `modo`: `fixo` (`doses[]`, `aps[]`), `kg` (`faixas[]`), `furo`, `inf` (`preps[]`, `un`, `ini`, `max`, `porKg`; `mgMl` para mg/h; `fator` para mg/min), `txt` (sem cálculo). `conc` é a concentração do primeiro preparo e é conferida no teste. `plano` (em `PLANO`, no fim do arquivo): `q` quanto, `rep` quando repetir, `max` limite, `maxN` nº máximo de doses, `intMin` minutos até poder repetir.
 
@@ -84,9 +84,16 @@ Medicamentos: `ind`, `dose[]`, `prep[]`, `cuid[]`, `ref` e o cálculo por `modo`
 
 Ver `docs/07-roteiro.md`. Resumo:
 
-- Feito: inventário dos PDFs, cobertura por tema, decisões, busca externa da IC, piloto v0.2 testado, lote 1 testado.
+- Feito: inventário dos PDFs, cobertura por tema, decisões, busca externa da IC, lote 1 (conferido contra CNP e DRG), interface de fluxograma vivo (v0.4), entrada por sinais e sintomas, perguntas e plano de medicamentos (v0.5).
 - Falta no tema IC: terapia oral do perfil A e prescrição de alta (CNP p. 72-74, ainda não conferidas por imagem); confirmar no bulário da Anvisa a bula de dobutamina.
 - Falta no site: senha opcional para os atendimentos (foi retirada no v0.2), teste em iPhone e Android, hospedagem, modo offline da versão hospedada, pediatria e gestantes.
 - Falta no lote 1: conferência completa contra o PSZ2 (recebido em 12/11; só as páginas de arritmia foram comparadas); cuidados pós-PCR. Ver `docs/05`.
 - Falta: quadro de trauma e mais síndromes de entrada (dor torácica, rebaixamento, dor abdominal); dependem de fonte externa.
-- Próximo: lote 2.
+- Próximo: trauma (quando houver fonte) e lote 2.
+
+## Ambiente
+
+- O projeto fica em `guia-ps/` dentro do repositório `jimbonio` (que também tem um site de agenda, sem relação). Branch de trabalho: `claude/new-session-vnm2c8`.
+- Para os testes de navegador na nuvem: `pip install playwright` e `CHROME=/opt/pw-browsers/chromium python3 testes/e2e.py`.
+- OCR dos PDFs de imagem: `apt-get update && apt-get install -y tesseract-ocr tesseract-ocr-por`.
+- A rede da sessão pode bloquear sites externos (`www.gov.br`, `bvsms.saude.gov.br`); nesse caso pedir o PDF ao usuário.
