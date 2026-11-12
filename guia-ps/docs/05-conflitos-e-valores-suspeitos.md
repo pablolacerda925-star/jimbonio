@@ -43,6 +43,9 @@ PSZ2 recebido em 12/11/2026 (texto extraível, mas com as colunas intercaladas).
 
 ## Valores e trechos suspeitos no próprio PDF
 
+| PSZ1 21-22 | Crise convulsiva: fenitoína "5-10 mg/kg" e fenobarbital "10 mg/kg" (conferido pela imagem) | Abaixo do usado em diretrizes de estado de mal epiléptico. Diretriz não acessível na sessão; a tela mostra o texto do guia com nota vermelha pedindo conferência |
+| PSZ2 155 | Sepse: "Noradrenalina 2 mg/mL – 4 mL" sem diluição nem dose | A diluição está em "Aminas vasoativas" (p. 193-194); a tela liga as duas |
+
 Regra: não deduzir. Buscar o valor correto em diretriz ou bula e usar esse.
 
 | Onde | O que está escrito | Problema |

@@ -5,8 +5,8 @@
 import os
 rd = lambda n: open(os.path.join('src', n), encoding='utf-8').read()
 corpo = f"""<div id="app"></div>
-<script id="conteudo-do-fluxo">{rd('fluxo.js')}</script>
-<script id="calculadoras">{rd('calc.js')}</script>
+<script id="doencas">{rd('doencas.js')}</script>
+<script id="complementos">{rd('extras.js')}</script>
 <script id="interface">{rd('ui.js')}</script>"""
 html = f"""<!DOCTYPE html>
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
@@ -14,6 +14,7 @@ html = f"""<!DOCTYPE html>
 <body>{corpo}
 </body></html>"""
 online = f"""<title>Guia de PS</title>
+<meta name="claude:viewport-fit-sides" content="cover">
 <style>{rd('estilo.css')}</style>
 {corpo}
 """
