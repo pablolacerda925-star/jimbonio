@@ -13,7 +13,7 @@ async def main():
         await pg.goto(URL); T = lambda: pg.inner_text('#app')
         await pg.goto(URL + '#tetano'); ck('tétano: tabela da vacina desenhada como tabela', await pg.locator('.tabw table tr').count() == 3)
         await pg.goto(URL)
-        ck('lista abre com 114 doenças agrupadas por sistema', await pg.locator('.dz').count() == 114 and 'CARDIOVASCULAR' in (await T()).upper() and 'INTOXICAÇÕES' in (await T()).upper())
+        ck('lista abre com 118 doenças agrupadas por sistema', len(set(await pg.evaluate("Array.from(document.querySelectorAll('.dz')).map(a=>a.getAttribute('href'))"))) == 118 and 'CARDIOVASCULAR' in (await T()).upper() and 'INTOXICAÇÕES' in (await T()).upper())
         await pg.fill('#q', 'tep'); ck('busca por sigla: TEP', await pg.locator('.dz').count() >= 1 and 'tromboembolismo' in (await pg.inner_text('#lista')).lower())
         await pg.fill('#q', 'itu'); ck('busca por sigla: ITU', 'Infecção do trato urinário' in await pg.inner_text('#lista'))
         await pg.fill('#q', 'ceftriaxona'); t = await pg.inner_text('#lista'); ck('busca por medicamento mostra as doenças que o usam', 'Apendicite aguda' in t and 'tem ceftriaxona na prescrição' in t)
@@ -30,6 +30,10 @@ async def main():
         await pg.goto(URL + '#sepse-e-choque-septico'); t = await T(); ck('link direto pelo endereço (#sepse)', 'Sepse e choque séptico' in t and '30 mL/kg IV em alíquotas de 500 mL' in t)
         ck('noradrenalina da sepse aponta para aminas vasoativas', 'ver "Aminas vasoativas"' in t); await pg.click('.nota a'); await pg.wait_for_timeout(150); ck('o link abre aminas vasoativas', 'Aminas vasoativas' in await pg.inner_text('h1'))
         await pg.goto(URL + '#sepse-e-choque-septico'); await pg.click('[data-aba=ex]'); t = await T(); ck('exames da sepse pelo ILAS', 'Duas hemoculturas' in t and 'ILAS' in t and 'Também citados no guia' in t)
+        await pg.goto(URL); await pg.fill('#q', 'daop'); ck('busca DAOP acha a entrada', 'Doença arterial obstrutiva periférica' in await pg.inner_text('#lista')); await pg.fill('#q', '')
+        g = await pg.inner_text('.grupo:has(h2:has-text("Trombose"))'); ck('seção trombose e doença vascular reúne DAOP, TEP, TVP, anticoagulantes e isquemia mesentérica', all(x in g for x in ['DAOP', 'TEP', 'TVP', 'Anticoagulantes', 'Abdome agudo vascular']))
+        await pg.goto(URL + '#doenca-arterial-obstrutiva-periferica'); ck('DAOP avisa que falta fonte, sem inventar', 'Ainda sem prescrição' in await T() and 'SBACV' in await T())
+        await pg.goto(URL + '#tep-cardiologia-na-pratica'); t = await T(); ck('TEP do Cardiologia na Prática com alerta da enoxaparina', 'Rivaroxabana' in t and 'Cardiologia na Prática 3.0, p. 116 a 123' in t and 'conferir antes de usar' in t)
         await pg.goto(URL + '#gota'); await pg.click('[data-aba=ex]'); ck('sem exames nos documentos: avisa, não inventa', 'não trazem exames' in await T())
         await pg.goto(URL + '#crise-convulsiva'); t = await T(); ck('crise convulsiva vem da edição anterior, com alerta na fenitoína', 'edição anterior' in t and 'menor que a usada em diretrizes' in t)
         await pg.goto(URL + '#parada-cardiorrespiratoria'); t = await T(); ck('parada cardiorrespiratória pela AHA 2025', 'Amiodarona 150 mg/3 mL' in t and '300 mg' in t and 'Diretriz AHA 2025' in t)
@@ -39,10 +43,10 @@ async def main():
         await pg.set_viewport_size({'width': 390, 'height': 800}); await pg.goto(URL + '#insuficiencia-cardiaca-descompensada-e-edema-agudo-de-pulmao')
         ck('celular: sem rolagem para o lado', await pg.evaluate('document.documentElement.scrollWidth') <= 392)
         await pg.goto(URL); ck('celular: lista sem rolagem para o lado', await pg.evaluate('document.documentElement.scrollWidth') <= 392)
-        n = 0
-        for i in await pg.evaluate("Array.from(document.querySelectorAll('.dz')).map(a=>a.getAttribute('href'))"):
-            await pg.goto(URL + i); n += await pg.locator('.conteudo li, .conteudo h3').count() > 0
-        ck('todas as 114 doenças abrem com conteúdo', n == 114)
+        n = 0; todas = sorted(set(await pg.evaluate("Array.from(document.querySelectorAll('.dz')).map(a=>a.getAttribute('href'))")))
+        for i in todas:
+            await pg.goto(URL + i); n += await pg.locator('.conteudo li, .conteudo h3, .semex').count() > 0
+        ck('todas as 118 doenças abrem com conteúdo', n == len(todas) == 118)
         ck('sem erros de JavaScript', not errs); print(errs[:3])
         await b.close()
     print(f"\n{sum(R)} passaram, {len(R)-sum(R)} falharam")

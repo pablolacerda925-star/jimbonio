@@ -2,7 +2,8 @@
   python3 ferramentas/extrai_psz2.py pdfs/PSZ2.pdf /tmp/psz2_linhas.json
   python3 ferramentas/monta_psz2.py /tmp/psz2_linhas.json /tmp/psz2_doencas.json
   python3 ferramentas/extrai_psz1.py pdfs/PSZ1.pdf /tmp/psz1_doencas.json
-  python3 ferramentas/gera_doencas.py /tmp/psz2_doencas.json /tmp/psz1_doencas.json
+  python3 ferramentas/extrai_med.py pdfs/MED.pdf /tmp/med_doencas.json
+  python3 ferramentas/gera_doencas.py /tmp/psz2_doencas.json /tmp/psz1_doencas.json /tmp/med_doencas.json
 O PSZ2 usado é o arquivo comprimido de 52 folhas (4 páginas por folha); as páginas citadas são as do livro."""
 import json, re, sys
 D = []

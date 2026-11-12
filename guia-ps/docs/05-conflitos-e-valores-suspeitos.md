@@ -43,6 +43,10 @@ PSZ2 recebido em 12/11/2026 (texto extraível, mas com as colunas intercaladas).
 
 ## Valores e trechos suspeitos no próprio PDF
 
+| CNP 121 | TEP: "Enoxaparina 1 mg/Kg SC 12/12 h ou 1,5 mg SC 1xd" (conferido pela imagem) | Falta "/kg" na segunda opção. Nota vermelha pedindo conferência |
+| CNP 123 | TEP: estreptoquinase "Diluir 1.500.00 Ui" e "1,5 mi UI EV em 2 horas" | Erro de digitação na diluição; usado 1.500.000 UI, igual ao PSZ2 p. 27 |
+| CNP 121 × 132 | HNF: TEP traz ataque 80 UI/kg e manutenção 18 UI/kg/h; TVP traz 60 a 80 e 12 a 18; a p. 122 traz 60 e 12 | Cada entrada mostra o que a sua página traz |
+
 | PSZ1 21-22 | Crise convulsiva: fenitoína "5-10 mg/kg" e fenobarbital "10 mg/kg" (conferido pela imagem) | Abaixo do usado em diretrizes de estado de mal epiléptico. Diretriz não acessível na sessão; a tela mostra o texto do guia com nota vermelha pedindo conferência |
 | PSZ2 155 | Sepse: "Noradrenalina 2 mg/mL – 4 mL" sem diluição nem dose | A diluição está em "Aminas vasoativas" (p. 193-194); a tela liga as duas |
 

@@ -2,10 +2,11 @@
 (function () {
   var app = document.getElementById("app");
   var LISTA = DOENCAS.concat(EXTRAS.doencas).sort(function (a, b) { return a.nome.localeCompare(b.nome, "pt"); });
-  var ORDEM = ["Cardiovascular", "Neurológico", "Respiratório", "Gastrointestinal", "Endócrino e metabólico", "Hidroeletrolítico", "Infecções", "Infecções de pele", "Geniturinário", "Reprodutor", "Hematológico", "Osteomuscular", "Psiquiatria", "Anafilaxia e alergias", "Intoxicações", "Causas externas", "Hemocomponentes", "Consulta rápida"];
-  var FONTES = { PSZ2: "PS Zerado, 2ª edição", PSZ1: "PS Zerado, edição anterior", AHA: "Diretriz AHA 2025" };
+  var ORDEM = ["Cardiovascular", "Trombose e doença vascular", "Neurológico", "Respiratório", "Gastrointestinal", "Endócrino e metabólico", "Hidroeletrolítico", "Infecções", "Infecções de pele", "Geniturinário", "Reprodutor", "Hematológico", "Osteomuscular", "Psiquiatria", "Anafilaxia e alergias", "Intoxicações", "Causas externas", "Hemocomponentes", "Consulta rápida"];
+  var FONTES = { PSZ2: "PS Zerado, 2ª edição", PSZ1: "PS Zerado, edição anterior", AHA: "Diretriz AHA 2025", CNP: "Cardiologia na Prática 3.0", MED: "Guia de Prescrições Medway" };
+  function noGrupo(d, sis) { return d.sistema === sis || ((EXTRAS.grupos || {})[sis] || []).indexOf(d.id) >= 0; }
   var S = { q: "", aba: "presc" };
-  var EXAME = /\b(exames?|solicitar|dosar|dosagem|hemograma|gasometria|lactato|hemoculturas?|culturas?|urocultura|ECG|eletrocardiograma|radiografia|tomografia|ultrassom|ultrassonografia|POCUS|ecocardiograma|troponina|D-d[ií]mero|creatinina|eletr[óo]litos|glicemia|cetonemia|coagulograma|INR|bilirrubinas?|amilase|lipase|PCR|VHS|sorologia|NS1|VDRL|hemoglobina|plaquetas|QTc)\b/i;
+  var EXAME = /\b(exames?|solicitar|dosar|dosagem|hemograma|gasometria|lactato|hemoculturas?|culturas?|urocultura|ECG|eletrocardiograma|radiografia|tomografia|ultrassom|ultrassonografia|POCUS|ecocardiograma|troponina|D-d[ií]mero|creatinina|eletr[óo]litos|glicemia|cetonemia|coagulograma|INR|bilirrubinas?|amilase|lipase|PCR|VHS|sorologia|NS1|VDRL|hemoglobina|plaquetas|QTc|TTPa|clearance)\b/i;
 
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
   function fmt(s) { return esc(s).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>"); }
@@ -13,7 +14,7 @@
   function norm(s) { return String(s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase(); }
   function acha(id) { return LISTA.filter(function (d) { return d.id === id; })[0]; }
   function eBizu(t) { return /^#?biz/i.test(t); }
-  function fonteTxt(d) { return (FONTES[d.fonte] || d.fonte) + (d.paginas ? ", p. " + (d.paginas[0] === d.paginas[1] ? d.paginas[0] : d.paginas[0] + " a " + d.paginas[1]) : ""); }
+  function fonteTxt(d) { if (!d.fonte) return "Sem fonte nos documentos enviados"; return (FONTES[d.fonte] || d.fonte) + (d.paginas ? ", p. " + (d.paginas[0] === d.paginas[1] ? d.paginas[0] : d.paginas[0] + " a " + d.paginas[1]) : ""); }
 
   // ---------- lista ----------
   function casa(d, n) {
@@ -26,7 +27,7 @@
   function lista() {
     var n = norm(S.q).trim(), h = "", total = 0;
     ORDEM.forEach(function (sis) {
-      var ds = LISTA.filter(function (d) { return d.sistema === sis && casa(d, n); }); total += ds.length;
+      var ds = LISTA.filter(function (d) { return noGrupo(d, sis) && casa(d, n); }); total += ds.length;
       if (!ds.length) return;
       h += '<section class="grupo"><h2>' + esc(sis) + ' <span>' + ds.length + "</span></h2><div class=\"doencas\">" + ds.map(function (d) {
         return '<a class="dz" href="#' + d.id + '">' + esc(d.nome) + (porMedicamento(d, n) ? "<small>tem " + esc(S.q) + " na prescrição</small>" : "") + "</a>"; }).join("") + "</div></section>";
@@ -95,7 +96,7 @@
     return '<div class="dh"><a class="volta" href="#">← Doenças</a><h1>' + esc(d.nome) + '</h1><p class="meta"><span class="sis">' + esc(d.sistema) + "</span>" + esc(fonteTxt(d)) + "</p>" +
       '<div class="abas" role="tablist"><button role="tab" aria-selected="' + (S.aba === "presc") + '" class="' + (S.aba === "presc" ? "on" : "") + '" data-aba="presc">Prescrição</button><button role="tab" aria-selected="' + (S.aba === "ex") + '" class="' + (S.aba === "ex" ? "on" : "") + '" data-aba="ex">Exames <span>' + (ne || "—") + "</span></button>" +
       (S.aba === "presc" ? '<button class="copiar" data-copiar="1">Copiar prescrição</button>' : "") + "</div></div>" +
-      '<div class="conteudo">' + (S.aba === "presc" ? prescricao(d) : exames(d)) + "</div>" + '<textarea id="copia" aria-hidden="true" tabindex="-1" readonly></textarea>';
+      '<div class="conteudo">' + (d.semFonte ? '<div class="semex"><b>Ainda sem prescrição.</b><p>' + esc(d.semFonte) + "</p></div>" : S.aba === "presc" ? prescricao(d) : exames(d)) + "</div>" + '<textarea id="copia" aria-hidden="true" tabindex="-1" readonly></textarea>';
   }
   function render() {
     var id = decodeURIComponent(location.hash.slice(1)), d = id && acha(id);
