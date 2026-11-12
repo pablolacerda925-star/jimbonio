@@ -121,6 +121,10 @@ F.temas.forEach(function (t) {
   if (t.gravidade && !t.gravidade.ref) falt.push(t.id + " gravidade sem ref"); if (!t.destino.ref) falt.push(t.id + " destino sem ref");
   t.passos.forEach(function (s) { s.itens.forEach(function (i) { if (i.tipo === "med" && !M[i.med]) falt.push(t.id + " med " + i.med); if (i.tipo === "acao" && !i.ref) falt.push(t.id + "." + s.id + "." + i.id + " sem ref"); }); });
   t.alertas.forEach(function (a) { if (a.ir && !F.temas.some(function (x) { return x.id === a.ir; })) falt.push(t.id + " alerta -> " + a.ir); }); });
+F.temas.forEach(function (t) { t.perguntar.paciente.concat(t.perguntar.familia).forEach(function (q) { if (!q.ref) falt.push(t.id + " pergunta " + q.id + " sem ref"); });
+  (t.hipoteses || []).forEach(function (h) { if (!h.ref) falt.push("hipótese " + h.id + " sem ref"); if (h.tema && !F.temas.some(function (x) { return x.id === h.tema; })) falt.push("hipótese -> " + h.tema); }); });
+Object.keys(M).forEach(function (k) { if (!M[k].plano || !M[k].plano.q || !M[k].plano.rep) falt.push("med " + k + " sem plano");
+  if (M[k].plano.maxN && M[k].doses && M[k].doses.length > 1 && M[k].doses.length !== M[k].plano.maxN) falt.push("med " + k + ": nº de doses diferente do máximo"); });
 Object.keys(M).forEach(function (k) { if (!M[k].ref) falt.push("med " + k + " sem ref"); if (!M[k].ind) falt.push("med " + k + " sem indicação"); });
 eq("todo item tem fonte e todo medicamento citado existe", falt, []);
 console.log("\n" + ok + " passaram, " + fail + " falharam");

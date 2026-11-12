@@ -46,7 +46,7 @@ main{padding:14px 16px 80px;max-width:1240px}
 .falta{background:var(--am);border:1px solid var(--amb);border-radius:10px;padding:9px 12px;margin:6px 0;font-size:.92rem}
 .passo{border-left:4px solid var(--vd);padding:4px 0 4px 12px;margin:14px 0 4px}.ph{display:flex;align-items:center;gap:8px}.ph b{flex:1;font-size:1.05rem}.pq{margin:0;color:var(--mu);font-size:.86rem}
 .agora{background:var(--az);border:1px solid var(--azb);border-radius:8px;padding:8px 10px;margin:8px 0;font-size:.95rem}.info{background:#f1f0ea;border-radius:8px;padding:7px 10px;margin:6px 0;font-size:.9rem}
-.med{display:flex;gap:8px;align-items:center;flex-wrap:wrap;width:100%;text-align:left;border:1px solid #9ccbbd;background:#fff;border-radius:10px;padding:10px;margin:6px 0}.med:hover{background:var(--vdc)}.med.ok{background:#f6fbf9}
+.medx{display:flex;gap:8px;align-items:center;flex-wrap:wrap;width:100%;text-align:left;border:1px solid #9ccbbd;background:#fff;border-radius:10px;padding:10px;margin:6px 0}
 .medn{flex:1;min-width:150px}.medn b::before{content:"💊 "}.medn small{display:block;color:var(--mu);font-size:.8rem}.seta{color:var(--vd);font-weight:700;font-size:.86rem}
 .aviso{background:var(--am);border:1px solid var(--amb);border-radius:12px;padding:10px 12px;margin:10px 0}.aviso p{margin:4px 0;font-size:.92rem}.aviso .bt{margin:6px 6px 0 0}.aviso.mud{background:var(--az);border-color:var(--azb)}
 .ld{border-top:1px solid var(--li);padding:8px 0}.ld b{display:flex;justify-content:space-between;font-size:.88rem}.ld b span{background:#eceeea;border-radius:20px;padding:0 8px;font-size:.78rem}
@@ -64,16 +64,37 @@ main{padding:14px 16px 80px;max-width:1240px}
 .res p.pri b{font-size:1.35rem;color:var(--vd2)}.res .form{display:block;font-size:.76rem;color:var(--mu);border-top:1px dashed var(--li);padding-top:6px}
 .faltac{background:var(--am);border-radius:8px;padding:7px 10px;margin:10px 0 0;font-size:.88rem}
 textarea{width:100%;border:1px solid var(--li);border-radius:10px;padding:10px;margin:10px 0;font-size:.92rem;line-height:1.45}
+.medc{border:1px solid #9ccbbd;border-radius:10px;background:#fff;margin:6px 0;overflow:hidden}.medc.ok{background:#f6fbf9}.medc.nao{opacity:.7}
+.medh{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:9px 10px 4px}
+.medp{display:flex;gap:0;flex-wrap:wrap;margin:4px 10px;border:1px solid var(--li);border-radius:8px;overflow:hidden}.medp p{margin:0;padding:6px 10px;flex:1;min-width:150px;font-size:.92rem;font-weight:600;border-right:1px solid var(--li)}.medp p:last-child{border-right:0}
+.medp small{display:block;font-weight:700;color:var(--mu);font-size:.7rem;letter-spacing:.04em}.medp.top{margin:12px 0 0;background:var(--vdc);border-color:#9ccbbd}
+.meds{padding:6px 10px 9px;font-size:.86rem;color:var(--mu);display:flex;gap:8px;align-items:center;flex-wrap:wrap}.medc.ok .meds{color:var(--vd2);font-weight:600}
+.bol{display:inline-flex;gap:4px}.bol i{width:14px;height:14px;border-radius:50%;border:2px solid var(--vd);display:inline-block}.bol i.on{background:var(--vd)}
+.ordw{display:flex;gap:8px;align-items:flex-start}.ordc{flex:1;min-width:0}.ord{flex:none;margin-top:14px;width:30px;height:30px;border-radius:50%;background:var(--vd2);color:#fff;display:grid;place-items:center;font-weight:700;font-size:.8rem}
+.pgs{border:1px solid var(--li);border-radius:10px;overflow:hidden;background:#fff}.pg{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:8px 10px;border-bottom:1px solid var(--li)}.pg:last-child{border-bottom:0}.pg.ok{background:#f6fbf9}
+.pgt{flex:1;min-width:200px}.pgt b{font-weight:600}.pgt small{display:block;color:var(--mu);font-size:.8rem}.pgb{display:flex;gap:5px;align-items:center}.pgb .bt{padding:6px 10px;min-height:34px}
+.hip{border:1px solid var(--amb);border-left:5px solid var(--amb);background:#fffdf6;border-radius:10px;padding:10px 12px;margin:8px 0}.hip.fraca{opacity:.75}.hip p{margin:5px 0;font-size:.93rem}.hip p small{display:block;font-weight:700;color:var(--mu);font-size:.7rem;letter-spacing:.04em}.hip .bt{margin-top:6px}
 .exg{display:grid;grid-template-columns:1fr 1fr;gap:0 8px;align-items:start}
 @media(max-width:980px){.cols{flex-direction:column}.lado{width:100%;position:static;max-height:none}}
-@media(max-width:760px){.exg{grid-template-columns:1fr}.lay{flex-direction:column}.pacs{width:100%;flex-direction:row;align-items:center;overflow-x:auto;padding:8px 10px;gap:6px}.marca{margin:0 6px 0 0;font-size:1rem}.marca small,.pacs .rot,.ver{display:none}
+@media(max-width:760px){.medc{border:1px solid #9ccbbd;border-radius:10px;background:#fff;margin:6px 0;overflow:hidden}.medc.ok{background:#f6fbf9}.medc.nao{opacity:.7}
+.medh{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:9px 10px 4px}
+.medp{display:flex;gap:0;flex-wrap:wrap;margin:4px 10px;border:1px solid var(--li);border-radius:8px;overflow:hidden}.medp p{margin:0;padding:6px 10px;flex:1;min-width:150px;font-size:.92rem;font-weight:600;border-right:1px solid var(--li)}.medp p:last-child{border-right:0}
+.medp small{display:block;font-weight:700;color:var(--mu);font-size:.7rem;letter-spacing:.04em}.medp.top{margin:12px 0 0;background:var(--vdc);border-color:#9ccbbd}
+.meds{padding:6px 10px 9px;font-size:.86rem;color:var(--mu);display:flex;gap:8px;align-items:center;flex-wrap:wrap}.medc.ok .meds{color:var(--vd2);font-weight:600}
+.bol{display:inline-flex;gap:4px}.bol i{width:14px;height:14px;border-radius:50%;border:2px solid var(--vd);display:inline-block}.bol i.on{background:var(--vd)}
+.ordw{display:flex;gap:8px;align-items:flex-start}.ordc{flex:1;min-width:0}.ord{flex:none;margin-top:14px;width:30px;height:30px;border-radius:50%;background:var(--vd2);color:#fff;display:grid;place-items:center;font-weight:700;font-size:.8rem}
+.pgs{border:1px solid var(--li);border-radius:10px;overflow:hidden;background:#fff}.pg{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:8px 10px;border-bottom:1px solid var(--li)}.pg:last-child{border-bottom:0}.pg.ok{background:#f6fbf9}
+.pgt{flex:1;min-width:200px}.pgt b{font-weight:600}.pgt small{display:block;color:var(--mu);font-size:.8rem}.pgb{display:flex;gap:5px;align-items:center}.pgb .bt{padding:6px 10px;min-height:34px}
+.hip{border:1px solid var(--amb);border-left:5px solid var(--amb);background:#fffdf6;border-radius:10px;padding:10px 12px;margin:8px 0}.hip.fraca{opacity:.75}.hip p{margin:5px 0;font-size:.93rem}.hip p small{display:block;font-weight:700;color:var(--mu);font-size:.7rem;letter-spacing:.04em}.hip .bt{margin-top:6px}
+.exg{grid-template-columns:1fr}.lay{flex-direction:column}.pacs{width:100%;flex-direction:row;align-items:center;overflow-x:auto;padding:8px 10px;gap:6px}.marca{margin:0 6px 0 0;font-size:1rem}.marca small,.pacs .rot,.ver{display:none}
 .pc{white-space:nowrap;border:1px solid #5f9a8a;padding:6px 10px}.pc small{display:none}.novo{margin:0;white-space:nowrap;padding:7px 10px}.topo{top:0}main{padding:10px 10px 70px}.modal,.modal.largo{width:100%}.vit label{width:calc(25% - 6px)}}
 </style></head>
 <body><div id="app"></div>
 <script id="conteudo-do-fluxo">// CONTEÚDO CLÍNICO — separado da interface. Todo número, critério e texto clínico mora aqui, com a fonte (ref).
 // Uma conduta por situação. Regra de escolha: decisão registrada em docs/02 → diretriz mais recente → PS Zerado 2ª edição.
 // Condições (se, classificar, dica) recebem P: P.a(id) achado "p"/"a"; P.o(id) opção; P.n(k) sinal vital;
-// P.ex(id) exame {st,r,val}; P.adm(med) nº de doses dadas; P.cont(id) nº de registros; P.r(id) resposta da reavaliação.
+// P.ex(id) exame {st,r,val}; P.adm(med) nº de doses dadas; P.cont(id) nº de registros; P.r(id) resposta da reavaliação;
+// P.p(id) resposta de pergunta "s"/"n"/"ns"; P.tem(lista, k) item marcado numa lista.
 var TRI_INST = [
   { id: "hipo", t: "Hipotensão" }, { id: "conf", t: "Alteração aguda da consciência" }, { id: "choque", t: "Sinais de choque" },
   { id: "dor", t: "Dor torácica isquêmica" }, { id: "ica", t: "Insuficiência cardíaca aguda (dispneia)" }];
@@ -84,7 +105,7 @@ var OSASCO = ["Orientar o paciente sobre o procedimento.", "Sedar: sedoanalgesia
   "Pás em posição anterolateral ou anteroposterior, com gel, pressionadas com firmeza. Avisar a equipe antes do choque.", "Marca-passo ou CDI: pás a pelo menos 10 cm do aparelho.", "Gestante: a cardioversão é segura para o feto e não deve atrasar."];
 
 var FLUXO = {
-  versao: "0.4.0", data: "2026-11-11",
+  versao: "0.5.0", data: "2026-11-11",
   vitais: [{ k: "pas", t: "PAS", un: "mmHg", min: 30, max: 300 }, { k: "pad", t: "PAD", un: "mmHg", min: 10, max: 200 }, { k: "fc", t: "FC", un: "bpm", min: 10, max: 300 },
     { k: "fr", t: "FR", un: "irpm", min: 2, max: 80 }, { k: "sat", t: "SpO₂", un: "%", min: 30, max: 100 }, { k: "temp", t: "Temp.", un: "°C", min: 25, max: 45 }, { k: "peso", t: "Peso", un: "kg", min: 20, max: 300 }],
   temas: [
@@ -194,7 +215,8 @@ var FLUXO = {
         dica: function (P) { return P.cont("vagal") === 0 ? "Começar pela manobra vagal modificada." : P.adm("adenosina") === 0 ? "Sem reversão: adenosina 6 mg." : P.adm("adenosina") === 1 ? "Sem reversão: adenosina 12 mg." : "Sem reversão: metoprolol. Se persistir, rever o diagnóstico e avaliar cardioversão sincronizada."; },
         itens: [
           { id: "vagal", tipo: "acao", rep: "Registrar manobra", t: "Manobra vagal modificada", como: ["Sentado a 45°, soprar uma seringa vazia de 20 mL por 15 segundos, tentando empurrar o êmbolo.", "Em seguida deitar a 0° e elevar as pernas a 45° por 15 segundos.", "Observar o monitor.", "Massagem do seio carotídeo: cautela, pode causar AVC em quem tem doença carotídea."], ref: "CNP p. 88 · AHA 2025 (ACLS-T p. 5)" },
-          { tipo: "med", med: "adenosina", nota: "6 mg; se não reverter, 12 mg" },
+          { tipo: "med", med: "adenosina", nota: "6 mg; se não reverter, 12 mg", se: function (P) { return P.p("asma") !== "s"; } },
+          { tipo: "info", t: "Adenosina contraindicada: paciente com asma. Seguir para o metoprolol.", se: function (P) { return P.p("asma") === "s"; } },
           { tipo: "med", med: "metoprolol", nota: "se persistir depois da adenosina" },
           { id: "cv", tipo: "acao", t: "Persistiu: rever o diagnóstico e avaliar cardioversão sincronizada (100 J)", ref: "AHA 2025 (ACLS-T p. 4-5) · CNP p. 89" }] },
       { id: "fa", t: "FA ou flutter estável: controle da frequência", se: function (P) { return P.o("ritmo") === "fa" && !instavel(P) && P.a("wpw") === "a"; }, porque: "Sem instabilidade e sem pré-excitação.", ref: "AHA 2025, Tabela 2 (ACLS-T p. 10-11) · DRG p. 62 e 64",
@@ -299,7 +321,8 @@ var FLUXO = {
       { id: "B", t: "Perfil B: descongestionar", se: function (P) { return P.a("cong") === "p" && P.a("perf") === "a"; }, porque: "Congestão com perfusão adequada.", ref: "SBC 2026, 7.5.1 e 7.8 · PSZ2 p. 20-22",
         itens: [
           { tipo: "med", med: "furosemida", nota: "idealmente em até 1 hora" },
-          { tipo: "med", med: "nitroglicerina", nota: "PAS acima de 110 mmHg", se: function (P) { return P.n("pas") > 110; } },
+          { tipo: "med", med: "nitroglicerina", nota: "PAS acima de 110 mmHg", se: function (P) { return P.n("pas") > 110 && P.p("pde5") !== "s"; } },
+          { tipo: "info", t: "Nitroglicerina contraindicada: usou sildenafila ou tadalafila.", se: function (P) { return P.n("pas") > 110 && P.p("pde5") === "s"; } },
           { tipo: "info", t: "Vasodilatador só com PAS acima de 110 mmHg.", se: function (P) { return P.n("pas") != null && !(P.n("pas") > 110); } }] },
       { id: "Cb", t: "Perfil C com PAS até 90: inotrópico e vasopressor", se: function (P) { return P.a("cong") === "p" && P.a("perf") === "p" && P.n("pas") != null && P.n("pas") <= 90; }, porque: "Congestão, baixa perfusão e PAS até 90 mmHg.", ref: "SBC 2026, Tabela 7.3 · CNP p. 61 · DRG p. 43",
         itens: [
@@ -332,7 +355,7 @@ var FLUXO = {
   // aps = ampolas documentadas; preps = preparos documentados (amp = nº de ampolas, ap = índice em aps, dil = mL de diluente).
   meds: {
     adrenalinaPcr: { nome: "Adrenalina", ind: "Parada cardiorrespiratória", modo: "fixo", doses: [1], aps: [{ t: "1 mg/1 mL", mg: 1, ml: 1 }], busca: ["adrenalina", "epinefrina"],
-      dose: ["1 mg EV ou IO a cada 3 a 5 minutos."], prep: ["Sem diluir, seguida de flush."], cuid: ["Ritmo chocável: depois do 2º choque. Não chocável: o quanto antes."], lembra: { min: 3, t: "Adrenalina de novo a partir das" }, ref: "AHA 2025, Figura 2 (ACLS-F p. 2) · DRG p. 88 · MED p. 11" },
+      dose: ["1 mg EV ou IO a cada 3 a 5 minutos."], prep: ["Sem diluir, seguida de flush."], cuid: ["Ritmo chocável: depois do 2º choque. Não chocável: o quanto antes."], lembra: "Adrenalina de novo a partir das", ref: "AHA 2025, Figura 2 (ACLS-F p. 2) · DRG p. 88 · MED p. 11" },
     amiodaronaPcr: { nome: "Amiodarona", ind: "PCR em FV ou TV sem pulso refratária", modo: "fixo", doses: [300, 150], aps: [{ t: "150 mg/3 mL", mg: 150, ml: 3 }], busca: ["amiodarona", "ancoron"],
       dose: ["Primeira dose: 300 mg EV ou IO em bolus.", "Segunda dose: 150 mg."], prep: ["Em bolus, durante a RCP."], cuid: ["Depois do 3º choque."], ref: "AHA 2025, Figura 2 (ACLS-F p. 2) · DRG p. 88" },
     lidocainaPcr: { nome: "Lidocaína 2% sem vasoconstritor", ind: "PCR em FV ou TV sem pulso, se não houver amiodarona", modo: "kg", faixas: [{ t: "1ª dose", mgKg: [1, 1.5] }, { t: "2ª dose", mgKg: [0.5, 0.75] }], aps: [{ t: "2% · 20 mg/mL", mg: 20, ml: 1 }], busca: ["lidocaina", "xylocaina"],
@@ -357,7 +380,7 @@ var FLUXO = {
     fentanil: { nome: "Fentanil", ind: "Analgesia para cardioversão elétrica", modo: "txt", busca: ["fentanil"],
       dose: ["1 mL (50 mcg) EV lento."], prep: ["Ampola de 50 mcg/mL, sem diluir."], cuid: ["Infundir devagar."], ref: "CNP p. 83-84" },
     atropina: { nome: "Atropina", ind: "Bradicardia instável", modo: "fixo", doses: [1], aps: [{ t: "0,25 mg/1 mL", mg: 0.25, ml: 1 }, { t: "0,5 mg/1 mL", mg: 0.5, ml: 1 }], busca: ["atropina"],
-      dose: ["1 mg EV em bolus.", "Repetir a cada 3 a 5 minutos.", "Dose total máxima: 3 mg."], prep: ["Sem diluir."], cuid: ["Conferir a ampola do serviço: existem 0,25 mg/mL e 0,5 mg/mL."], maxDoses: 3, lembra: { min: 3, t: "Atropina de novo a partir das" }, ref: "AHA 2025, Figura 8 (ACLS-F p. 3) · CNP p. 115 · MED p. 39" },
+      dose: ["1 mg EV em bolus.", "Repetir a cada 3 a 5 minutos.", "Dose total máxima: 3 mg."], prep: ["Sem diluir."], cuid: ["Conferir a ampola do serviço: existem 0,25 mg/mL e 0,5 mg/mL."], lembra: "Atropina de novo a partir das", ref: "AHA 2025, Figura 8 (ACLS-F p. 3) · CNP p. 115 · MED p. 39" },
     adrenalinaInf: { nome: "Adrenalina em bomba", ind: "Bradicardia instável sem resposta à atropina", modo: "inf", porKg: 0, un: "mcg/min", busca: ["adrenalina em bomba", "epinefrina em bomba"], aps: [{ t: "1 mg/1 mL", mg: 1, ml: 1 }],
       preps: [{ t: "6 ampolas + 94 mL SF 0,9%", amp: 6, ap: 0, dil: 94 }, { t: "10 ampolas + 90 mL SF 0,9%", amp: 10, ap: 0, dil: 90 }], conc: 60, ini: [2, 2], max: 10,
       dose: ["2 a 10 mcg/min, ajustando pela resposta."], prep: ["6 ampolas + 94 mL de SF 0,9% (60 mcg/mL), ou 10 ampolas + 90 mL (100 mcg/mL)."], cuid: [], ref: "AHA 2025, Figura 8 (ACLS-F p. 3) · MED p. 11 e 16 · CNP p. 115" },
@@ -378,6 +401,149 @@ var FLUXO = {
       dose: ["Começar com 0,1 a 0,2 mcg/kg/min.", "Ajustar a cada 15 minutos.", "Máximo: 1 mcg/kg/min."], prep: ["4 ampolas (4 mg/4 mL) + 234 mL de SG 5% = 64 mcg/mL."], cuid: ["Meta: PAM de 65 a 70 mmHg."], ref: "SBC 2018, Tabela 2.3 · DRG p. 43 · PSZ2 p. 194 · bula" }
   }
 };
+
+// ============================== PLANO DE CADA MEDICAMENTO (quanto, repetir, máximo) ==============================
+// q = quanto dar; rep = quando repetir; max = limite; maxN = nº máximo de doses; intMin = minutos até poder repetir.
+var PLANO = {
+  adrenalinaPcr: { q: "1 mg EV ou IO", rep: "a cada 3 a 5 minutos", max: "enquanto durar a RCP", intMin: 3 },
+  amiodaronaPcr: { q: "1ª dose 300 mg · 2ª dose 150 mg", rep: "2ª dose se o ritmo seguir chocável", max: "2 doses", maxN: 2 },
+  lidocainaPcr: { q: "1ª dose 1 a 1,5 mg/kg · 2ª dose 0,5 a 0,75 mg/kg", rep: "2ª dose se o ritmo seguir chocável", max: "2 doses", maxN: 2 },
+  adenosina: { q: "1ª dose 6 mg · 2ª dose 12 mg", rep: "2ª dose se não reverter", max: "2 doses", maxN: 2 },
+  metoprolol: { q: "5 mg EV lento", rep: "pode repetir se a frequência não cair", max: "3 doses (15 mg)", maxN: 3 },
+  amiodaronaTv: { q: "150 mg em 10 minutos", rep: "repetir se a TV voltar", max: "" },
+  amiodaronaTvManut: { q: "1 mg/min por 6 h, depois 0,5 mg/min por 18 h", rep: "infusão contínua", max: "24 horas" },
+  amiodaronaFa: { q: "300 mg em 1 hora", rep: "dose única", max: "1 dose", maxN: 1 },
+  amiodaronaFaManut: { q: "10 a 50 mg/h", rep: "infusão contínua, ajustar pela frequência", max: "24 horas" },
+  magnesio: { q: "1 a 2 g em 15 minutos", rep: "pode seguir com infusão de 1 a 4 g/h", max: "" },
+  midazolam: { q: "1 a 2 mL da solução de 1,5 mg/mL", rep: "repetir até sedação leve", max: "" },
+  fentanil: { q: "1 mL (50 mcg) EV lento", rep: "dose única", max: "" },
+  atropina: { q: "1 mg EV em bolus", rep: "a cada 3 a 5 minutos", max: "3 doses (3 mg)", maxN: 3, intMin: 3 },
+  adrenalinaInf: { q: "2 a 10 mcg/min", rep: "infusão contínua, ajustar pela resposta", max: "10 mcg/min" },
+  dopamina: { q: "5 a 20 mcg/kg/min", rep: "infusão contínua, ajustar pela resposta", max: "20 mcg/kg/min" },
+  furosemida: { q: "20 a 40 mg EV (ou 1 a 2 vezes a dose oral diária)", rep: "reavaliar em 6 h: repetir a cada 12 h ou dobrar", max: "600 mg por dia" },
+  nitroglicerina: { q: "começar com 10 a 20 mcg/min", rep: "subir 10 a 20 mcg/min a cada 15 minutos", max: "200 mcg/min" },
+  nitroprussiato: { q: "começar com 0,3 mcg/kg/min", rep: "subir 0,3 a 0,5 mcg/kg/min a cada 15 minutos", max: "5 mcg/kg/min" },
+  dobutamina: { q: "começar com 0,5 a 1 mcg/kg/min", rep: "ajustar a cada 10 minutos; manter 2 a 20", max: "20 mcg/kg/min" },
+  noradrenalina: { q: "começar com 0,1 a 0,2 mcg/kg/min", rep: "ajustar a cada 15 minutos", max: "1 mcg/kg/min" }
+};
+Object.keys(PLANO).forEach(function (k) { FLUXO.meds[k].plano = PLANO[k]; });
+
+// ============================== O QUE PERGUNTAR (paciente e familiares) ==============================
+// Cada pergunta nasce de uma decisão documentada; a fonte é a do item que depende da resposta.
+var PERG = {
+  pcr: { paciente: [], familia: [
+    { id: "presenc", t: "A parada foi presenciada?", ref: "AHA 2025, Figuras 3 e 4 (ACLS-F p. 6-7)" },
+    { id: "rcpleigo", t: "Alguém fez massagem cardíaca antes da equipe chegar?", ref: "AHA 2025, Figura 4 (ACLS-F p. 7)" },
+    { id: "antes", t: "Teve dor no peito ou falta de ar antes de parar?", por: "trombose coronária e pulmonar são causas reversíveis", ref: "AHA 2025, Figura 2 (ACLS-F p. 2)" },
+    { id: "tox", t: "Pode ter tomado remédio em excesso, veneno ou droga?", por: "toxinas são causa reversível", ref: "AHA 2025, Figura 2 (ACLS-F p. 2)" },
+    { id: "perdas", t: "Teve sangramento, vômito ou diarreia importantes?", por: "hipovolemia é causa reversível", ref: "AHA 2025, Figura 2 (ACLS-F p. 2)" }] },
+  taqui: { paciente: [
+    { id: "t48", t: "Começou há mais de 48 horas, ou não sabe quando?", por: "define se dá para reverter FA ou flutter sem anticoagular", ref: "AHA 2025 (ACLS-T p. 6-8)" },
+    { id: "dorp", t: "Sente dor no peito ou falta de ar?", por: "são sinais de instabilidade", ref: "AHA 2025, Figura 6 (ACLS-F p. 4)" },
+    { id: "asma", t: "Tem asma?", por: "contraindica adenosina", ref: "AHA 2025 (ACLS-T p. 5)" },
+    { id: "cardiop", t: "Tem doença do coração (infarto, insuficiência cardíaca, Chagas)?", por: "muda a escolha do remédio e sugere origem ventricular", ref: "AHA 2025 (ACLS-T p. 10-11) · CNP p. 101" },
+    { id: "qtmed", t: "Usa diurético ou remédio que alonga o QT?", por: "hipocalemia e QT longo causam arritmia ventricular", ref: "CNP p. 101 e 103" },
+    { id: "mp", t: "Tem marca-passo ou desfibrilador implantado?", por: "as pás ficam a pelo menos 10 cm do aparelho", ref: "CNP p. 80" },
+    { id: "gest", t: "Está grávida?", por: "a cardioversão é segura e não deve atrasar", ref: "CNP p. 80" }],
+    familia: [{ id: "conf", t: "Ficou confuso, sonolento ou desmaiou?", por: "alteração aguda da consciência é sinal de instabilidade", ref: "AHA 2025, Figura 6 (ACLS-F p. 4)" }] },
+  bradi: { paciente: [
+    { id: "remed", t: "Usa betabloqueador, bloqueador de canal de cálcio ou digoxina?", por: "são causas de bradicardia", ref: "AHA 2025, Figura 8 (ACLS-F p. 3)" },
+    { id: "dorp", t: "Sente dor no peito?", por: "isquemia ou infarto é causa e sinal de instabilidade", ref: "AHA 2025, Figura 8 (ACLS-F p. 3)" },
+    { id: "tont", t: "Teve tontura, escurecimento da vista ou desmaio?", por: "sintomas de baixo débito pela bradicardia", ref: "AHA 2025 (ACLS-B p. 1)" },
+    { id: "disp", t: "Sente falta de ar?", por: "insuficiência cardíaca aguda é sinal de instabilidade", ref: "AHA 2025, Figura 8 (ACLS-F p. 3)" }],
+    familia: [
+      { id: "conf", t: "Ficou confuso, sonolento ou desmaiou?", por: "alteração aguda da consciência é sinal de instabilidade", ref: "AHA 2025, Figura 8 (ACLS-F p. 3)" },
+      { id: "remedf", t: "Quais remédios toma? Pode ter tomado a mais?", por: "betabloqueador, bloqueador de cálcio e digoxina causam bradicardia", ref: "AHA 2025, Figura 8 (ACLS-F p. 3)" }] },
+  ic: { paciente: [
+    { id: "diur", t: "Usa diurético em casa?", por: "define a dose de furosemida: 1 a 2 vezes a dose oral diária", ref: "SBC 2026, 7.5.1 (p. 70)" },
+    { id: "pde5", t: "Usou sildenafila nas últimas 24 h ou tadalafila nas últimas 48 h?", por: "contraindica nitroglicerina", ref: "DRG p. 52" },
+    { id: "orto", t: "A falta de ar piora deitado?", por: "ortopneia é sinal de congestão", ref: "SBC 2026, Figura 7.3 (p. 68)" },
+    { id: "dorp", t: "Sente dor no peito?", por: "afastar síndrome coronariana", ref: "SBC 2026, Quadro 7.1 (p. 64)" },
+    { id: "urina", t: "Está urinando pouco?", por: "baixa diurese é sinal de má perfusão", ref: "SBC 2026, Figura 7.3 (p. 68)" }],
+    familia: [
+      { id: "sono", t: "Ficou sonolento ou confuso?", por: "sinal de baixa perfusão", ref: "SBC 2026, Figura 7.3 (p. 68)" },
+      { id: "subito", t: "A falta de ar começou de repente, em minutos ou poucas horas?", por: "sugere a forma hiperaguda do edema de pulmão", ref: "PSZ2 p. 19" }] },
+  sind: { paciente: [
+    { id: "dorp", t: "Sente dor no peito?", por: "sinal de instabilidade e pista de síndrome coronariana", ref: "CNP p. 78 · SBC 2026, Quadro 7.1" },
+    { id: "orto", t: "A falta de ar piora deitado?", por: "ortopneia é sinal de congestão", ref: "SBC 2026, Figura 7.3 (p. 68)" },
+    { id: "remed", t: "Usa betabloqueador, bloqueador de canal de cálcio ou digoxina?", por: "são causas de bradicardia", ref: "AHA 2025, Figura 8 (ACLS-F p. 3)" },
+    { id: "cardiop", t: "Tem doença do coração conhecida?", por: "orienta para insuficiência cardíaca e arritmia", ref: "AHA 2025 (ACLS-T p. 10-11) · CNP p. 101" }],
+    familia: [
+      { id: "conf", t: "Ficou confuso, sonolento ou desmaiou?", por: "alteração aguda da consciência é sinal de instabilidade", ref: "CNP p. 78" },
+      { id: "remedf", t: "Quais remédios toma? Pode ter tomado a mais?", por: "remédios causam bradicardia e arritmia", ref: "AHA 2025, Figura 8 (ACLS-F p. 3)" }] }
+};
+
+// ============================== ENTRADA POR SINAIS E SINTOMAS (sem diagnóstico) ==============================
+function fcTxt(P) { return "FC de " + P.n("fc") + " por minuto"; }
+var SIND = {
+  id: "sind", sind: 1, nome: "Avaliação por sinais e sintomas", curto: "Sinais e sintomas", busca: ["sinais e sintomas", "sem diagnostico", "nao sei", "avaliacao inicial"],
+  sobre: "Sem diagnóstico ainda. Comece pelo suporte comum a todo paciente que chega à sala de emergência, registre o que encontrar e acompanhe as hipóteses. Quando uma se firmar, abra o protocolo dela: os dados vão junto.", refSobre: "CNP p. 78 · AHA 2025, Figuras 6 e 8",
+  agora: [
+    { id: "monitor", t: "Monitorizar", ref: "CNP p. 78" }, { id: "o2", t: "Oxigênio se saturação abaixo de 90%", ref: "CNP p. 78" },
+    { id: "acesso", t: "Acesso venoso periférico", ref: "CNP p. 78" }, { id: "ecg", t: "ECG de 12 derivações", ref: "CNP p. 78" }],
+  gravidade: { t: "Sinais de instabilidade", itens: TRI_INST, como: ["Qualquer um presente: paciente instável."], ref: "CNP p. 78 · AHA 2025, Figuras 6 e 8" },
+  investigar: [
+    { id: "qx", tipo: "lista", t: "Queixa e o que você vê", itens: [{ k: "sempulso", t: "Não responde e sem pulso" }, { k: "disp", t: "Falta de ar" }, { k: "palp", t: "Palpitação" }, { k: "sinc", t: "Desmaio ou tontura" }, { k: "dorp", t: "Dor no peito" }, { k: "edema", t: "Inchaço nas pernas" }], ref: "AHA 2025, Figuras 2, 6 e 8 · SBC 2026, Figura 7.3" },
+    { id: "ef", tipo: "lista", t: "Exame físico", itens: [{ k: "orto", t: "Ortopneia" }, { k: "estert", t: "Estertores" }, { k: "jug", t: "Turgência jugular" }, { k: "ascite", t: "Ascite" }, { k: "frio", t: "Extremidades frias" }, { k: "sono", t: "Sonolência" }], ref: "SBC 2026, Figura 7.3 (p. 68)" },
+    { id: "ritmo", tipo: "opc", t: "ECG", ops: [{ v: "taqui", t: "Taquiarritmia" }, { v: "bradi", t: "Bradiarritmia ou bloqueio" }, { v: "isq", t: "Supra de ST ou isquemia" }, { v: "sem", t: "Sem alteração aguda" }], ref: "AHA 2025, Figuras 6 e 8 · SBC 2026, Quadro 7.1" }],
+  exames: [
+    { id: "bnp", t: "BNP", num: { un: "pg/mL", corte: 100, txt: "abaixo de 100 pg/mL afasta IC descompensada" }, ref: "SBC 2026, 7.2 (p. 63)" },
+    { id: "ntbnp", t: "NT-proBNP", num: { un: "pg/mL", corte: 300, txt: "abaixo de 300 pg/mL afasta IC descompensada" }, ref: "SBC 2026, 7.2 (p. 63)" },
+    { id: "tropo", t: "Troponina", por: "afastar síndrome coronariana", res: [{ v: "elev", t: "Elevada" }, { v: "normal", t: "Normal" }], ref: "SBC 2026, Quadro 7.1 (p. 64)" },
+    { id: "rx", t: "Radiografia de tórax", res: [{ v: "cong", t: "Congestão" }, { v: "cons", t: "Consolidação" }, { v: "normal", t: "Normal" }], ref: "SBC 2026, Quadro 7.1 (p. 64)" }],
+  hipoteses: [
+    { id: "pcr", t: "Parada cardiorrespiratória", tema: "pcr", ref: "AHA 2025, Figura 2 (ACLS-F p. 2)",
+      favor: function (P) { return P.tem("qx", "sempulso") ? ["Não responde e sem pulso"] : []; }, contra: function () { return []; },
+      confirmar: "Sem pulso: não esperar confirmação.", enquanto: "Iniciar RCP agora e chamar o desfibrilador." },
+    { id: "taqui", t: "Taquiarritmia", tema: "taqui", ref: "AHA 2025, Figura 6 (ACLS-F p. 4)",
+      favor: function (P) { var r = []; if (P.n("fc") >= 150) r.push(fcTxt(P) + " (150 ou mais)"); if (P.tem("qx", "palp")) r.push("Palpitação"); if (P.o("ritmo") === "taqui") r.push("ECG com taquiarritmia"); return r; },
+      contra: function (P) { return P.n("fc") != null && P.n("fc") < 100 ? [fcTxt(P)] : []; },
+      confirmar: "ECG de 12 derivações: QRS estreito ou largo, regular ou irregular.", enquanto: "Se estiver instável por causa da taquicardia: cardioversão elétrica sincronizada.",
+      levar: function (P) { return {}; } },
+    { id: "bradi", t: "Bradiarritmia", tema: "bradi", ref: "AHA 2025, Figura 8 (ACLS-F p. 3) · ACLS-B p. 1",
+      favor: function (P) { var r = []; if (P.n("fc") != null && P.n("fc") < 50) r.push(fcTxt(P) + " (abaixo de 50)"); if (P.tem("qx", "sinc")) r.push("Desmaio ou tontura"); if (P.o("ritmo") === "bradi") r.push("ECG com bradiarritmia"); if (P.p("remed") === "s") r.push("Usa remédio que baixa a frequência"); return r; },
+      contra: function (P) { return P.n("fc") >= 60 ? [fcTxt(P)] : []; },
+      confirmar: "ECG de 12 derivações.", enquanto: "Se estiver instável por causa da bradicardia: atropina 1 mg EV." },
+    { id: "ic", t: "Insuficiência cardíaca descompensada ou edema agudo de pulmão", tema: "ic", ref: "SBC 2026, Figura 7.3 e 7.2",
+      favor: function (P) { var r = []; [["qx", "disp", "Falta de ar"], ["qx", "edema", "Inchaço nas pernas"], ["ef", "orto", "Ortopneia"], ["ef", "estert", "Estertores"], ["ef", "jug", "Turgência jugular"], ["ef", "ascite", "Ascite"]].forEach(function (x) { if (P.tem(x[0], x[1])) r.push(x[2]); });
+        if (P.p("orto") === "s" && !P.tem("ef", "orto")) r.push("Falta de ar piora deitado"); if (P.ex("rx").r === "cong") r.push("Radiografia com congestão"); return r; },
+      contra: function (P) { var r = [], b = P.ex("bnp").val, n = P.ex("ntbnp").val; if (b && +String(b).replace(",", ".") < 100) r.push("BNP abaixo de 100 pg/mL"); if (n && +String(n).replace(",", ".") < 300) r.push("NT-proBNP abaixo de 300 pg/mL"); return r; },
+      confirmar: "Sinais de congestão e de perfusão no exame; BNP ou NT-proBNP; radiografia e ultrassom pulmonar.", enquanto: "Desconforto respiratório: VNI. Acesso venoso para diurético.",
+      levar: function (P) { var m = { orto: 0, estert: 1, jug: 2, ascite: 3 }, s = []; Object.keys(m).forEach(function (k) { if (P.tem("ef", k)) s.push(m[k]); }); if (P.tem("qx", "edema")) s.push(4);
+        var perf = []; if (P.tem("ef", "sono")) perf.push(1); if (P.tem("ef", "frio")) perf.push(2);
+        var o = { ach: {}, sin: {} }; if (s.length) { o.ach.cong = "p"; o.sin.cong = s; } if (perf.length) { o.ach.perf = "p"; o.sin.perf = perf; } return o; } },
+    { id: "sca", t: "Síndrome coronariana aguda", tema: null, ref: "SBC 2026, Quadro 7.1 (p. 64)",
+      favor: function (P) { var r = []; if (P.tem("qx", "dorp") || P.p("dorp") === "s") r.push("Dor no peito"); if (P.o("ritmo") === "isq") r.push("ECG com supra de ST ou isquemia"); if (P.ex("tropo").r === "elev") r.push("Troponina elevada"); return r; },
+      contra: function () { return []; }, confirmar: "ECG de 12 derivações e troponina.", enquanto: "" },
+    { id: "sinusal", t: "Taquicardia sinusal por outra causa", tema: null, ref: "CNP p. 81 e 87",
+      favor: function (P) { var f = P.n("fc"); return f > 100 && f < 150 ? [fcTxt(P) + " (entre 100 e 150)"] : []; }, contra: function () { return []; },
+      confirmar: "Procurar a causa: isquemia, embolia pulmonar, sepse, pneumonia, hipovolemia, hipervolemia, anemia, hipertireoidismo, febre, dor ou ansiedade.", enquanto: "Tratar a causa, não a frequência." },
+    { id: "resp", t: "Outra causa de falta de ar: embolia pulmonar ou pneumonia", tema: null, ref: "SBC 2026, Quadro 7.1 (p. 64)",
+      favor: function (P) { var r = []; if (P.tem("qx", "disp")) r.push("Falta de ar"); if (P.ex("rx").r === "cons") r.push("Radiografia com consolidação"); return r; }, contra: function () { return []; },
+      confirmar: "D-dímero se a suspeita for embolia pulmonar; procalcitonina se for pneumonia; radiografia de tórax.", enquanto: "" }],
+  classificar: function (P) {
+    var it = [], falta = [];
+    if (instavel(P)) it.push({ t: "Estabilidade", v: "Instável", porque: "Há sinal de instabilidade marcado como presente." });
+    else if (estavel(P)) it.push({ t: "Estabilidade", v: "Estável", porque: "Todos os sinais de instabilidade avaliados e ausentes." });
+    else falta.push("Sinais de instabilidade (marcar presente ou ausente)");
+    if (P.n("fc") == null) falta.push("Frequência cardíaca"); if (P.n("pas") == null) falta.push("Pressão arterial"); if (P.n("sat") == null) falta.push("Saturação");
+    return { itens: it, falta: falta };
+  },
+  passos: [
+    { id: "sempulso", t: "Sem pulso: RCP agora", se: function (P) { return P.tem("qx", "sempulso"); }, porque: "Não responde e sem pulso.", ref: "AHA 2025, Figura 2 (ACLS-F p. 2)",
+      itens: [{ id: "rcp", tipo: "acao", t: "Iniciar RCP e pedir o desfibrilador", como: ["Comprimir forte (pelo menos 5 cm) e rápido (100 a 120 por minuto).", "30 compressões para 2 ventilações.", "Abrir o protocolo de parada cardiorrespiratória."], ref: "AHA 2025, Figura 2 (ACLS-F p. 2)" }] },
+    { id: "o2", t: "Saturação abaixo de 90%", se: function (P) { return P.n("sat") != null && P.n("sat") < 90; }, porque: "Saturação registrada abaixo de 90%.", ref: "CNP p. 78",
+      itens: [{ id: "o2", tipo: "acao", t: "Dar oxigênio suplementar", ref: "CNP p. 78" }] },
+    { id: "inst", t: "Paciente instável", se: function (P) { return instavel(P) && !P.tem("qx", "sempulso"); }, porque: "Há sinal de instabilidade presente.", ref: "CNP p. 78 · AHA 2025, Figuras 6 e 8",
+      itens: [{ tipo: "info", t: "Se a causa for taquicardia: cardioversão elétrica sincronizada. Se for bradicardia: atropina. Abra a hipótese correspondente abaixo." },
+        { id: "sala", tipo: "acao", t: "Manter na sala de emergência, monitorizado", ref: "CNP p. 78" }] }],
+  reav: [{ id: "evol", t: "Evolução", se: function () { return true; }, ref: "CNP p. 78", repete: 1,
+    ops: [{ v: "melhor", t: "Melhorou", prox: "Seguir investigando a causa." }, { v: "igual", t: "Sem mudança", prox: "Rever sinais vitais e achados; completar o que falta investigar." }, { v: "pior", t: "Piorou", prox: "Reavaliar os sinais de instabilidade e atualizar os achados: as hipóteses e a conduta se ajustam." }] }],
+  alertas: [],
+  destino: { ops: [{ v: "uti", t: "UTI" }, { v: "obs", t: "Observação ou enfermaria" }, { v: "alta", t: "Alta" }], ref: "CNP p. 78" }
+};
+FLUXO.temas.unshift(SIND);
+FLUXO.temas.forEach(function (t) { t.perguntar = PERG[t.id]; });
 if (typeof module !== "undefined") module.exports = FLUXO;
 </script>
 <script id="calculadoras">// CALCULADORAS — funções puras, sem interface. Testadas em testes/calc.test.js.
@@ -480,7 +646,7 @@ if (typeof module !== "undefined") module.exports = CALC;
   function tm(id) { return F.temas.filter(function (t) { return t.id === id; })[0]; }
   function pac() { return S.pac.filter(function (p) { return p.id === S.ativo; })[0] || null; }
   function nomeP(p) { return p.nome || "Paciente " + p2(p.n); }
-  function D(p) { return p.d[p.tema] || (p.d[p.tema] = { ac: {}, ach: {}, sin: {}, opc: {}, ex: {}, med: {}, cont: {}, resp: {}, hist: [], dest: null, dx: "susp", ok: null }); }
+  function D(p) { return p.d[p.tema] || (p.d[p.tema] = { ac: {}, ach: {}, sin: {}, opc: {}, ex: {}, med: {}, cont: {}, resp: {}, perg: {}, hist: [], dest: null, dx: "susp", ok: null }); }
   function log(p, x) { p.log.push({ t: Date.now(), x: x, tm: p.tema }); }
   function ult(p, k) { for (var i = p.vit.length - 1; i >= 0; i--) if (p.vit[i].k === k) return p.vit[i]; return null; }
   function prim(p, k) { for (var i = 0; i < p.vit.length; i++) if (p.vit[i].k === k) return p.vit[i]; return null; }
@@ -488,12 +654,16 @@ if (typeof module !== "undefined") module.exports = CALC;
     var d = D(p);
     return { a: function (id) { return d.ach[id]; }, o: function (id) { return d.opc[id]; }, n: function (k) { var u = ult(p, k); return u ? u.v : null; },
       ex: function (id) { return d.ex[id] || {}; }, adm: function (id) { return ((d.med[id] || {}).adm || []).length; }, cont: function (id) { return (d.cont[id] || []).length; },
-      r: function (id) { return (d.resp[id] || {}).v; } };
+      r: function (id) { return (d.resp[id] || {}).v; }, p: function (id) { return (d.perg || {})[id]; }, tem: function (l, k) { return (d.sin[l] || []).indexOf(k) >= 0; } };
   }
   function vis(lista, P) { return (lista || []).filter(function (x) { return !x.se || x.se(P); }); }
   function passosDe(p) { var t = tm(p.tema), P = ctx(p); return t.passos.filter(function (s) { return s.se(P); }); }
   function medsDe(t) { var l = []; t.passos.forEach(function (s) { s.itens.forEach(function (i) { if (i.tipo === "med" && l.indexOf(i.med) < 0) l.push(i.med); }); }); return l; }
   function temaDoMed(id) { return F.temas.filter(function (t) { return medsDe(t).indexOf(id) >= 0; })[0]; }
+  function hipoteses(p) {
+    var t = tm(p.tema), P = ctx(p); if (!t.hipoteses) return [];
+    return t.hipoteses.map(function (h, i) { return { h: h, f: h.favor(P), c: h.contra(P), i: i }; }).filter(function (x) { return x.f.length; }).sort(function (a, b) { return (b.h.id === "pcr") - (a.h.id === "pcr") || (b.f.length - b.c.length) - (a.f.length - a.c.length) || a.i - b.i; });
+  }
   function rotDose(m, d) { return m.rot && m.rot[d] ? m.rot[d] : vg(d) + " mg"; }
 
   // ---------- revisão automática quando um dado muda ----------
@@ -503,7 +673,7 @@ if (typeof module !== "undefined") module.exports = CALC;
   }
   function mudou(p) {
     if (!p.tema) return; var d = D(p), a = assinatura(p);
-    if (d.sig && d.sig !== a && d.sigN) { d.mudou = { de: d.sig, para: a, t: Date.now() }; log(p, "Conduta revista pelo aplicativo. Antes: " + d.sig + ". Agora: " + (a || "sem conduta definida") + "."); d.ok = null; }
+    if (d.sig && d.sig !== a && d.sigN && !tm(p.tema).sind) { d.mudou = { de: d.sig, para: a, t: Date.now() }; log(p, "Conduta revista pelo aplicativo. Antes: " + d.sig + ". Agora: " + (a || "sem conduta definida") + "."); d.ok = null; }
     d.sig = a; d.sigN = passosDe(p).length;
   }
 
@@ -522,7 +692,7 @@ if (typeof module !== "undefined") module.exports = CALC;
     if (t.gravidade) t.gravidade.itens.forEach(function (g) { if (!d.ach[g.id] && r.falta.join().indexOf("instabilidade") < 0) r.falta.push(g.t + " (presente ou ausente)"); });
     t.exames.forEach(function (e) { var x = d.ex[e.id]; if (x && (x.st === "sol" || x.st === "agu")) r.ex.push(e.t + (x.st === "sol" ? " (solicitado " : " (aguardando desde ") + hm(x.t) + ")"); });
     vis(t.reav, P).forEach(function (v) { if (v.quando) { var m = (d.med[v.quando.med] || {}).adm || []; if (m.length && !(d.resp[v.id] && d.resp[v.id].t > m[m.length - 1].t)) r.reav.push(v.t + " às " + hm(m[m.length - 1].t + v.quando.h * 3600000)); } });
-    medsDe(t).forEach(function (k) { var m = F.meds[k], a = (d.med[k] || {}).adm || []; if (m.lembra && a.length && !d.dest && !(m.maxDoses && a.length >= m.maxDoses)) r.reav.push(m.lembra.t + " " + hm(a[a.length - 1].t + m.lembra.min * 60000)); });
+    medsDe(t).forEach(function (k) { var m = F.meds[k], a = (d.med[k] || {}).adm || []; var pl = m.plano; if (m.lembra && pl.intMin && a.length && !d.dest && !(pl.maxN && a.length >= pl.maxN)) r.reav.push(m.lembra + " " + hm(a[a.length - 1].t + pl.intMin * 60000)); });
     return r;
   }
 
@@ -556,6 +726,16 @@ if (typeof module !== "undefined") module.exports = CALC;
     var d = D(p), v = d.opc[it.id], k = "o." + it.id;
     return '<div class="it' + (v ? " ok" : "") + '"><div class="itt"><b>' + esc(it.t) + "</b>" + (v ? "" : '<span class="tag">Não informado</span>') + '</div><div class="itb wrap">' + it.ops.map(function (o) { return '<button class="bt' + (v === o.v ? " on" : "") + '" data-a="opc" data-id="' + it.id + '" data-v="' + o.v + '" data-t="' + esc(it.t) + '" data-r="' + esc(o.t) + '">' + esc(o.t) + "</button>"; }).join("") + botoesInfo(k, it.como, it.ref, "Como avaliar") + "</div>" + extra(k, it.como, it.ref) + "</div>";
   }
+  function lista(p, it) {
+    var sel = D(p).sin[it.id] || [], k = "l." + it.id;
+    return '<div class="it' + (sel.length ? " ok" : "") + '"><div class="itt"><b>' + esc(it.t) + "</b>" + (sel.length ? "" : '<span class="tag">Nada marcado</span>') + tg("f:" + k, "Fonte") + '</div><div class="sin">' + it.itens.map(function (o) { return '<button class="chip' + (sel.indexOf(o.k) >= 0 ? " on" : "") + '" data-a="lst" data-id="' + it.id + '" data-k="' + o.k + '" data-t="' + esc(o.t) + '">' + esc(o.t) + "</button>"; }).join("") + "</div>" + (S.ab["f:" + k] ? '<p class="fonte">Fonte: ' + esc(it.ref) + "</p>" : "") + "</div>";
+  }
+  function perguntas(p, tit, l, quem) {
+    if (!l || !l.length) return ""; var d = D(p), pg = d.perg || (d.perg = {});
+    return '<p class="rot">' + tit + '</p><div class="pgs">' + l.map(function (q) { var v = pg[q.id], k = "q." + q.id;
+      return '<div class="pg' + (v ? " ok" : "") + '"><div class="pgt"><b>' + esc(q.t) + "</b>" + (q.por ? "<small>" + esc(q.por) + "</small>" : "") + (S.ab["f:" + k] ? '<small class="fonte">Fonte: ' + esc(q.ref) + "</small>" : "") + '</div><div class="pgb">' +
+        [["s", "Sim"], ["n", "Não"], ["ns", "Não sabe"]].map(function (o) { return '<button class="bt' + (v === o[0] ? " on" : "") + '" data-a="pg" data-id="' + q.id + '" data-v="' + o[0] + '" data-t="' + esc(q.t) + '" data-q="' + quem + '">' + o[1] + "</button>"; }).join("") + tg("f:" + k, "Fonte") + "</div></div>"; }).join("") + "</div>";
+  }
   function exame(p, e) {
     var d = D(p), x = d.ex[e.id] || {}, k = "e." + e.id;
     function b(st, rot) { return '<button class="bt' + (x.st === st ? " on" : "") + '" data-a="ex" data-id="' + e.id + '" data-st="' + st + '" data-t="' + esc(e.t) + '">' + rot + "</button>"; }
@@ -570,9 +750,12 @@ if (typeof module !== "undefined") module.exports = CALC;
     return h + (S.ab["f:" + k] ? '<p class="fonte">Fonte: ' + esc(e.ref) + "</p>" : "") + "</div>";
   }
   function medLinha(p, i) {
-    var m = F.meds[i.med], st = D(p).med[i.med] || {}, adm = st.adm || [], pr = st.presc || [];
-    return '<button class="med' + (adm.length ? " ok" : st.nao ? " nao" : "") + '" data-a="med" data-id="' + i.med + '"><span class="medn"><b>' + esc(m.nome) + "</b>" + (i.nota ? "<small>" + esc(i.nota) + "</small>" : "") + "</span>" +
-      (adm.length ? '<span class="tag ok">Administrado ' + adm.length + "× · " + hm(adm[adm.length - 1].t) + "</span>" : st.nao ? '<span class="tag nao">Não usado</span>' : pr.length ? '<span class="tag esp">Prescrito ' + hm(pr[pr.length - 1].t) + "</span>" : "") + '<span class="seta">Dose e preparo →</span></button>';
+    var m = F.meds[i.med], pl = m.plano, st = D(p).med[i.med] || {}, adm = st.adm || [], pr = st.presc || [], ult = adm.length ? adm[adm.length - 1].t : 0, cheio = pl.maxN && adm.length >= pl.maxN, bol = "";
+    if (pl.maxN) for (var b = 0; b < pl.maxN; b++) bol += '<i class="' + (b < adm.length ? "on" : "") + '"></i>';
+    var sit = adm.length ? (pl.maxN ? adm.length + " de " + pl.maxN + " doses dadas" : adm.length + (adm.length > 1 ? " doses dadas" : " dose dada")) + " · última às " + hm(ult) + (cheio ? " · máximo atingido" : pl.intMin ? " · próxima a partir das " + hm(ult + pl.intMin * 60000) : "")
+      : st.nao ? "Decidido não usar" : pr.length ? "Prescrito às " + hm(pr[pr.length - 1].t) + ", ainda não administrado" : "Nenhuma dose registrada";
+    return '<div class="medc' + (adm.length ? " ok" : st.nao ? " nao" : "") + '"><div class="medh"><span class="medn"><b>' + esc(m.nome) + "</b>" + (i.nota ? "<small>" + esc(i.nota) + "</small>" : "") + '</span><button class="bt pri med" data-a="med" data-id="' + i.med + '">' + esc(m.nome) + ": dose e cálculo →</button></div>" +
+      '<div class="medp"><p><small>Quanto</small>' + esc(pl.q) + "</p><p><small>Repetir</small>" + esc(pl.rep) + "</p>" + (pl.max ? "<p><small>Máximo</small>" + esc(pl.max) + "</p>" : "") + '</div><div class="meds">' + (bol ? '<span class="bol">' + bol + "</span>" : "") + esc(sit) + "</div></div>";
   }
   function bloco(n, k, tit, resumo, corpo) {
     var ab = S.ab["b:" + k] !== 0;
@@ -601,13 +784,14 @@ if (typeof module !== "undefined") module.exports = CALC;
       '<button class="bt pri" data-a="passagem">Passagem de caso</button></div><input class="cmp queixa" data-c="queixa" placeholder="Motivo do atendimento (queixa, em poucas palavras)" value="' + esc(p.queixa) + '">' + vitais(p);
   }
   function inicial(p) {
-    var q = norm(p.queixa), sug = q ? F.temas.filter(function (t) { return t.busca.some(function (b) { return b.length > 2 && q.indexOf(b) >= 0; }); }) : [];
+    var q = norm(p.queixa), sug = q ? F.temas.filter(function (t) { return !t.sind && t.busca.some(function (b) { return b.length > 2 && q.indexOf(b) >= 0; }); }) : [];
     return cabecalho(p) + "<h1>Qual é o quadro?</h1><p class=\"sobre\">Escolha um diagnóstico conhecido ou suspeito, ou digite sinais e sintomas na busca. Nome, idade e sinais vitais podem ser preenchidos depois.</p>" +
-      (sug.length ? '<p class="rot">Sugerido pela queixa</p>' + sug.map(function (t) { return '<button class="op" data-a="tema" data-id="' + t.id + '">' + esc(t.nome) + " <span>→</span></button>"; }).join("") : "") +
-      '<p class="rot">Quadros disponíveis</p>' + F.temas.filter(function (t) { return sug.indexOf(t) < 0; }).map(function (t) { return '<button class="op sec" data-a="tema" data-id="' + t.id + '">' + esc(t.nome) + " <span>→</span></button>"; }).join("");
+      '<button class="op" data-a="tema" data-id="sind">Começar pelos sinais e sintomas, sem diagnóstico <span>→</span></button><p class="fraco">Você recebe a conduta inicial na hora e as hipóteses vão aparecendo conforme registra os achados.</p>' +
+      (sug.length ? '<p class="rot">Sugerido pela queixa</p>' + sug.map(function (t) { return '<button class="op sec" data-a="tema" data-id="' + t.id + '">' + esc(t.nome) + " <span>→</span></button>"; }).join("") : "") +
+      '<p class="rot">Já tenho o diagnóstico (conhecido ou suspeito)</p>' + F.temas.filter(function (t) { return sug.indexOf(t) < 0 && !t.sind; }).map(function (t) { return '<button class="op sec" data-a="tema" data-id="' + t.id + '">' + esc(t.nome) + " <span>→</span></button>"; }).join("");
   }
   function fluxo(p) {
-    var t = tm(p.tema), d = D(p), P = ctx(p), cl = t.classificar(P), ps = passosDe(p), pd = pend(p), h = cabecalho(p);
+    var t = tm(p.tema), d = D(p), P = ctx(p), cl = t.classificar(P), ps = passosDe(p), pd = pend(p), hs = hipoteses(p), h = cabecalho(p);
     // avisos
     if (d.mudou) h += '<div class="aviso mud"><b>A conduta foi revista porque um dado mudou.</b><p>Antes: ' + esc(d.mudou.de || "sem conduta") + "</p><p>Agora: " + esc(d.mudou.para || "sem conduta definida") + '</p><button class="bt" data-a="okmud">Entendi</button></div>';
     vis(t.alertas, P).forEach(function (a) {
@@ -615,13 +799,13 @@ if (typeof module !== "undefined") module.exports = CALC;
       h += '<div class="aviso"><b>' + esc(a.t) + "</b><p>Motivo: " + esc(a.porque) + " É uma hipótese sugerida, não um diagnóstico.</p>" + (a.ir ? '<button class="bt pri" data-a="ir" data-id="' + a.ir + '" data-al="' + a.id + '">Abrir o fluxo de ' + esc(tm(a.ir).curto) + '</button>' : "<p><em>Este fluxo ainda não está no aplicativo.</em></p>") + '<button class="bt" data-a="alok" data-id="' + a.id + '">Manter o caminho atual</button></div>';
     });
     if (S.troca) h += '<div class="aviso"><b>Abrir ' + esc(tm(S.troca).nome) + '?</b><p>' + esc(nomeP(p)) + " está no fluxo de " + esc(t.curto) + '.</p><button class="bt pri" data-a="ir" data-id="' + S.troca + '">Mudar o fluxo deste paciente (mantém o histórico)</button><button class="bt" data-a="novocom" data-id="' + S.troca + '">Novo paciente</button><button class="bt" data-a="cancelatroca">Cancelar</button></div>';
-    h += '<div class="tit"><h1>' + esc(t.nome) + '</h1><div class="dx"><button class="bt' + (d.dx === "susp" ? " on" : "") + '" data-a="dx" data-v="susp">Suspeita</button><button class="bt' + (d.dx === "conf" ? " on" : "") + '" data-a="dx" data-v="conf">Confirmado</button>' + tg("sobre", "Sobre") + "</div></div>" +
+    h += '<div class="tit"><h1>' + esc(t.nome) + '</h1><div class="dx">' + (t.sind ? '<span class="tag esp">Sem diagnóstico</span>' : '<button class="bt' + (d.dx === "susp" ? " on" : "") + '" data-a="dx" data-v="susp">Suspeita</button><button class="bt' + (d.dx === "conf" ? " on" : "") + '" data-a="dx" data-v="conf">Confirmado</button>') + tg("sobre", "Sobre") + "</div></div>" +
       (S.ab.sobre ? '<p class="sobre">' + esc(t.sobre) + ' <span class="fonte">Fonte: ' + esc(t.refSobre) + "</span></p>" : "");
     if (p.temas.length > 1) h += '<p class="fraco">Fluxos deste atendimento: ' + p.temas.map(function (x) { return x === p.tema ? "<b>" + esc(tm(x).curto) + "</b>" : '<button class="lk" data-a="ir" data-id="' + x + '">' + esc(tm(x).curto) + "</button>"; }).join(" → ") + "</p>";
     // caminho
     var nAg = t.agora.filter(function (a) { return d.ac["ag." + a.id]; }).length;
     h += '<nav class="cam">' + [["agora", "Manejo inicial", nAg + "/" + t.agora.length, nAg === t.agora.length], ["inv", "Investigar", pd.falta.length ? "falta " + pd.falta.length : "completo", !pd.falta.length],
-      ["cond", cl.itens.length ? cl.itens.map(function (i) { return i.v; }).join(" · ") : "Classificar", ps.length ? ps.length + " conduta" + (ps.length > 1 ? "s" : "") : "aguarda dados", ps.length > 0],
+      t.sind ? ["cond", "Hipóteses", hs.length ? hs.length + " em aberto" : "aguarda dados", hs.length > 0] : ["cond", cl.itens.length ? cl.itens.map(function (i) { return i.v; }).join(" · ") : "Classificar", ps.length ? ps.length + " conduta" + (ps.length > 1 ? "s" : "") : "aguarda dados", ps.length > 0],
       ["reav", "Reavaliar", d.hist.length ? d.hist.length + " registro" + (d.hist.length > 1 ? "s" : "") : "", d.hist.length > 0], ["dest", "Destino", d.dest ? d.dest.t : "", !!d.dest]]
       .map(function (c) { return '<button class="' + (c[3] ? "ok" : "") + '" data-a="rolar" data-k="' + c[0] + '"><b>' + esc(c[1]) + "</b><small>" + esc(c[2]) + "</small></button>"; }).join("<i>→</i>") + "</nav>";
     h += '<div class="cols"><div class="fx">';
@@ -630,7 +814,8 @@ if (typeof module !== "undefined") module.exports = CALC;
     h += bloco(1, "agora", "Manejo inicial", "fazer agora, sem esperar a investigação", '<p class="rot">Fazer agora</p>' + t.agora.map(function (a) { return acao(p, "ag." + a.id, a); }).join("") +
       (g ? '<p class="rot">' + esc(g.t) + '</p>' + (g.como ? '<p class="dica2">' + esc(g.como[0]) + "</p>" : "") + g.itens.map(function (i) { return tri(p, i, g.ref, g.como.slice(1)); }).join("") : ""));
     // 2 investigar
-    h += bloco(2, "inv", "Investigar e registrar", "achados e exames", '<p class="rot">História e exame físico</p>' + vis(t.investigar, P).map(function (i) { return i.tipo === "opc" ? opc(p, i) : tri(p, i, i.ref, i.como); }).join("") +
+    h += bloco(2, "inv", "Investigar e registrar", "perguntas, exame físico e exames", perguntas(p, "Perguntar ao paciente", t.perguntar.paciente, "paciente") + perguntas(p, "Perguntar a familiares ou acompanhante", t.perguntar.familia, "familiar") +
+      '<p class="rot">Exame físico e achados</p>' + vis(t.investigar, P).map(function (i) { return i.tipo === "opc" ? opc(p, i) : i.tipo === "lista" ? lista(p, i) : tri(p, i, i.ref, i.como); }).join("") +
       '<p class="rot">Exames</p><div class="exg">' + vis(t.exames, P).map(function (e) { return exame(p, e); }).join("") + "</div>");
     // 3 classificação e conduta
     var c3 = "";
@@ -640,10 +825,17 @@ if (typeof module !== "undefined") module.exports = CALC;
     ps.forEach(function (s) {
       c3 += '<div class="passo"><div class="ph"><b>' + esc(s.t) + "</b>" + tg("f:p." + s.id, "Fonte") + "</div><p class=\"pq\">Por quê: " + esc(s.porque) + "</p>" + (S.ab["f:p." + s.id] ? '<p class="fonte">Fonte: ' + esc(s.ref) + "</p>" : "") +
         (s.dica ? '<p class="agora"><b>Agora:</b> ' + esc(s.dica(P)) + "</p>" : "") +
-        vis(s.itens, P).map(function (i) { return i.tipo === "med" ? medLinha(p, i) : i.tipo === "info" ? '<p class="info">' + esc(i.t) + "</p>" : acao(p, s.id + "." + i.id, i); }).join("") + "</div>";
+        (function () { var n = 0, l = vis(s.itens, P), num = l.filter(function (i) { return i.tipo !== "info"; }).length > 1; return l.map(function (i) { if (i.tipo === "info") return '<p class="info">' + esc(i.t) + "</p>"; n++; return '<div class="ordw">' + (num ? '<span class="ord">' + n + "º</span>" : "") + '<div class="ordc">' + (i.tipo === "med" ? medLinha(p, i) : acao(p, s.id + "." + i.id, i)) + "</div></div>"; }).join(""); })() + "</div>";
     });
-    if (!ps.length && !cl.falta.length) c3 += '<p class="fraco">Sem conduta específica para os dados registrados.</p>';
-    h += bloco(3, "cond", "Classificação e conduta", "atualiza conforme os achados", c3);
+    if (t.sind) {
+      c3 += '<p class="rot">Hipóteses, da mais provável para a menos</p>' + (hs.length ? hs.map(function (x) { var hh = x.h;
+        return '<div class="hip' + (x.c.length ? " fraca" : "") + '"><div class="ph"><b>' + esc(hh.t) + '</b><span class="tag esp">Hipótese</span>' + tg("f:h." + hh.id, "Fonte") + '</div><p><small>A favor</small>' + esc(x.f.join("; ")) + ".</p>" + (x.c.length ? "<p><small>Contra</small>" + esc(x.c.join("; ")) + ".</p>" : "") +
+          "<p><small>Para confirmar</small>" + esc(hh.confirmar) + "</p>" + (hh.enquanto ? '<p class="agora"><b>Enquanto isso:</b> ' + esc(hh.enquanto) + "</p>" : "") + (S.ab["f:h." + hh.id] ? '<p class="fonte">Fonte: ' + esc(hh.ref) + "</p>" : "") +
+          (hh.tema ? '<button class="bt pri" data-a="ir" data-id="' + hh.tema + '" data-h="' + hh.id + '">Seguir o protocolo de ' + esc(tm(hh.tema).curto) + " →</button>" : '<p class="dica2">O protocolo deste quadro ainda não está no aplicativo.</p>') + "</div>"; }).join("")
+        : '<p class="fraco">Registre queixa, exame físico, sinais vitais ou ECG: as hipóteses aparecem aqui.</p>');
+    }
+    if (!ps.length && !cl.falta.length && !t.sind) c3 += '<p class="fraco">Sem conduta específica para os dados registrados.</p>';
+    h += bloco(3, "cond", t.sind ? "Conduta agora e hipóteses" : "Classificação e conduta", "atualiza conforme os achados", c3);
     // 4 reavaliação
     var rv = vis(t.reav, P), c4 = rv.map(function (v) {
       var r = d.resp[v.id], k = "r." + v.id, op = r ? v.ops.filter(function (o) { return o.v === r.v; })[0] : null;
@@ -725,6 +917,7 @@ if (typeof module !== "undefined") module.exports = CALC;
     function chips(a, lista, sel) { return '<div class="itb wrap">' + lista.map(function (o) { return '<button class="bt' + (sel === o[0] ? " on" : "") + '" data-a="' + a + '" data-v="' + o[0] + '">' + esc(o[1]) + "</button>"; }).join("") + "</div>"; }
     function campo(k, rot, ph) { return "<label>" + rot + '<input inputmode="decimal" data-k="' + k + '" class="cc" placeholder="' + (ph || "") + '" value="' + esc(c[k] || "") + '"></label>'; }
     var h = '<div class="mh"><div><h2>' + esc(m.nome) + "</h2><p>Nesta indicação: " + esc(m.ind) + '</p></div><button class="x" data-a="fechar" aria-label="Fechar">×</button></div><div class="mb">' +
+      '<div class="medp top"><p><small>Quanto</small>' + esc(m.plano.q) + "</p><p><small>Repetir</small>" + esc(m.plano.rep) + "</p>" + (m.plano.max ? "<p><small>Máximo</small>" + esc(m.plano.max) + "</p>" : "") + "</div>" +
       sec("Dose, via e intervalo", m.dose) + sec("Preparo e diluição", m.prep) + sec("Cuidados", m.cuid);
     if (m.modo !== "txt") {
       h += '<h4>Calcular</h4><div class="calc">';
@@ -762,10 +955,14 @@ if (typeof module !== "undefined") module.exports = CALC;
     L.push("SINAIS VITAIS: " + (vi ? (vi === vu ? vi : "iniciais: " + vi + ". Mais recentes: " + vu) : "não registrados") + ".");
     p.temas.forEach(function (tid) {
       var t = tm(tid), d = p.d[tid]; if (!d) return; var keep = p.tema; p.tema = tid; var P = ctx(p), cl = t.classificar(P), pd = pend(p);
-      L.push("", "— " + t.nome.toUpperCase() + " (" + (d.dx === "conf" ? "diagnóstico confirmado pelo médico" : "hipótese em investigação") + ") —");
-      var todos = (t.gravidade ? t.gravidade.itens : []).concat(t.investigar.filter(function (i) { return i.tipo !== "opc"; }));
+      L.push("", "— " + t.nome.toUpperCase() + " (" + (t.sind ? "sem diagnóstico definido" : d.dx === "conf" ? "diagnóstico confirmado pelo médico" : "hipótese em investigação") + ") —");
+      var qs = t.perguntar.paciente.concat(t.perguntar.familia).filter(function (q) { return (d.perg || {})[q.id]; }).map(function (q) { return q.t + " " + { s: "Sim", n: "Não", ns: "Não sabe" }[d.perg[q.id]]; });
+      L.push("HISTÓRIA: " + (qs.join(" · ") || "nenhuma pergunta registrada") + ".");
+      var todos = (t.gravidade ? t.gravidade.itens : []).concat(t.investigar.filter(function (i) { return i.tipo !== "opc" && i.tipo !== "lista"; }));
       var pres = todos.filter(function (i) { return d.ach[i.id] === "p"; }).map(function (i) { var s = (d.sin[i.id] || []).map(function (x) { return i.sinais[x]; }); return i.t + (s.length ? " (" + s.join(", ") + ")" : ""); });
       var aus = todos.filter(function (i) { return d.ach[i.id] === "a"; }).map(function (i) { return i.t; }), na = todos.filter(function (i) { return !d.ach[i.id]; }).map(function (i) { return i.t; });
+      t.investigar.filter(function (i) { return i.tipo === "lista"; }).forEach(function (i) { i.itens.forEach(function (o) { if ((d.sin[i.id] || []).indexOf(o.k) >= 0) pres.push(o.t); }); });
+      if (t.hipoteses) { var hh = hipoteses(p); if (hh.length) L.push("HIPÓTESES EM ABERTO (sugeridas pelo aplicativo, sem confirmação): " + hh.map(function (x) { return x.h.t + " (a favor: " + x.f.join(", ") + (x.c.length ? "; contra: " + x.c.join(", ") : "") + ")"; }).join("; ") + "."); }
       t.investigar.filter(function (i) { return i.tipo === "opc" && d.opc[i.id]; }).forEach(function (i) { pres.unshift(i.t + ": " + i.ops.filter(function (o) { return o.v === d.opc[i.id]; })[0].t); });
       L.push("ACHADOS: presentes: " + (pres.join("; ") || "nenhum registrado") + ". Ausentes: " + (aus.join("; ") || "nenhum registrado") + "." + (det && na.length ? " Não avaliados: " + na.join("; ") + "." : ""));
       if (cl.itens.length) L.push("CLASSIFICAÇÃO: " + cl.itens.map(function (i) { return i.t + " " + i.v; }).join("; ") + " (" + (d.ok === d.sig ? "confirmada pelo médico" : "sugerida pelo aplicativo, ainda não confirmada") + ").");
@@ -805,7 +1002,16 @@ if (typeof module !== "undefined") module.exports = CALC;
     S.seq++; var p = { id: "P" + S.seq, n: S.seq, nome: "", idade: "", queixa: "", tema: null, temas: [], d: {}, vit: [], log: [], criado: Date.now() };
     S.pac.push(p); S.ativo = p.id; log(p, "Atendimento iniciado"); if (tema) entra(p, tema, "Quadro escolhido"); return p;
   }
-  function entra(p, tema, motivo) { p.tema = tema; if (p.temas.indexOf(tema) < 0) p.temas.push(tema); D(p); log(p, motivo + ": " + tm(tema).nome); S.troca = null; S.ab = {}; mudou(p); }
+  function entra(p, tema, motivo, hid) {
+    var ant = p.tema ? D(p) : null, P0 = p.tema ? ctx(p) : null, tA = p.tema ? tm(p.tema) : null, lv = hid && tA.hipoteses ? tA.hipoteses.filter(function (h) { return h.id === hid; })[0].levar : null, dados = lv ? lv(P0) : null;
+    p.tema = tema; if (p.temas.indexOf(tema) < 0) p.temas.push(tema); D(p); log(p, motivo + ": " + tm(tema).nome); S.troca = null; S.ab = {};
+    var d = D(p), t = tm(tema);
+    if (ant && ant !== d) { // leva o que já foi registrado e tem o mesmo significado
+      (t.gravidade ? t.gravidade.itens : []).forEach(function (g) { if (ant.ach[g.id] && !d.ach[g.id] && tA.gravidade && tA.gravidade.itens.some(function (x) { return x.id === g.id && x.t === g.t; })) d.ach[g.id] = ant.ach[g.id]; });
+      t.perguntar.paciente.concat(t.perguntar.familia).forEach(function (q) { var o = tA.perguntar.paciente.concat(tA.perguntar.familia).filter(function (x) { return x.id === q.id && x.t === q.t; })[0]; if (o && (ant.perg || {})[q.id] && !(d.perg || (d.perg = {}))[q.id]) d.perg[q.id] = ant.perg[q.id]; });
+      if (dados) { Object.keys(dados.ach || {}).forEach(function (k) { if (!d.ach[k]) d.ach[k] = dados.ach[k]; }); Object.keys(dados.sin || {}).forEach(function (k) { if (!d.sin[k]) d.sin[k] = dados.sin[k]; }); log(p, "Achados já registrados foram levados para o protocolo"); }
+    }
+    mudou(p); }
 
   // ---------- eventos ----------
   app.addEventListener("input", function (ev) {
@@ -836,7 +1042,7 @@ if (typeof module !== "undefined") module.exports = CALC;
     else if (a === "tema") { S.q = ""; if (!p) novoPac(id); else if (!p.tema) entra(p, id, "Quadro escolhido"); else if (p.tema !== id) S.troca = id; }
     else if (a === "novocom") novoPac(id);
     else if (a === "cancelatroca") S.troca = null;
-    else if (a === "ir") { if (e.dataset.al) (d.alOk || (d.alOk = {}))[e.dataset.al] = 1; entra(p, id, "Mudança de fluxo confirmada pelo médico"); window.scrollTo(0, 0); }
+    else if (a === "ir") { if (e.dataset.al) (d.alOk || (d.alOk = {}))[e.dataset.al] = 1; entra(p, id, e.dataset.h ? "Hipótese escolhida pelo médico, protocolo aberto" : "Mudança de fluxo confirmada pelo médico", e.dataset.h); window.scrollTo(0, 0); }
     else if (a === "alok") { (d.alOk || (d.alOk = {}))[id] = 1; log(p, "Sugestão de outro fluxo vista; caminho atual mantido"); }
     else if (a === "okmud") d.mudou = null;
     else if (a === "okcls") { d.ok = d.sig; log(p, "Classificação confirmada pelo médico: " + tm(p.tema).classificar(ctx(p)).itens.map(function (i) { return i.t + " " + i.v; }).join("; ")); }
@@ -851,6 +1057,8 @@ if (typeof module !== "undefined") module.exports = CALC;
     else if (a === "ach") { var ant = d.ach[id]; if (v) d.ach[id] = v; else { delete d.ach[id]; delete d.sin[id]; } if (v === "a") delete d.sin[id]; if (ant !== (v || undefined)) log(p, e.dataset.t + ": " + (v === "p" ? "presente" : v === "a" ? "ausente" : "não avaliado") + (ant ? " (corrigido)" : "")); }
     else if (a === "sin") { var s = d.sin[id] || (d.sin[id] = []), i = +e.dataset.i, ix = s.indexOf(i), it = tm(p.tema).investigar.filter(function (x) { return x.id === id; })[0]; if (ix >= 0) s.splice(ix, 1); else s.push(i);
       if (s.length && d.ach[id] !== "p") { d.ach[id] = "p"; } log(p, e.dataset.t + ": " + (ix >= 0 ? "desmarcado " : "") + it.sinais[i]); }
+    else if (a === "lst") { var sl = d.sin[id] || (d.sin[id] = []), kx = sl.indexOf(e.dataset.k); if (kx >= 0) sl.splice(kx, 1); else sl.push(e.dataset.k); log(p, (kx >= 0 ? "Desmarcado: " : "Presente: ") + e.dataset.t); }
+    else if (a === "pg") { var pq = d.perg || (d.perg = {}); if (pq[id] === v) { delete pq[id]; log(p, "Pergunta voltou a não feita: " + e.dataset.t); } else { pq[id] = v; log(p, "Perguntado ao " + e.dataset.q + ": " + e.dataset.t + " " + { s: "Sim", n: "Não", ns: "Não sabe" }[v]); } }
     else if (a === "opc") { var an = d.opc[id]; if (an === v) delete d.opc[id]; else d.opc[id] = v; log(p, e.dataset.t + ": " + (an === v ? "não informado" : e.dataset.r) + (an && an !== v ? " (corrigido)" : "")); }
     else if (a === "ex") { var x = d.ex[id]; if (x && x.st === e.dataset.st) { delete d.ex[id]; log(p, e.dataset.t + ": voltou a não solicitado"); } else { d.ex[id] = { st: e.dataset.st, t: x ? x.t : Date.now(), r: x && x.r, val: x && x.val, obs: x && x.obs }; log(p, e.dataset.t + ": " + { sol: "solicitado", agu: "aguardando resultado", res: "resultado disponível" }[e.dataset.st]); } }
     else if (a === "exr") { d.ex[id].r = v; log(p, "Resultado de " + e.dataset.t + ": " + e.dataset.r); }
@@ -869,7 +1077,7 @@ if (typeof module !== "undefined") module.exports = CALC;
       var mm = F.meds[S.modal.id], st2 = d.med[S.modal.id] || (d.med[S.modal.id] = {}), r = calcular(mm, S.calc);
       if (a === "mnao") { st2.nao = { t: Date.now() }; log(p, mm.nome + ": decidido não usar"); S.modal = null; }
       else if (!r.txt) { S.merro = "Complete o cálculo antes de registrar, para a dose ficar anotada."; }
-      else if (a === "madm" && mm.maxDoses && (st2.adm || []).length >= mm.maxDoses) { S.merro = "Dose total máxima documentada já atingida."; }
+      else if (a === "madm" && mm.plano.maxN && (st2.adm || []).length >= mm.plano.maxN) { S.merro = "Número máximo de doses documentado já atingido (" + mm.plano.max + ")."; }
       else { S.merro = ""; (st2[a === "madm" ? "adm" : "presc"] || (st2[a === "madm" ? "adm" : "presc"] = [])).push({ t: Date.now(), txt: r.txt }); delete st2.nao; log(p, mm.nome + (a === "madm" ? " administrado: " : " prescrito: ") + r.txt); if (a === "madm") S.modal = null; }
     }
     else if (a === "passagem") S.modal = { tipo: "pass", det: 0 };

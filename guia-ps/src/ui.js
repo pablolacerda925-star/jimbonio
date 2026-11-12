@@ -15,7 +15,7 @@
   function tm(id) { return F.temas.filter(function (t) { return t.id === id; })[0]; }
   function pac() { return S.pac.filter(function (p) { return p.id === S.ativo; })[0] || null; }
   function nomeP(p) { return p.nome || "Paciente " + p2(p.n); }
-  function D(p) { return p.d[p.tema] || (p.d[p.tema] = { ac: {}, ach: {}, sin: {}, opc: {}, ex: {}, med: {}, cont: {}, resp: {}, hist: [], dest: null, dx: "susp", ok: null }); }
+  function D(p) { return p.d[p.tema] || (p.d[p.tema] = { ac: {}, ach: {}, sin: {}, opc: {}, ex: {}, med: {}, cont: {}, resp: {}, perg: {}, hist: [], dest: null, dx: "susp", ok: null }); }
   function log(p, x) { p.log.push({ t: Date.now(), x: x, tm: p.tema }); }
   function ult(p, k) { for (var i = p.vit.length - 1; i >= 0; i--) if (p.vit[i].k === k) return p.vit[i]; return null; }
   function prim(p, k) { for (var i = 0; i < p.vit.length; i++) if (p.vit[i].k === k) return p.vit[i]; return null; }
@@ -23,12 +23,16 @@
     var d = D(p);
     return { a: function (id) { return d.ach[id]; }, o: function (id) { return d.opc[id]; }, n: function (k) { var u = ult(p, k); return u ? u.v : null; },
       ex: function (id) { return d.ex[id] || {}; }, adm: function (id) { return ((d.med[id] || {}).adm || []).length; }, cont: function (id) { return (d.cont[id] || []).length; },
-      r: function (id) { return (d.resp[id] || {}).v; } };
+      r: function (id) { return (d.resp[id] || {}).v; }, p: function (id) { return (d.perg || {})[id]; }, tem: function (l, k) { return (d.sin[l] || []).indexOf(k) >= 0; } };
   }
   function vis(lista, P) { return (lista || []).filter(function (x) { return !x.se || x.se(P); }); }
   function passosDe(p) { var t = tm(p.tema), P = ctx(p); return t.passos.filter(function (s) { return s.se(P); }); }
   function medsDe(t) { var l = []; t.passos.forEach(function (s) { s.itens.forEach(function (i) { if (i.tipo === "med" && l.indexOf(i.med) < 0) l.push(i.med); }); }); return l; }
   function temaDoMed(id) { return F.temas.filter(function (t) { return medsDe(t).indexOf(id) >= 0; })[0]; }
+  function hipoteses(p) {
+    var t = tm(p.tema), P = ctx(p); if (!t.hipoteses) return [];
+    return t.hipoteses.map(function (h, i) { return { h: h, f: h.favor(P), c: h.contra(P), i: i }; }).filter(function (x) { return x.f.length; }).sort(function (a, b) { return (b.h.id === "pcr") - (a.h.id === "pcr") || (b.f.length - b.c.length) - (a.f.length - a.c.length) || a.i - b.i; });
+  }
   function rotDose(m, d) { return m.rot && m.rot[d] ? m.rot[d] : vg(d) + " mg"; }
 
   // ---------- revisão automática quando um dado muda ----------
@@ -38,7 +42,7 @@
   }
   function mudou(p) {
     if (!p.tema) return; var d = D(p), a = assinatura(p);
-    if (d.sig && d.sig !== a && d.sigN) { d.mudou = { de: d.sig, para: a, t: Date.now() }; log(p, "Conduta revista pelo aplicativo. Antes: " + d.sig + ". Agora: " + (a || "sem conduta definida") + "."); d.ok = null; }
+    if (d.sig && d.sig !== a && d.sigN && !tm(p.tema).sind) { d.mudou = { de: d.sig, para: a, t: Date.now() }; log(p, "Conduta revista pelo aplicativo. Antes: " + d.sig + ". Agora: " + (a || "sem conduta definida") + "."); d.ok = null; }
     d.sig = a; d.sigN = passosDe(p).length;
   }
 
@@ -57,7 +61,7 @@
     if (t.gravidade) t.gravidade.itens.forEach(function (g) { if (!d.ach[g.id] && r.falta.join().indexOf("instabilidade") < 0) r.falta.push(g.t + " (presente ou ausente)"); });
     t.exames.forEach(function (e) { var x = d.ex[e.id]; if (x && (x.st === "sol" || x.st === "agu")) r.ex.push(e.t + (x.st === "sol" ? " (solicitado " : " (aguardando desde ") + hm(x.t) + ")"); });
     vis(t.reav, P).forEach(function (v) { if (v.quando) { var m = (d.med[v.quando.med] || {}).adm || []; if (m.length && !(d.resp[v.id] && d.resp[v.id].t > m[m.length - 1].t)) r.reav.push(v.t + " às " + hm(m[m.length - 1].t + v.quando.h * 3600000)); } });
-    medsDe(t).forEach(function (k) { var m = F.meds[k], a = (d.med[k] || {}).adm || []; if (m.lembra && a.length && !d.dest && !(m.maxDoses && a.length >= m.maxDoses)) r.reav.push(m.lembra.t + " " + hm(a[a.length - 1].t + m.lembra.min * 60000)); });
+    medsDe(t).forEach(function (k) { var m = F.meds[k], a = (d.med[k] || {}).adm || []; var pl = m.plano; if (m.lembra && pl.intMin && a.length && !d.dest && !(pl.maxN && a.length >= pl.maxN)) r.reav.push(m.lembra + " " + hm(a[a.length - 1].t + pl.intMin * 60000)); });
     return r;
   }
 
@@ -91,6 +95,16 @@
     var d = D(p), v = d.opc[it.id], k = "o." + it.id;
     return '<div class="it' + (v ? " ok" : "") + '"><div class="itt"><b>' + esc(it.t) + "</b>" + (v ? "" : '<span class="tag">Não informado</span>') + '</div><div class="itb wrap">' + it.ops.map(function (o) { return '<button class="bt' + (v === o.v ? " on" : "") + '" data-a="opc" data-id="' + it.id + '" data-v="' + o.v + '" data-t="' + esc(it.t) + '" data-r="' + esc(o.t) + '">' + esc(o.t) + "</button>"; }).join("") + botoesInfo(k, it.como, it.ref, "Como avaliar") + "</div>" + extra(k, it.como, it.ref) + "</div>";
   }
+  function lista(p, it) {
+    var sel = D(p).sin[it.id] || [], k = "l." + it.id;
+    return '<div class="it' + (sel.length ? " ok" : "") + '"><div class="itt"><b>' + esc(it.t) + "</b>" + (sel.length ? "" : '<span class="tag">Nada marcado</span>') + tg("f:" + k, "Fonte") + '</div><div class="sin">' + it.itens.map(function (o) { return '<button class="chip' + (sel.indexOf(o.k) >= 0 ? " on" : "") + '" data-a="lst" data-id="' + it.id + '" data-k="' + o.k + '" data-t="' + esc(o.t) + '">' + esc(o.t) + "</button>"; }).join("") + "</div>" + (S.ab["f:" + k] ? '<p class="fonte">Fonte: ' + esc(it.ref) + "</p>" : "") + "</div>";
+  }
+  function perguntas(p, tit, l, quem) {
+    if (!l || !l.length) return ""; var d = D(p), pg = d.perg || (d.perg = {});
+    return '<p class="rot">' + tit + '</p><div class="pgs">' + l.map(function (q) { var v = pg[q.id], k = "q." + q.id;
+      return '<div class="pg' + (v ? " ok" : "") + '"><div class="pgt"><b>' + esc(q.t) + "</b>" + (q.por ? "<small>" + esc(q.por) + "</small>" : "") + (S.ab["f:" + k] ? '<small class="fonte">Fonte: ' + esc(q.ref) + "</small>" : "") + '</div><div class="pgb">' +
+        [["s", "Sim"], ["n", "Não"], ["ns", "Não sabe"]].map(function (o) { return '<button class="bt' + (v === o[0] ? " on" : "") + '" data-a="pg" data-id="' + q.id + '" data-v="' + o[0] + '" data-t="' + esc(q.t) + '" data-q="' + quem + '">' + o[1] + "</button>"; }).join("") + tg("f:" + k, "Fonte") + "</div></div>"; }).join("") + "</div>";
+  }
   function exame(p, e) {
     var d = D(p), x = d.ex[e.id] || {}, k = "e." + e.id;
     function b(st, rot) { return '<button class="bt' + (x.st === st ? " on" : "") + '" data-a="ex" data-id="' + e.id + '" data-st="' + st + '" data-t="' + esc(e.t) + '">' + rot + "</button>"; }
@@ -105,9 +119,12 @@
     return h + (S.ab["f:" + k] ? '<p class="fonte">Fonte: ' + esc(e.ref) + "</p>" : "") + "</div>";
   }
   function medLinha(p, i) {
-    var m = F.meds[i.med], st = D(p).med[i.med] || {}, adm = st.adm || [], pr = st.presc || [];
-    return '<button class="med' + (adm.length ? " ok" : st.nao ? " nao" : "") + '" data-a="med" data-id="' + i.med + '"><span class="medn"><b>' + esc(m.nome) + "</b>" + (i.nota ? "<small>" + esc(i.nota) + "</small>" : "") + "</span>" +
-      (adm.length ? '<span class="tag ok">Administrado ' + adm.length + "× · " + hm(adm[adm.length - 1].t) + "</span>" : st.nao ? '<span class="tag nao">Não usado</span>' : pr.length ? '<span class="tag esp">Prescrito ' + hm(pr[pr.length - 1].t) + "</span>" : "") + '<span class="seta">Dose e preparo →</span></button>';
+    var m = F.meds[i.med], pl = m.plano, st = D(p).med[i.med] || {}, adm = st.adm || [], pr = st.presc || [], ult = adm.length ? adm[adm.length - 1].t : 0, cheio = pl.maxN && adm.length >= pl.maxN, bol = "";
+    if (pl.maxN) for (var b = 0; b < pl.maxN; b++) bol += '<i class="' + (b < adm.length ? "on" : "") + '"></i>';
+    var sit = adm.length ? (pl.maxN ? adm.length + " de " + pl.maxN + " doses dadas" : adm.length + (adm.length > 1 ? " doses dadas" : " dose dada")) + " · última às " + hm(ult) + (cheio ? " · máximo atingido" : pl.intMin ? " · próxima a partir das " + hm(ult + pl.intMin * 60000) : "")
+      : st.nao ? "Decidido não usar" : pr.length ? "Prescrito às " + hm(pr[pr.length - 1].t) + ", ainda não administrado" : "Nenhuma dose registrada";
+    return '<div class="medc' + (adm.length ? " ok" : st.nao ? " nao" : "") + '"><div class="medh"><span class="medn"><b>' + esc(m.nome) + "</b>" + (i.nota ? "<small>" + esc(i.nota) + "</small>" : "") + '</span><button class="bt pri med" data-a="med" data-id="' + i.med + '">' + esc(m.nome) + ": dose e cálculo →</button></div>" +
+      '<div class="medp"><p><small>Quanto</small>' + esc(pl.q) + "</p><p><small>Repetir</small>" + esc(pl.rep) + "</p>" + (pl.max ? "<p><small>Máximo</small>" + esc(pl.max) + "</p>" : "") + '</div><div class="meds">' + (bol ? '<span class="bol">' + bol + "</span>" : "") + esc(sit) + "</div></div>";
   }
   function bloco(n, k, tit, resumo, corpo) {
     var ab = S.ab["b:" + k] !== 0;
@@ -136,13 +153,14 @@
       '<button class="bt pri" data-a="passagem">Passagem de caso</button></div><input class="cmp queixa" data-c="queixa" placeholder="Motivo do atendimento (queixa, em poucas palavras)" value="' + esc(p.queixa) + '">' + vitais(p);
   }
   function inicial(p) {
-    var q = norm(p.queixa), sug = q ? F.temas.filter(function (t) { return t.busca.some(function (b) { return b.length > 2 && q.indexOf(b) >= 0; }); }) : [];
+    var q = norm(p.queixa), sug = q ? F.temas.filter(function (t) { return !t.sind && t.busca.some(function (b) { return b.length > 2 && q.indexOf(b) >= 0; }); }) : [];
     return cabecalho(p) + "<h1>Qual é o quadro?</h1><p class=\"sobre\">Escolha um diagnóstico conhecido ou suspeito, ou digite sinais e sintomas na busca. Nome, idade e sinais vitais podem ser preenchidos depois.</p>" +
-      (sug.length ? '<p class="rot">Sugerido pela queixa</p>' + sug.map(function (t) { return '<button class="op" data-a="tema" data-id="' + t.id + '">' + esc(t.nome) + " <span>→</span></button>"; }).join("") : "") +
-      '<p class="rot">Quadros disponíveis</p>' + F.temas.filter(function (t) { return sug.indexOf(t) < 0; }).map(function (t) { return '<button class="op sec" data-a="tema" data-id="' + t.id + '">' + esc(t.nome) + " <span>→</span></button>"; }).join("");
+      '<button class="op" data-a="tema" data-id="sind">Começar pelos sinais e sintomas, sem diagnóstico <span>→</span></button><p class="fraco">Você recebe a conduta inicial na hora e as hipóteses vão aparecendo conforme registra os achados.</p>' +
+      (sug.length ? '<p class="rot">Sugerido pela queixa</p>' + sug.map(function (t) { return '<button class="op sec" data-a="tema" data-id="' + t.id + '">' + esc(t.nome) + " <span>→</span></button>"; }).join("") : "") +
+      '<p class="rot">Já tenho o diagnóstico (conhecido ou suspeito)</p>' + F.temas.filter(function (t) { return sug.indexOf(t) < 0 && !t.sind; }).map(function (t) { return '<button class="op sec" data-a="tema" data-id="' + t.id + '">' + esc(t.nome) + " <span>→</span></button>"; }).join("");
   }
   function fluxo(p) {
-    var t = tm(p.tema), d = D(p), P = ctx(p), cl = t.classificar(P), ps = passosDe(p), pd = pend(p), h = cabecalho(p);
+    var t = tm(p.tema), d = D(p), P = ctx(p), cl = t.classificar(P), ps = passosDe(p), pd = pend(p), hs = hipoteses(p), h = cabecalho(p);
     // avisos
     if (d.mudou) h += '<div class="aviso mud"><b>A conduta foi revista porque um dado mudou.</b><p>Antes: ' + esc(d.mudou.de || "sem conduta") + "</p><p>Agora: " + esc(d.mudou.para || "sem conduta definida") + '</p><button class="bt" data-a="okmud">Entendi</button></div>';
     vis(t.alertas, P).forEach(function (a) {
@@ -150,13 +168,13 @@
       h += '<div class="aviso"><b>' + esc(a.t) + "</b><p>Motivo: " + esc(a.porque) + " É uma hipótese sugerida, não um diagnóstico.</p>" + (a.ir ? '<button class="bt pri" data-a="ir" data-id="' + a.ir + '" data-al="' + a.id + '">Abrir o fluxo de ' + esc(tm(a.ir).curto) + '</button>' : "<p><em>Este fluxo ainda não está no aplicativo.</em></p>") + '<button class="bt" data-a="alok" data-id="' + a.id + '">Manter o caminho atual</button></div>';
     });
     if (S.troca) h += '<div class="aviso"><b>Abrir ' + esc(tm(S.troca).nome) + '?</b><p>' + esc(nomeP(p)) + " está no fluxo de " + esc(t.curto) + '.</p><button class="bt pri" data-a="ir" data-id="' + S.troca + '">Mudar o fluxo deste paciente (mantém o histórico)</button><button class="bt" data-a="novocom" data-id="' + S.troca + '">Novo paciente</button><button class="bt" data-a="cancelatroca">Cancelar</button></div>';
-    h += '<div class="tit"><h1>' + esc(t.nome) + '</h1><div class="dx"><button class="bt' + (d.dx === "susp" ? " on" : "") + '" data-a="dx" data-v="susp">Suspeita</button><button class="bt' + (d.dx === "conf" ? " on" : "") + '" data-a="dx" data-v="conf">Confirmado</button>' + tg("sobre", "Sobre") + "</div></div>" +
+    h += '<div class="tit"><h1>' + esc(t.nome) + '</h1><div class="dx">' + (t.sind ? '<span class="tag esp">Sem diagnóstico</span>' : '<button class="bt' + (d.dx === "susp" ? " on" : "") + '" data-a="dx" data-v="susp">Suspeita</button><button class="bt' + (d.dx === "conf" ? " on" : "") + '" data-a="dx" data-v="conf">Confirmado</button>') + tg("sobre", "Sobre") + "</div></div>" +
       (S.ab.sobre ? '<p class="sobre">' + esc(t.sobre) + ' <span class="fonte">Fonte: ' + esc(t.refSobre) + "</span></p>" : "");
     if (p.temas.length > 1) h += '<p class="fraco">Fluxos deste atendimento: ' + p.temas.map(function (x) { return x === p.tema ? "<b>" + esc(tm(x).curto) + "</b>" : '<button class="lk" data-a="ir" data-id="' + x + '">' + esc(tm(x).curto) + "</button>"; }).join(" → ") + "</p>";
     // caminho
     var nAg = t.agora.filter(function (a) { return d.ac["ag." + a.id]; }).length;
     h += '<nav class="cam">' + [["agora", "Manejo inicial", nAg + "/" + t.agora.length, nAg === t.agora.length], ["inv", "Investigar", pd.falta.length ? "falta " + pd.falta.length : "completo", !pd.falta.length],
-      ["cond", cl.itens.length ? cl.itens.map(function (i) { return i.v; }).join(" · ") : "Classificar", ps.length ? ps.length + " conduta" + (ps.length > 1 ? "s" : "") : "aguarda dados", ps.length > 0],
+      t.sind ? ["cond", "Hipóteses", hs.length ? hs.length + " em aberto" : "aguarda dados", hs.length > 0] : ["cond", cl.itens.length ? cl.itens.map(function (i) { return i.v; }).join(" · ") : "Classificar", ps.length ? ps.length + " conduta" + (ps.length > 1 ? "s" : "") : "aguarda dados", ps.length > 0],
       ["reav", "Reavaliar", d.hist.length ? d.hist.length + " registro" + (d.hist.length > 1 ? "s" : "") : "", d.hist.length > 0], ["dest", "Destino", d.dest ? d.dest.t : "", !!d.dest]]
       .map(function (c) { return '<button class="' + (c[3] ? "ok" : "") + '" data-a="rolar" data-k="' + c[0] + '"><b>' + esc(c[1]) + "</b><small>" + esc(c[2]) + "</small></button>"; }).join("<i>→</i>") + "</nav>";
     h += '<div class="cols"><div class="fx">';
@@ -165,7 +183,8 @@
     h += bloco(1, "agora", "Manejo inicial", "fazer agora, sem esperar a investigação", '<p class="rot">Fazer agora</p>' + t.agora.map(function (a) { return acao(p, "ag." + a.id, a); }).join("") +
       (g ? '<p class="rot">' + esc(g.t) + '</p>' + (g.como ? '<p class="dica2">' + esc(g.como[0]) + "</p>" : "") + g.itens.map(function (i) { return tri(p, i, g.ref, g.como.slice(1)); }).join("") : ""));
     // 2 investigar
-    h += bloco(2, "inv", "Investigar e registrar", "achados e exames", '<p class="rot">História e exame físico</p>' + vis(t.investigar, P).map(function (i) { return i.tipo === "opc" ? opc(p, i) : tri(p, i, i.ref, i.como); }).join("") +
+    h += bloco(2, "inv", "Investigar e registrar", "perguntas, exame físico e exames", perguntas(p, "Perguntar ao paciente", t.perguntar.paciente, "paciente") + perguntas(p, "Perguntar a familiares ou acompanhante", t.perguntar.familia, "familiar") +
+      '<p class="rot">Exame físico e achados</p>' + vis(t.investigar, P).map(function (i) { return i.tipo === "opc" ? opc(p, i) : i.tipo === "lista" ? lista(p, i) : tri(p, i, i.ref, i.como); }).join("") +
       '<p class="rot">Exames</p><div class="exg">' + vis(t.exames, P).map(function (e) { return exame(p, e); }).join("") + "</div>");
     // 3 classificação e conduta
     var c3 = "";
@@ -175,10 +194,17 @@
     ps.forEach(function (s) {
       c3 += '<div class="passo"><div class="ph"><b>' + esc(s.t) + "</b>" + tg("f:p." + s.id, "Fonte") + "</div><p class=\"pq\">Por quê: " + esc(s.porque) + "</p>" + (S.ab["f:p." + s.id] ? '<p class="fonte">Fonte: ' + esc(s.ref) + "</p>" : "") +
         (s.dica ? '<p class="agora"><b>Agora:</b> ' + esc(s.dica(P)) + "</p>" : "") +
-        vis(s.itens, P).map(function (i) { return i.tipo === "med" ? medLinha(p, i) : i.tipo === "info" ? '<p class="info">' + esc(i.t) + "</p>" : acao(p, s.id + "." + i.id, i); }).join("") + "</div>";
+        (function () { var n = 0, l = vis(s.itens, P), num = l.filter(function (i) { return i.tipo !== "info"; }).length > 1; return l.map(function (i) { if (i.tipo === "info") return '<p class="info">' + esc(i.t) + "</p>"; n++; return '<div class="ordw">' + (num ? '<span class="ord">' + n + "º</span>" : "") + '<div class="ordc">' + (i.tipo === "med" ? medLinha(p, i) : acao(p, s.id + "." + i.id, i)) + "</div></div>"; }).join(""); })() + "</div>";
     });
-    if (!ps.length && !cl.falta.length) c3 += '<p class="fraco">Sem conduta específica para os dados registrados.</p>';
-    h += bloco(3, "cond", "Classificação e conduta", "atualiza conforme os achados", c3);
+    if (t.sind) {
+      c3 += '<p class="rot">Hipóteses, da mais provável para a menos</p>' + (hs.length ? hs.map(function (x) { var hh = x.h;
+        return '<div class="hip' + (x.c.length ? " fraca" : "") + '"><div class="ph"><b>' + esc(hh.t) + '</b><span class="tag esp">Hipótese</span>' + tg("f:h." + hh.id, "Fonte") + '</div><p><small>A favor</small>' + esc(x.f.join("; ")) + ".</p>" + (x.c.length ? "<p><small>Contra</small>" + esc(x.c.join("; ")) + ".</p>" : "") +
+          "<p><small>Para confirmar</small>" + esc(hh.confirmar) + "</p>" + (hh.enquanto ? '<p class="agora"><b>Enquanto isso:</b> ' + esc(hh.enquanto) + "</p>" : "") + (S.ab["f:h." + hh.id] ? '<p class="fonte">Fonte: ' + esc(hh.ref) + "</p>" : "") +
+          (hh.tema ? '<button class="bt pri" data-a="ir" data-id="' + hh.tema + '" data-h="' + hh.id + '">Seguir o protocolo de ' + esc(tm(hh.tema).curto) + " →</button>" : '<p class="dica2">O protocolo deste quadro ainda não está no aplicativo.</p>') + "</div>"; }).join("")
+        : '<p class="fraco">Registre queixa, exame físico, sinais vitais ou ECG: as hipóteses aparecem aqui.</p>');
+    }
+    if (!ps.length && !cl.falta.length && !t.sind) c3 += '<p class="fraco">Sem conduta específica para os dados registrados.</p>';
+    h += bloco(3, "cond", t.sind ? "Conduta agora e hipóteses" : "Classificação e conduta", "atualiza conforme os achados", c3);
     // 4 reavaliação
     var rv = vis(t.reav, P), c4 = rv.map(function (v) {
       var r = d.resp[v.id], k = "r." + v.id, op = r ? v.ops.filter(function (o) { return o.v === r.v; })[0] : null;
@@ -260,6 +286,7 @@
     function chips(a, lista, sel) { return '<div class="itb wrap">' + lista.map(function (o) { return '<button class="bt' + (sel === o[0] ? " on" : "") + '" data-a="' + a + '" data-v="' + o[0] + '">' + esc(o[1]) + "</button>"; }).join("") + "</div>"; }
     function campo(k, rot, ph) { return "<label>" + rot + '<input inputmode="decimal" data-k="' + k + '" class="cc" placeholder="' + (ph || "") + '" value="' + esc(c[k] || "") + '"></label>'; }
     var h = '<div class="mh"><div><h2>' + esc(m.nome) + "</h2><p>Nesta indicação: " + esc(m.ind) + '</p></div><button class="x" data-a="fechar" aria-label="Fechar">×</button></div><div class="mb">' +
+      '<div class="medp top"><p><small>Quanto</small>' + esc(m.plano.q) + "</p><p><small>Repetir</small>" + esc(m.plano.rep) + "</p>" + (m.plano.max ? "<p><small>Máximo</small>" + esc(m.plano.max) + "</p>" : "") + "</div>" +
       sec("Dose, via e intervalo", m.dose) + sec("Preparo e diluição", m.prep) + sec("Cuidados", m.cuid);
     if (m.modo !== "txt") {
       h += '<h4>Calcular</h4><div class="calc">';
@@ -297,10 +324,14 @@
     L.push("SINAIS VITAIS: " + (vi ? (vi === vu ? vi : "iniciais: " + vi + ". Mais recentes: " + vu) : "não registrados") + ".");
     p.temas.forEach(function (tid) {
       var t = tm(tid), d = p.d[tid]; if (!d) return; var keep = p.tema; p.tema = tid; var P = ctx(p), cl = t.classificar(P), pd = pend(p);
-      L.push("", "— " + t.nome.toUpperCase() + " (" + (d.dx === "conf" ? "diagnóstico confirmado pelo médico" : "hipótese em investigação") + ") —");
-      var todos = (t.gravidade ? t.gravidade.itens : []).concat(t.investigar.filter(function (i) { return i.tipo !== "opc"; }));
+      L.push("", "— " + t.nome.toUpperCase() + " (" + (t.sind ? "sem diagnóstico definido" : d.dx === "conf" ? "diagnóstico confirmado pelo médico" : "hipótese em investigação") + ") —");
+      var qs = t.perguntar.paciente.concat(t.perguntar.familia).filter(function (q) { return (d.perg || {})[q.id]; }).map(function (q) { return q.t + " " + { s: "Sim", n: "Não", ns: "Não sabe" }[d.perg[q.id]]; });
+      L.push("HISTÓRIA: " + (qs.join(" · ") || "nenhuma pergunta registrada") + ".");
+      var todos = (t.gravidade ? t.gravidade.itens : []).concat(t.investigar.filter(function (i) { return i.tipo !== "opc" && i.tipo !== "lista"; }));
       var pres = todos.filter(function (i) { return d.ach[i.id] === "p"; }).map(function (i) { var s = (d.sin[i.id] || []).map(function (x) { return i.sinais[x]; }); return i.t + (s.length ? " (" + s.join(", ") + ")" : ""); });
       var aus = todos.filter(function (i) { return d.ach[i.id] === "a"; }).map(function (i) { return i.t; }), na = todos.filter(function (i) { return !d.ach[i.id]; }).map(function (i) { return i.t; });
+      t.investigar.filter(function (i) { return i.tipo === "lista"; }).forEach(function (i) { i.itens.forEach(function (o) { if ((d.sin[i.id] || []).indexOf(o.k) >= 0) pres.push(o.t); }); });
+      if (t.hipoteses) { var hh = hipoteses(p); if (hh.length) L.push("HIPÓTESES EM ABERTO (sugeridas pelo aplicativo, sem confirmação): " + hh.map(function (x) { return x.h.t + " (a favor: " + x.f.join(", ") + (x.c.length ? "; contra: " + x.c.join(", ") : "") + ")"; }).join("; ") + "."); }
       t.investigar.filter(function (i) { return i.tipo === "opc" && d.opc[i.id]; }).forEach(function (i) { pres.unshift(i.t + ": " + i.ops.filter(function (o) { return o.v === d.opc[i.id]; })[0].t); });
       L.push("ACHADOS: presentes: " + (pres.join("; ") || "nenhum registrado") + ". Ausentes: " + (aus.join("; ") || "nenhum registrado") + "." + (det && na.length ? " Não avaliados: " + na.join("; ") + "." : ""));
       if (cl.itens.length) L.push("CLASSIFICAÇÃO: " + cl.itens.map(function (i) { return i.t + " " + i.v; }).join("; ") + " (" + (d.ok === d.sig ? "confirmada pelo médico" : "sugerida pelo aplicativo, ainda não confirmada") + ").");
@@ -340,7 +371,16 @@
     S.seq++; var p = { id: "P" + S.seq, n: S.seq, nome: "", idade: "", queixa: "", tema: null, temas: [], d: {}, vit: [], log: [], criado: Date.now() };
     S.pac.push(p); S.ativo = p.id; log(p, "Atendimento iniciado"); if (tema) entra(p, tema, "Quadro escolhido"); return p;
   }
-  function entra(p, tema, motivo) { p.tema = tema; if (p.temas.indexOf(tema) < 0) p.temas.push(tema); D(p); log(p, motivo + ": " + tm(tema).nome); S.troca = null; S.ab = {}; mudou(p); }
+  function entra(p, tema, motivo, hid) {
+    var ant = p.tema ? D(p) : null, P0 = p.tema ? ctx(p) : null, tA = p.tema ? tm(p.tema) : null, lv = hid && tA.hipoteses ? tA.hipoteses.filter(function (h) { return h.id === hid; })[0].levar : null, dados = lv ? lv(P0) : null;
+    p.tema = tema; if (p.temas.indexOf(tema) < 0) p.temas.push(tema); D(p); log(p, motivo + ": " + tm(tema).nome); S.troca = null; S.ab = {};
+    var d = D(p), t = tm(tema);
+    if (ant && ant !== d) { // leva o que já foi registrado e tem o mesmo significado
+      (t.gravidade ? t.gravidade.itens : []).forEach(function (g) { if (ant.ach[g.id] && !d.ach[g.id] && tA.gravidade && tA.gravidade.itens.some(function (x) { return x.id === g.id && x.t === g.t; })) d.ach[g.id] = ant.ach[g.id]; });
+      t.perguntar.paciente.concat(t.perguntar.familia).forEach(function (q) { var o = tA.perguntar.paciente.concat(tA.perguntar.familia).filter(function (x) { return x.id === q.id && x.t === q.t; })[0]; if (o && (ant.perg || {})[q.id] && !(d.perg || (d.perg = {}))[q.id]) d.perg[q.id] = ant.perg[q.id]; });
+      if (dados) { Object.keys(dados.ach || {}).forEach(function (k) { if (!d.ach[k]) d.ach[k] = dados.ach[k]; }); Object.keys(dados.sin || {}).forEach(function (k) { if (!d.sin[k]) d.sin[k] = dados.sin[k]; }); log(p, "Achados já registrados foram levados para o protocolo"); }
+    }
+    mudou(p); }
 
   // ---------- eventos ----------
   app.addEventListener("input", function (ev) {
@@ -371,7 +411,7 @@
     else if (a === "tema") { S.q = ""; if (!p) novoPac(id); else if (!p.tema) entra(p, id, "Quadro escolhido"); else if (p.tema !== id) S.troca = id; }
     else if (a === "novocom") novoPac(id);
     else if (a === "cancelatroca") S.troca = null;
-    else if (a === "ir") { if (e.dataset.al) (d.alOk || (d.alOk = {}))[e.dataset.al] = 1; entra(p, id, "Mudança de fluxo confirmada pelo médico"); window.scrollTo(0, 0); }
+    else if (a === "ir") { if (e.dataset.al) (d.alOk || (d.alOk = {}))[e.dataset.al] = 1; entra(p, id, e.dataset.h ? "Hipótese escolhida pelo médico, protocolo aberto" : "Mudança de fluxo confirmada pelo médico", e.dataset.h); window.scrollTo(0, 0); }
     else if (a === "alok") { (d.alOk || (d.alOk = {}))[id] = 1; log(p, "Sugestão de outro fluxo vista; caminho atual mantido"); }
     else if (a === "okmud") d.mudou = null;
     else if (a === "okcls") { d.ok = d.sig; log(p, "Classificação confirmada pelo médico: " + tm(p.tema).classificar(ctx(p)).itens.map(function (i) { return i.t + " " + i.v; }).join("; ")); }
@@ -386,6 +426,8 @@
     else if (a === "ach") { var ant = d.ach[id]; if (v) d.ach[id] = v; else { delete d.ach[id]; delete d.sin[id]; } if (v === "a") delete d.sin[id]; if (ant !== (v || undefined)) log(p, e.dataset.t + ": " + (v === "p" ? "presente" : v === "a" ? "ausente" : "não avaliado") + (ant ? " (corrigido)" : "")); }
     else if (a === "sin") { var s = d.sin[id] || (d.sin[id] = []), i = +e.dataset.i, ix = s.indexOf(i), it = tm(p.tema).investigar.filter(function (x) { return x.id === id; })[0]; if (ix >= 0) s.splice(ix, 1); else s.push(i);
       if (s.length && d.ach[id] !== "p") { d.ach[id] = "p"; } log(p, e.dataset.t + ": " + (ix >= 0 ? "desmarcado " : "") + it.sinais[i]); }
+    else if (a === "lst") { var sl = d.sin[id] || (d.sin[id] = []), kx = sl.indexOf(e.dataset.k); if (kx >= 0) sl.splice(kx, 1); else sl.push(e.dataset.k); log(p, (kx >= 0 ? "Desmarcado: " : "Presente: ") + e.dataset.t); }
+    else if (a === "pg") { var pq = d.perg || (d.perg = {}); if (pq[id] === v) { delete pq[id]; log(p, "Pergunta voltou a não feita: " + e.dataset.t); } else { pq[id] = v; log(p, "Perguntado ao " + e.dataset.q + ": " + e.dataset.t + " " + { s: "Sim", n: "Não", ns: "Não sabe" }[v]); } }
     else if (a === "opc") { var an = d.opc[id]; if (an === v) delete d.opc[id]; else d.opc[id] = v; log(p, e.dataset.t + ": " + (an === v ? "não informado" : e.dataset.r) + (an && an !== v ? " (corrigido)" : "")); }
     else if (a === "ex") { var x = d.ex[id]; if (x && x.st === e.dataset.st) { delete d.ex[id]; log(p, e.dataset.t + ": voltou a não solicitado"); } else { d.ex[id] = { st: e.dataset.st, t: x ? x.t : Date.now(), r: x && x.r, val: x && x.val, obs: x && x.obs }; log(p, e.dataset.t + ": " + { sol: "solicitado", agu: "aguardando resultado", res: "resultado disponível" }[e.dataset.st]); } }
     else if (a === "exr") { d.ex[id].r = v; log(p, "Resultado de " + e.dataset.t + ": " + e.dataset.r); }
@@ -404,7 +446,7 @@
       var mm = F.meds[S.modal.id], st2 = d.med[S.modal.id] || (d.med[S.modal.id] = {}), r = calcular(mm, S.calc);
       if (a === "mnao") { st2.nao = { t: Date.now() }; log(p, mm.nome + ": decidido não usar"); S.modal = null; }
       else if (!r.txt) { S.merro = "Complete o cálculo antes de registrar, para a dose ficar anotada."; }
-      else if (a === "madm" && mm.maxDoses && (st2.adm || []).length >= mm.maxDoses) { S.merro = "Dose total máxima documentada já atingida."; }
+      else if (a === "madm" && mm.plano.maxN && (st2.adm || []).length >= mm.plano.maxN) { S.merro = "Número máximo de doses documentado já atingido (" + mm.plano.max + ")."; }
       else { S.merro = ""; (st2[a === "madm" ? "adm" : "presc"] || (st2[a === "madm" ? "adm" : "presc"] = [])).push({ t: Date.now(), txt: r.txt }); delete st2.nao; log(p, mm.nome + (a === "madm" ? " administrado: " : " prescrito: ") + r.txt); if (a === "madm") S.modal = null; }
     }
     else if (a === "passagem") S.modal = { tipo: "pass", det: 0 };

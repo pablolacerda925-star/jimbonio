@@ -2,7 +2,7 @@
 
 Site em HTML, em português do Brasil, que acompanha o atendimento no pronto-socorro como um fluxograma vivo: quadro → manejo inicial → achados e exames → classificação e conduta → medicamento com cálculo → reavaliação → destino → passagem de caso. É apoio à decisão do médico, não substituto. O dono do projeto vai usar em plantão e, mais tarde, talvez compartilhar com colegas.
 
-**Estado atual:** v0.4. O formato de "uma pergunta por tela" (v0.2 e v0.3) foi rejeitado em 11/11/2026: ficou cru, com pouca informação, "parecendo um jogo". O formato atual é o **fluxograma vivo por paciente**, descrito abaixo. Quatro quadros: parada cardiorrespiratória, taquiarritmia com pulso, bradiarritmia, IC e edema agudo de pulmão. O v0.4 ainda não recebeu "aprovado". Falta o PS Zerado 2ª edição para conferir o lote 1. Próximo: lote 2.
+**Estado atual:** v0.5 (v0.4 mais a entrada por sinais e sintomas com hipóteses, as perguntas ao paciente e à família e o plano de cada medicamento; pedido de 12/11/2026 em `docs/09-pedido-v05.md`). O formato de "uma pergunta por tela" (v0.2 e v0.3) foi rejeitado em 11/11/2026: ficou cru, com pouca informação, "parecendo um jogo". O formato atual é o **fluxograma vivo por paciente**, descrito abaixo. Quatro quadros: parada cardiorrespiratória, taquiarritmia com pulso, bradiarritmia, IC e edema agudo de pulmão. Ainda sem "aprovado" explícito. **Trauma não está em nenhum dos 11 PDFs** e a rede da sessão bloqueou o protocolo do Ministério da Saúde; ver `docs/09`. Próximo: trauma (quando houver fonte) e lote 2.
 
 ## Regras de produto (valem acima de tudo)
 
@@ -20,6 +20,9 @@ O pedido do usuário de 11/11/2026 (roteiro completo em `docs/08-pedido-v04.md`)
 10. **Passagem de caso a qualquer momento**, curta e detalhada, editável, só com o que foi registrado.
 11. **Vários pacientes** ("Paciente 01" enquanto não houver nome), sem misturar dados.
 12. **Não parar para pedir aprovação de cada fonte ou conflito.** Decidir, registrar em `docs/`, listar no fim.
+13. **Entrada por sinais e sintomas é o caminho principal** (pedido mais importante de 12/11): o médico marca o que vê, recebe a pré-conduta na hora, as hipóteses aparecem e se reordenam a cada achado, e ao escolher uma hipótese abre o protocolo levando os dados. Diagnóstico direto continua possível.
+14. **Medicamento tem que responder de relance: quanto, a cada quanto tempo, quantas vezes, quantas já foram e quando é a próxima.** Conduta numerada na ordem (1º, 2º, 3º).
+15. **Cada quadro traz o que perguntar ao paciente e o que perguntar a familiares**, com Sim / Não / Não sabe. Cada pergunta existe porque muda uma decisão documentada.
 
 ## Regras de segurança (invisíveis para o usuário, mas obrigatórias)
 
@@ -37,7 +40,7 @@ O pedido do usuário de 11/11/2026 (roteiro completo em `docs/08-pedido-v04.md`)
 ```bash
 python3 build.py                  # gera dist/guia-ps.html (arquivo único, abre offline)
 node testes/calc.test.js          # 91 contas das calculadoras conferidas à mão
-python3 testes/e2e.py             # 104 casos simulados no navegador (precisa de playwright)
+python3 testes/e2e.py             # 127 casos simulados no navegador (precisa de playwright)
 CHROME=/caminho/do/chrome python3 testes/e2e.py   # se não houver Chromium do Playwright
 ```
 
@@ -70,10 +73,12 @@ Cada quadro (tema) tem:
 - `reav`: reavaliações com opções e "como seguir" (`prox`); `quando` gera horário a partir de um medicamento.
 - `alertas`: sugestão de outro fluxo (`ir`) ou aviso de fluxo ainda inexistente (`ir: null`), sempre com `porque`.
 - `destino`.
+- `perguntar`: `{ paciente: [], familia: [] }`, definido em `PERG` no fim do arquivo. `P.p(id)` lê a resposta ("s", "n", "ns").
+- Só no quadro `sind` (entrada por sinais e sintomas): `investigar` aceita `tipo: "lista"` (itens tocáveis, `P.tem(lista, k)`) e há `hipoteses`: cada uma com `favor(P)` e `contra(P)` (listas de motivos), `confirmar`, `enquanto`, `tema` (protocolo a abrir, ou `null`) e `levar(P)` (achados que seguem para o protocolo).
 
 `P` é o leitor dos dados do paciente: `P.a(id)`, `P.o(id)`, `P.n(sinalVital)`, `P.ex(id)`, `P.adm(med)`, `P.cont(acao)`, `P.r(reav)`.
 
-Medicamentos: `ind`, `dose[]`, `prep[]`, `cuid[]`, `ref` e o cálculo por `modo`: `fixo` (`doses[]`, `aps[]`), `kg` (`faixas[]`), `furo`, `inf` (`preps[]`, `un`, `ini`, `max`, `porKg`; `mgMl` para mg/h; `fator` para mg/min), `txt` (sem cálculo). `conc` é a concentração do primeiro preparo e é conferida no teste.
+Medicamentos: `ind`, `dose[]`, `prep[]`, `cuid[]`, `ref` e o cálculo por `modo`: `fixo` (`doses[]`, `aps[]`), `kg` (`faixas[]`), `furo`, `inf` (`preps[]`, `un`, `ini`, `max`, `porKg`; `mgMl` para mg/h; `fator` para mg/min), `txt` (sem cálculo). `conc` é a concentração do primeiro preparo e é conferida no teste. `plano` (em `PLANO`, no fim do arquivo): `q` quanto, `rep` quando repetir, `max` limite, `maxN` nº máximo de doses, `intMin` minutos até poder repetir.
 
 ## Onde paramos e o que falta
 
@@ -82,5 +87,6 @@ Ver `docs/07-roteiro.md`. Resumo:
 - Feito: inventário dos PDFs, cobertura por tema, decisões, busca externa da IC, piloto v0.2 testado, lote 1 testado.
 - Falta no tema IC: terapia oral do perfil A e prescrição de alta (CNP p. 72-74, ainda não conferidas por imagem); confirmar no bulário da Anvisa a bula de dobutamina.
 - Falta no site: senha opcional para os atendimentos (foi retirada no v0.2), teste em iPhone e Android, hospedagem, modo offline da versão hospedada, pediatria e gestantes.
-- Falta no lote 1: conferir contra o PSZ2 (não enviado); cuidados pós-PCR. CNP e DRG já conferidos. Ver `docs/05`.
+- Falta no lote 1: conferência completa contra o PSZ2 (recebido em 12/11; só as páginas de arritmia foram comparadas); cuidados pós-PCR. Ver `docs/05`.
+- Falta: quadro de trauma e mais síndromes de entrada (dor torácica, rebaixamento, dor abdominal); dependem de fonte externa.
 - Próximo: lote 2.

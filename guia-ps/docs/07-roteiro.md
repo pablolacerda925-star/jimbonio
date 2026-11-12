@@ -10,12 +10,14 @@
 - Lote 1 (v0.3): PCR, taquiarritmia com pulso (com cardioversão) e bradiarritmia, pelos algoritmos da AHA 2025. 15 medicamentos novos. Testes: 78 contas e 96 casos no navegador. "Novo atendimento" agora pergunta o tema; os medicamentos da busca e do rodapé são os do tema.
 
 - v0.4: interface refeita como fluxograma vivo por paciente (pedido em `08`); lote 1 conferido contra CNP e DRG. Testes: 91 contas e 104 casos no navegador.
+- v0.5: entrada por sinais e sintomas com hipóteses, perguntas ao paciente e à família, plano de cada medicamento (pedido em `09`). Testes: 91 contas e 127 casos no navegador.
 
 ## Em aberto com o usuário
 
 1. Confirmar que o formato v0.4 é o desejado (v0.2 e v0.3 foram rejeitados).
 2. Senha dos atendimentos: voltar como opção?
-3. Falta o PSZ2 (PS Zerado 2ª edição) para conferir o lote 1 e para os próximos lotes.
+3. Trauma: precisa do protocolo do SAMU 192 (Ministério da Saúde) ou de outro PDF; a rede bloqueou o download.
+4. PSZ2 recebido em 12/11; falta a conferência completa do lote 1 contra ele.
 
 ## Ordem dos lotes
 

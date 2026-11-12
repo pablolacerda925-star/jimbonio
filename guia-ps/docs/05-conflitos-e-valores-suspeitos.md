@@ -33,6 +33,14 @@ Só o tema IC foi comparado dose a dose em todos os PDFs. Nos outros temas, espe
 
 Lote 1 conferido contra CNP p. 77-117 e DRG p. 62-67 e 88 (leitura por OCR e conferência pela imagem das páginas com números usados: CNP 82, 84, 88, 103 e 115; DRG 62). Ainda pendente: conferir contra PSZ2 p. 8-15 e 194 (não enviado); cuidados pós-PCR; pontos de corte do CHA₂DS₂-VASc (CNP 109) e dose de fentanil no marca-passo (CNP 116), não conferidos pela imagem e por isso fora da tela.
 
+PSZ2 recebido em 12/11/2026 (texto extraível, mas com as colunas intercaladas). Comparação feita só nas páginas de arritmia:
+
+| # | Item | O que cada PDF diz | Situação |
+| --- | --- | --- | --- |
+| 22 | Amiodarona, ataque na TV estável | PSZ2: 2 ampolas (300 mg) em 250 mL de SG 5% em 30 min. AHA 2025 e CNP: 150 mg em 10 min | Mantido AHA 2025 (diretriz mais recente) |
+| 23 | Amiodarona, manutenção | PSZ2: 6 ampolas em 500 mL de SG 5%, 34 mL/h (1 mg/min) por 6 h e 17 mL/h (0,5 mg/min) por 18 h | Confere com o site (33,3 e 16,7 mL/h a 1,8 mg/mL) |
+| 24 | Bradicardia instável | PSZ2: atropina 1 mg em bolus; depois dopamina; marca-passo transcutâneo com analgesia potente | Confere com a sequência do site; o site põe adrenalina antes da dopamina (AHA 2025 dá as duas como equivalentes) |
+
 ## Valores e trechos suspeitos no próprio PDF
 
 Regra: não deduzir. Buscar o valor correto em diretriz ou bula e usar esse.

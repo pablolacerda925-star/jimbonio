@@ -18,6 +18,8 @@ As páginas citadas no projeto são sempre as do arquivo PDF (não a numeração
 
 Em 11/11/2026 o CNP e o DRG foram reenviados comprimidos, com duas páginas do original por página (89 e 59 páginas). A página original N está na folha (N+1)/2 arredondada para baixo. As citações do projeto continuam usando a página do arquivo original.
 
+Em 12/11/2026 o PSZ2 foi reenviado comprimido (52 páginas, quatro do original por folha). O texto é extraível, mas sai com as colunas intercaladas: conferir a página pela imagem antes de usar qualquer dose.
+
 ## Cuidados de leitura
 
 - **CNP e DRG:** qualquer OCR troca caracteres. Exemplos reais: "Img/kg" (1 mg/kg), "50Omg" (50 mg), "Smg/ml" (5 mg/mL), "SOmg/ml" (50 mg/mL). Rasterizar a página (`pdftoppm -r 80 -jpeg -f N -l N`) e ler a imagem antes de usar qualquer número.
