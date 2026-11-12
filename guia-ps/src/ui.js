@@ -532,7 +532,7 @@
     }
     else if (a === "passagem") S.modal = { tipo: "pass", det: 0 };
     else if (a === "pdet") S.modal.det = +v;
-    else if (a === "copiar") { var ta = document.getElementById("pass"); ta.select(); try { navigator.clipboard.writeText(ta.value); } catch (x2) { document.execCommand("copy"); } e.textContent = "Copiado"; return; }
+    else if (a === "copiar") { var ta = document.getElementById("pass"); ta.select(); try { var cp = navigator.clipboard && navigator.clipboard.writeText(ta.value); if (cp && cp.catch) cp.catch(function () { }); } catch (x2) { } e.textContent = "Copiado"; return; }
     if (p && !p.arq) mudou(p); salvar(); render();
   });
   if (!pac() || pac().arq) S.ativo = null;

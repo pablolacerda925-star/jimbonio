@@ -42,7 +42,7 @@ Os pedidos do usuário de 11/11/2026 (`docs/08-pedido-v04.md`) e de 12/11/2026 (
 ## Comandos
 
 ```bash
-python3 build.py                  # gera dist/guia-ps.html (arquivo único, abre offline)
+python3 build.py                  # gera dist/guia-ps.html (arquivo único, offline) e dist/guia-ps-online.html (página publicada)
 node testes/calc.test.js          # 91 contas das calculadoras conferidas à mão
 python3 testes/e2e.py             # 94 casos simulados no navegador (precisa de playwright)
 CHROME=/caminho/do/chrome python3 testes/e2e.py   # se não houver Chromium do Playwright
@@ -100,6 +100,8 @@ Ver `docs/07-roteiro.md`. Resumo:
 - Próximo: trauma (quando houver fonte) e lote 2.
 
 ## Ambiente
+
+- Página publicada (privada, do usuário): https://claude.ai/artifact/QFiq2NBB8dKBBPB7hNc8Wk . Para atualizar no mesmo link: `python3 build.py` e publicar `dist/guia-ps-online.html` com a ferramenta Artifact passando esse link em `url`. Os atendimentos ficam só no navegador de cada aparelho (localStorage); não passam de um aparelho para outro.
 
 - O projeto fica em `guia-ps/` dentro do repositório `jimbonio` (que também tem um site de agenda, sem relação). Branch de trabalho: `claude/new-session-vnm2c8`.
 - Para os testes de navegador na nuvem: `pip install playwright` e `CHROME=/opt/pw-browsers/chromium python3 testes/e2e.py`.
