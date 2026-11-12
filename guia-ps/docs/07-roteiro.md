@@ -11,10 +11,11 @@
 
 - v0.4: interface refeita como fluxograma vivo por paciente (pedido em `08`); lote 1 conferido contra CNP e DRG. Testes: 91 contas e 104 casos no navegador.
 - v0.5: entrada por sinais e sintomas com hipóteses, perguntas ao paciente e à família, plano de cada medicamento (pedido em `09`). Testes: 91 contas e 127 casos no navegador.
+- v0.6: fluxograma de cartões, texto livre de sintomas, sinais vitais só quando decidem, resumo atrás de botão (pedido em `10`). Testes: 91 contas e 94 casos no navegador.
 
 ## Em aberto com o usuário
 
-1. Confirmar que o formato v0.4 é o desejado (v0.2 e v0.3 foram rejeitados).
+1. Confirmar que o formato v0.6 é o desejado (v0.2, v0.3 e, em parte, v0.4 e v0.5 foram criticados).
 2. Senha dos atendimentos: voltar como opção?
 3. Trauma: precisa do protocolo do SAMU 192 (Ministério da Saúde) ou de outro PDF; a rede bloqueou o download.
 4. PSZ2 recebido em 12/11; falta a conferência completa do lote 1 contra ele.

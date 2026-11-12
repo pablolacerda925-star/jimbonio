@@ -29,7 +29,7 @@ var FLUXO = {
       { id: "acesso", t: "Acesso EV ou IO", ref: "AHA 2025, Figura 2 (ACLS-F p. 2)" },
       { id: "via", t: "Considerar via aérea avançada e capnografia", como: ["Tubo endotraqueal ou dispositivo supraglótico.", "Capnografia em onda para confirmar e monitorar a posição do tubo.", "Com via aérea avançada: 1 ventilação a cada 6 segundos (10 por minuto), com compressões contínuas."], ref: "AHA 2025, Figura 2 (ACLS-F p. 2)" }],
     investigar: [
-      { id: "ritmo", tipo: "opc", t: "Ritmo", ops: [{ v: "choc", t: "Chocável · FV ou TV sem pulso" }, { v: "nchoc", t: "Não chocável · assistolia ou AESP" }], como: ["Checar o ritmo a cada 2 minutos de RCP e atualizar aqui."], ref: "AHA 2025, Figura 2 (ACLS-F p. 2)" },
+      { id: "ritmo", tipo: "opc", decide: 1, t: "Ritmo", ops: [{ v: "choc", t: "Chocável · FV ou TV sem pulso" }, { v: "nchoc", t: "Não chocável · assistolia ou AESP" }], como: ["Checar o ritmo a cada 2 minutos de RCP e atualizar aqui."], ref: "AHA 2025, Figura 2 (ACLS-F p. 2)" },
       { id: "causas", tipo: "tri", t: "Causa reversível identificada", sinais: CAUSAS_PCR, como: ["Procurar e tratar durante a RCP os 5 H e os 5 T. Toque na causa encontrada."], ref: "AHA 2025, Figura 2 (ACLS-F p. 2) · DRG p. 88" }],
     exames: [
       { id: "gaso", t: "Gasometria e potássio", por: "acidose e distúrbio do potássio são causas reversíveis", res: [{ v: "acid", t: "Acidose" }, { v: "kalto", t: "Potássio alto" }, { v: "kbaixo", t: "Potássio baixo" }, { v: "normal", t: "Sem alteração" }], ref: "AHA 2025, Figura 2 (ACLS-F p. 2)" }],
@@ -80,12 +80,12 @@ var FLUXO = {
       { id: "ecg", t: "ECG de 12 derivações", ref: "AHA 2025, Figura 6 (ACLS-F p. 4)" }],
     gravidade: { t: "Sinais de instabilidade", itens: TRI_INST, como: ["Um sinal presente já define instabilidade, desde que a taquicardia seja a causa (a frequência costuma ser de 150 por minuto ou mais).", "Se a taquicardia for consequência de outro problema (por exemplo, sepse), tratar o problema de base."], ref: "AHA 2025, Figura 6 (ACLS-F p. 4) · ACLS-T p. 5" },
     investigar: [
-      { id: "ritmo", tipo: "opc", t: "Ritmo no ECG", ops: [{ v: "sinusal", t: "Sinusal" }, { v: "estreito", t: "QRS estreito e regular (TPSV)" }, { v: "fa", t: "FA ou flutter" }, { v: "tv", t: "QRS largo, regular, monomórfico" }, { v: "largoirr", t: "QRS largo e irregular" }, { v: "poli", t: "TV polimórfica" }],
+      { id: "ritmo", tipo: "opc", decide: 1, t: "Ritmo no ECG", ops: [{ v: "sinusal", t: "Sinusal" }, { v: "estreito", t: "QRS estreito e regular (TPSV)" }, { v: "fa", t: "FA ou flutter" }, { v: "tv", t: "QRS largo, regular, monomórfico" }, { v: "largoirr", t: "QRS largo e irregular" }, { v: "poli", t: "TV polimórfica" }],
         como: ["QRS largo: 0,12 segundo ou mais.", "Sinusal: onda P positiva em D1, D2 e aVF e negativa em aVR.", "TV polimórfica: o QRS muda de forma a cada batimento."], ref: "AHA 2025, Figura 6 (ACLS-F p. 4) · CNP p. 87" },
-      { id: "wpw", tipo: "tri", t: "Pré-excitação (WPW)", se: function (P) { return P.o("ritmo") === "fa"; }, como: ["Na FA ou flutter com pré-excitação, bloquear o nó AV pode acelerar a resposta ventricular e levar à fibrilação ventricular."], ref: "AHA 2025 (ACLS-T p. 10-11)" },
-      { id: "ic", tipo: "tri", t: "IC descompensada ou fração de ejeção reduzida", se: function (P) { return P.o("ritmo") === "fa"; }, como: ["Betabloqueador EV e bloqueador de canal de cálcio não devem ser usados na disfunção sistólica com IC descompensada."], ref: "AHA 2025 (ACLS-T p. 10-11) · DRG p. 64" },
-      { id: "t48", tipo: "tri", t: "Início há mais de 48 h ou tempo incerto", se: function (P) { return P.o("ritmo") === "fa"; }, como: ["Reverter FA ou flutter com mais de 48 h sem anticoagulação traz risco de embolia."], ref: "AHA 2025 (ACLS-T p. 6-8) · DRG p. 62" },
-      { id: "qt", tipo: "tri", t: "QT longo", se: function (P) { return P.o("ritmo") === "poli"; }, como: ["Torsades de pointes: TV polimórfica com QT prolongado (QT corrigido em geral acima de 500 ms)."], ref: "CNP p. 103 · AHA 2025 (ACLS-T p. 3)" }],
+      { id: "wpw", tipo: "tri", decide: 1, t: "Pré-excitação (WPW)", se: function (P) { return P.o("ritmo") === "fa"; }, como: ["Na FA ou flutter com pré-excitação, bloquear o nó AV pode acelerar a resposta ventricular e levar à fibrilação ventricular."], ref: "AHA 2025 (ACLS-T p. 10-11)" },
+      { id: "ic", tipo: "tri", decide: 1, t: "IC descompensada ou fração de ejeção reduzida", se: function (P) { return P.o("ritmo") === "fa"; }, como: ["Betabloqueador EV e bloqueador de canal de cálcio não devem ser usados na disfunção sistólica com IC descompensada."], ref: "AHA 2025 (ACLS-T p. 10-11) · DRG p. 64" },
+      { id: "t48", tipo: "tri", decide: 1, t: "Início há mais de 48 h ou tempo incerto", se: function (P) { return P.o("ritmo") === "fa"; }, como: ["Reverter FA ou flutter com mais de 48 h sem anticoagulação traz risco de embolia."], ref: "AHA 2025 (ACLS-T p. 6-8) · DRG p. 62" },
+      { id: "qt", tipo: "tri", decide: 1, t: "QT longo", se: function (P) { return P.o("ritmo") === "poli"; }, como: ["Torsades de pointes: TV polimórfica com QT prolongado (QT corrigido em geral acima de 500 ms)."], ref: "CNP p. 103 · AHA 2025 (ACLS-T p. 3)" }],
     exames: [
       { id: "k", t: "Potássio", por: "hipocalemia favorece arritmia ventricular e torsades", res: [{ v: "alto", t: "Alto" }, { v: "normal", t: "Normal" }, { v: "baixo", t: "Baixo" }], ref: "CNP p. 102-103" },
       { id: "mg", t: "Magnésio", por: "hipomagnesemia pode estar associada a torsades", res: [{ v: "alto", t: "Alto" }, { v: "normal", t: "Normal" }, { v: "baixo", t: "Baixo" }], ref: "CNP p. 103" },
@@ -195,10 +195,11 @@ var FLUXO = {
       { id: "monitor", t: "Monitorizar: FC, FR, pressão, ECG e saturação", ref: "SBC 2018, Quadro 1.7 (p. 490)" },
       { id: "acesso", t: "Acesso venoso", como: ["O diurético vai por via endovenosa: na hipervolemia a absorção oral é imprevisível."], ref: "PSZ2 p. 20" },
       { id: "vni", t: "VNI se desconforto respiratório ou edema agudo de pulmão", como: ["Começar com pressão de suporte de 12 cmH₂O e PEEP de 6 a 7 cmH₂O.", "FiO₂ conforme a saturação.", "Morfina não é mais usada no edema agudo de pulmão."], ref: "PSZ2 p. 20 e 22" }],
+    pedeVitais: [{ k: "pas", se: function (P) { return P.a("cong") === "p"; }, por: "define vasodilatador ou inotrópico", ref: "SBC 2026, Tabela 7.3 e 7.8" }],
     gravidade: { t: "Risco imediato", itens: [{ id: "choque", t: "Choque cardiogênico" }, { id: "irpa", t: "Insuficiência respiratória" }], como: ["Presente: VNI ou via aérea, e acionar a UTI."], ref: "SBC 2026, 7.4.1" },
     investigar: [
-      { id: "cong", tipo: "tri", t: "Congestão", sinais: ["Ortopneia", "Estertores", "Turgência jugular", "Ascite", "Edema", "Refluxo hepatojugular", "Terceira bulha (B3)", "Taquipneia (FR > 22) ou esforço respiratório"], como: ["Um ou mais sinais já sugerem congestão. Toque nos sinais encontrados."], ref: "SBC 2026, Figura 7.3 (p. 68) · SBC 2018, Quadro 1.2" },
-      { id: "perf", tipo: "tri", t: "Baixa perfusão", sinais: ["Pressão de pulso reduzida", "Sonolência ou obnubilação", "Extremidades frias", "Baixa diurese", "Sudorese fria", "Lactato elevado"], como: ["Um ou mais sinais já sugerem baixa perfusão. Toque nos sinais encontrados."], ref: "SBC 2026, Figura 7.3 (p. 68) · SBC 2018, Quadro 1.2" },
+      { id: "cong", tipo: "tri", decide: 1, t: "Congestão", sinais: ["Ortopneia", "Estertores", "Turgência jugular", "Ascite", "Edema", "Refluxo hepatojugular", "Terceira bulha (B3)", "Taquipneia (FR > 22) ou esforço respiratório"], como: ["Um ou mais sinais já sugerem congestão. Toque nos sinais encontrados."], ref: "SBC 2026, Figura 7.3 (p. 68) · SBC 2018, Quadro 1.2" },
+      { id: "perf", tipo: "tri", decide: 1, t: "Baixa perfusão", sinais: ["Pressão de pulso reduzida", "Sonolência ou obnubilação", "Extremidades frias", "Baixa diurese", "Sudorese fria", "Lactato elevado"], como: ["Um ou mais sinais já sugerem baixa perfusão. Toque nos sinais encontrados."], ref: "SBC 2026, Figura 7.3 (p. 68) · SBC 2018, Quadro 1.2" },
       { id: "scape", tipo: "tri", t: "Edema agudo hiperagudo, sem excesso de líquido (SCAPE)", como: ["Forma hiperaguda: o paciente não tem excesso de líquido; trata-se com VNI e vasodilatador.", "Forma subaguda (com hipervolemia): a base é a furosemida."], ref: "PSZ2 p. 19" }],
     exames: [
       { id: "ecg", t: "ECG", por: "afastar síndrome coronariana e arritmia", res: [{ v: "isq", t: "Supra de ST ou isquemia" }, { v: "taqui", t: "FA ou outra taquiarritmia" }, { v: "bradi", t: "Bradiarritmia ou bloqueio" }, { v: "sem", t: "Sem alteração aguda" }], ref: "SBC 2026, Quadro 7.1 (p. 64)" },
@@ -389,30 +390,31 @@ var SIND = {
   agora: [
     { id: "monitor", t: "Monitorizar", ref: "CNP p. 78" }, { id: "o2", t: "Oxigênio se saturação abaixo de 90%", ref: "CNP p. 78" },
     { id: "acesso", t: "Acesso venoso periférico", ref: "CNP p. 78" }, { id: "ecg", t: "ECG de 12 derivações", ref: "CNP p. 78" }],
+  pedeVitais: [{ k: "fc", por: "separa taquiarritmia de bradiarritmia", ref: "AHA 2025, Figuras 6 e 8 (ACLS-F p. 3-4)" }, { k: "sat", por: "abaixo de 90%: oxigênio", ref: "CNP p. 78" }],
   gravidade: { t: "Sinais de instabilidade", itens: TRI_INST, como: ["Qualquer um presente: paciente instável."], ref: "CNP p. 78 · AHA 2025, Figuras 6 e 8" },
   investigar: [
-    { id: "qx", tipo: "lista", t: "Queixa e o que você vê", itens: [{ k: "sempulso", t: "Não responde e sem pulso" }, { k: "disp", t: "Falta de ar" }, { k: "palp", t: "Palpitação" }, { k: "sinc", t: "Desmaio ou tontura" }, { k: "dorp", t: "Dor no peito" }, { k: "edema", t: "Inchaço nas pernas" }], ref: "AHA 2025, Figuras 2, 6 e 8 · SBC 2026, Figura 7.3" },
+    { id: "qx", tipo: "lista", t: "Queixa e o que você vê", itens: [{ k: "sempulso", t: "Não responde e sem pulso" }, { k: "disp", t: "Falta de ar" }, { k: "palp", t: "Palpitação" }, { k: "sinc", t: "Desmaio ou tontura" }, { k: "dorp", t: "Dor no peito" }, { k: "edema", t: "Inchaço nas pernas" }, { k: "lento", t: "Coração lento" }, { k: "trauma", t: "Trauma" }], ref: "AHA 2025, Figuras 2, 6 e 8 · SBC 2026, Figura 7.3" },
     { id: "ef", tipo: "lista", t: "Exame físico", itens: [{ k: "orto", t: "Ortopneia" }, { k: "estert", t: "Estertores" }, { k: "jug", t: "Turgência jugular" }, { k: "ascite", t: "Ascite" }, { k: "frio", t: "Extremidades frias" }, { k: "sono", t: "Sonolência" }], ref: "SBC 2026, Figura 7.3 (p. 68)" },
-    { id: "ritmo", tipo: "opc", t: "ECG", ops: [{ v: "taqui", t: "Taquiarritmia" }, { v: "bradi", t: "Bradiarritmia ou bloqueio" }, { v: "isq", t: "Supra de ST ou isquemia" }, { v: "sem", t: "Sem alteração aguda" }], ref: "AHA 2025, Figuras 6 e 8 · SBC 2026, Quadro 7.1" }],
+    { id: "ritmo", tipo: "opc", decide: 1, t: "ECG", ops: [{ v: "taqui", t: "Taquiarritmia" }, { v: "bradi", t: "Bradiarritmia ou bloqueio" }, { v: "isq", t: "Supra de ST ou isquemia" }, { v: "sem", t: "Sem alteração aguda" }], ref: "AHA 2025, Figuras 6 e 8 · SBC 2026, Quadro 7.1" }],
   exames: [
     { id: "bnp", t: "BNP", num: { un: "pg/mL", corte: 100, txt: "abaixo de 100 pg/mL afasta IC descompensada" }, ref: "SBC 2026, 7.2 (p. 63)" },
     { id: "ntbnp", t: "NT-proBNP", num: { un: "pg/mL", corte: 300, txt: "abaixo de 300 pg/mL afasta IC descompensada" }, ref: "SBC 2026, 7.2 (p. 63)" },
     { id: "tropo", t: "Troponina", por: "afastar síndrome coronariana", res: [{ v: "elev", t: "Elevada" }, { v: "normal", t: "Normal" }], ref: "SBC 2026, Quadro 7.1 (p. 64)" },
     { id: "rx", t: "Radiografia de tórax", res: [{ v: "cong", t: "Congestão" }, { v: "cons", t: "Consolidação" }, { v: "normal", t: "Normal" }], ref: "SBC 2026, Quadro 7.1 (p. 64)" }],
   hipoteses: [
-    { id: "pcr", t: "Parada cardiorrespiratória", tema: "pcr", ref: "AHA 2025, Figura 2 (ACLS-F p. 2)",
+    { id: "pcr", t: "Parada cardiorrespiratória", curto: "Parada cardiorrespiratória", tema: "pcr", ref: "AHA 2025, Figura 2 (ACLS-F p. 2)",
       favor: function (P) { return P.tem("qx", "sempulso") ? ["Não responde e sem pulso"] : []; }, contra: function () { return []; },
       confirmar: "Sem pulso: não esperar confirmação.", enquanto: "Iniciar RCP agora e chamar o desfibrilador." },
     { id: "taqui", t: "Taquiarritmia", tema: "taqui", ref: "AHA 2025, Figura 6 (ACLS-F p. 4)",
-      favor: function (P) { var r = []; if (P.n("fc") >= 150) r.push(fcTxt(P) + " (150 ou mais)"); if (P.tem("qx", "palp")) r.push("Palpitação"); if (P.o("ritmo") === "taqui") r.push("ECG com taquiarritmia"); return r; },
+      favor: function (P) { var r = []; if (P.n("fc") >= 150) r.push(fcTxt(P) + " (150 ou mais)"); if (P.tem("qx", "palp")) r.push("Palpitação ou coração acelerado"); if (P.o("ritmo") === "taqui") r.push("ECG com taquiarritmia"); return r; },
       contra: function (P) { return P.n("fc") != null && P.n("fc") < 100 ? [fcTxt(P)] : []; },
       confirmar: "ECG de 12 derivações: QRS estreito ou largo, regular ou irregular.", enquanto: "Se estiver instável por causa da taquicardia: cardioversão elétrica sincronizada.",
       levar: function (P) { return {}; } },
     { id: "bradi", t: "Bradiarritmia", tema: "bradi", ref: "AHA 2025, Figura 8 (ACLS-F p. 3) · ACLS-B p. 1",
-      favor: function (P) { var r = []; if (P.n("fc") != null && P.n("fc") < 50) r.push(fcTxt(P) + " (abaixo de 50)"); if (P.tem("qx", "sinc")) r.push("Desmaio ou tontura"); if (P.o("ritmo") === "bradi") r.push("ECG com bradiarritmia"); if (P.p("remed") === "s") r.push("Usa remédio que baixa a frequência"); return r; },
+      favor: function (P) { var r = []; if (P.n("fc") != null && P.n("fc") < 50) r.push(fcTxt(P) + " (abaixo de 50)"); if (P.tem("qx", "sinc")) r.push("Desmaio ou tontura"); if (P.tem("qx", "lento")) r.push("Coração lento"); if (P.o("ritmo") === "bradi") r.push("ECG com bradiarritmia"); if (P.p("remed") === "s") r.push("Usa remédio que baixa a frequência"); return r; },
       contra: function (P) { return P.n("fc") >= 60 ? [fcTxt(P)] : []; },
       confirmar: "ECG de 12 derivações.", enquanto: "Se estiver instável por causa da bradicardia: atropina 1 mg EV." },
-    { id: "ic", t: "Insuficiência cardíaca descompensada ou edema agudo de pulmão", tema: "ic", ref: "SBC 2026, Figura 7.3 e 7.2",
+    { id: "ic", t: "Insuficiência cardíaca descompensada ou edema agudo de pulmão", curto: "Insuficiência cardíaca ou EAP", tema: "ic", ref: "SBC 2026, Figura 7.3 e 7.2",
       favor: function (P) { var r = []; [["qx", "disp", "Falta de ar"], ["qx", "edema", "Inchaço nas pernas"], ["ef", "orto", "Ortopneia"], ["ef", "estert", "Estertores"], ["ef", "jug", "Turgência jugular"], ["ef", "ascite", "Ascite"]].forEach(function (x) { if (P.tem(x[0], x[1])) r.push(x[2]); });
         if (P.p("orto") === "s" && !P.tem("ef", "orto")) r.push("Falta de ar piora deitado"); if (P.ex("rx").r === "cong") r.push("Radiografia com congestão"); return r; },
       contra: function (P) { var r = [], b = P.ex("bnp").val, n = P.ex("ntbnp").val; if (b && +String(b).replace(",", ".") < 100) r.push("BNP abaixo de 100 pg/mL"); if (n && +String(n).replace(",", ".") < 300) r.push("NT-proBNP abaixo de 300 pg/mL"); return r; },
@@ -423,10 +425,10 @@ var SIND = {
     { id: "sca", t: "Síndrome coronariana aguda", tema: null, ref: "SBC 2026, Quadro 7.1 (p. 64)",
       favor: function (P) { var r = []; if (P.tem("qx", "dorp") || P.p("dorp") === "s") r.push("Dor no peito"); if (P.o("ritmo") === "isq") r.push("ECG com supra de ST ou isquemia"); if (P.ex("tropo").r === "elev") r.push("Troponina elevada"); return r; },
       contra: function () { return []; }, confirmar: "ECG de 12 derivações e troponina.", enquanto: "" },
-    { id: "sinusal", t: "Taquicardia sinusal por outra causa", tema: null, ref: "CNP p. 81 e 87",
+    { id: "sinusal", t: "Taquicardia sinusal por outra causa", curto: "Taquicardia sinusal (outra causa)", tema: null, ref: "CNP p. 81 e 87",
       favor: function (P) { var f = P.n("fc"); return f > 100 && f < 150 ? [fcTxt(P) + " (entre 100 e 150)"] : []; }, contra: function () { return []; },
       confirmar: "Procurar a causa: isquemia, embolia pulmonar, sepse, pneumonia, hipovolemia, hipervolemia, anemia, hipertireoidismo, febre, dor ou ansiedade.", enquanto: "Tratar a causa, não a frequência." },
-    { id: "resp", t: "Outra causa de falta de ar: embolia pulmonar ou pneumonia", tema: null, ref: "SBC 2026, Quadro 7.1 (p. 64)",
+    { id: "resp", t: "Outra causa de falta de ar: embolia pulmonar ou pneumonia", curto: "Embolia pulmonar ou pneumonia", tema: null, ref: "SBC 2026, Quadro 7.1 (p. 64)",
       favor: function (P) { var r = []; if (P.tem("qx", "disp")) r.push("Falta de ar"); if (P.ex("rx").r === "cons") r.push("Radiografia com consolidação"); return r; }, contra: function () { return []; },
       confirmar: "D-dímero se a suspeita for embolia pulmonar; procalcitonina se for pneumonia; radiografia de tórax.", enquanto: "" }],
   classificar: function (P) {
@@ -434,7 +436,6 @@ var SIND = {
     if (instavel(P)) it.push({ t: "Estabilidade", v: "Instável", porque: "Há sinal de instabilidade marcado como presente." });
     else if (estavel(P)) it.push({ t: "Estabilidade", v: "Estável", porque: "Todos os sinais de instabilidade avaliados e ausentes." });
     else falta.push("Sinais de instabilidade (marcar presente ou ausente)");
-    if (P.n("fc") == null) falta.push("Frequência cardíaca"); if (P.n("pas") == null) falta.push("Pressão arterial"); if (P.n("sat") == null) falta.push("Saturação");
     return { itens: it, falta: falta };
   },
   passos: [
@@ -445,11 +446,37 @@ var SIND = {
     { id: "inst", t: "Paciente instável", se: function (P) { return instavel(P) && !P.tem("qx", "sempulso"); }, porque: "Há sinal de instabilidade presente.", ref: "CNP p. 78 · AHA 2025, Figuras 6 e 8",
       itens: [{ tipo: "info", t: "Se a causa for taquicardia: cardioversão elétrica sincronizada. Se for bradicardia: atropina. Abra a hipótese correspondente abaixo." },
         { id: "sala", tipo: "acao", t: "Manter na sala de emergência, monitorizado", ref: "CNP p. 78" }] }],
-  reav: [{ id: "evol", t: "Evolução", se: function () { return true; }, ref: "CNP p. 78", repete: 1,
+  reav: [{ id: "evol", t: "Evolução", se: function (P) { return P.qtd() > 0; }, ref: "CNP p. 78", repete: 1,
     ops: [{ v: "melhor", t: "Melhorou", prox: "Seguir investigando a causa." }, { v: "igual", t: "Sem mudança", prox: "Rever sinais vitais e achados; completar o que falta investigar." }, { v: "pior", t: "Piorou", prox: "Reavaliar os sinais de instabilidade e atualizar os achados: as hipóteses e a conduta se ajustam." }] }],
   alertas: [],
   destino: { ops: [{ v: "uti", t: "UTI" }, { v: "obs", t: "Observação ou enfermaria" }, { v: "alta", t: "Alta" }], ref: "CNP p. 78" }
 };
+// ============================== TEXTO LIVRE: termos que o site reconhece ==============================
+// l = lista do quadro "sind" onde o achado entra; g = sinal de instabilidade; perg = pergunta respondida "sim". Termos sem acento e em minúsculas.
+// Precedido de uma palavra de negação (até 3 palavras antes), o achado conta como ausente.
+FLUXO.negacao = ["sem", "nega", "negou", "nao", "ausencia"];
+FLUXO.sintomas = [
+  { l: "qx", k: "sempulso", t: "Sem pulso", termos: ["sem pulso", "parada cardiaca", "parada cardiorrespiratoria", "pcr", "nao responde"] },
+  { l: "qx", k: "disp", t: "Falta de ar", termos: ["falta de ar", "dispneia", "dispneico", "cansaco", "sem ar", "ofegante", "desconforto respiratorio"] },
+  { l: "qx", k: "palp", t: "Palpitação", termos: ["palpitacao", "palpitacoes", "coracao acelerado", "taquicardia", "taquicardico"] },
+  { l: "qx", k: "lento", t: "Coração lento", termos: ["bradicardia", "bradicardico", "coracao lento", "pulso lento"] },
+  { l: "qx", k: "sinc", t: "Desmaio ou tontura", termos: ["desmaio", "desmaiou", "sincope", "tontura", "tonto", "escureceu a vista"] },
+  { l: "qx", k: "dorp", t: "Dor no peito", termos: ["dor no peito", "dor toracica", "precordialgia", "aperto no peito"] },
+  { l: "qx", k: "edema", t: "Inchaço nas pernas", termos: ["edema", "inchaco", "inchado", "inchada", "pernas inchadas"] },
+  { l: "qx", k: "trauma", t: "Trauma", termos: ["trauma", "politrauma", "acidente", "colisao", "capotamento", "atropelado", "atropelamento", "queda", "agressao", "ferimento", "baleado", "esfaqueado", "contusao"] },
+  { l: "ef", k: "orto", t: "Ortopneia", termos: ["ortopneia", "piora deitado", "nao consegue deitar"] },
+  { l: "ef", k: "estert", t: "Estertores", termos: ["estertor", "estertores", "crepitacao", "crepitacoes", "creptos"] },
+  { l: "ef", k: "jug", t: "Turgência jugular", termos: ["turgencia jugular", "estase jugular", "jugular turgida"] },
+  { l: "ef", k: "ascite", t: "Ascite", termos: ["ascite"] },
+  { l: "ef", k: "frio", t: "Extremidades frias", termos: ["extremidades frias", "pele fria", "maos frias", "frio e umido"] },
+  { l: "ef", k: "sono", t: "Sonolência", termos: ["sonolento", "sonolenta", "sonolencia", "rebaixado", "rebaixada", "rebaixamento"] },
+  { perg: "remed", t: "Usa remédio que baixa a frequência", termos: ["betabloqueador", "atenolol", "metoprolol", "propranolol", "carvedilol", "bisoprolol", "verapamil", "diltiazem", "digoxina", "digital"] },
+  { perg: "pde5", t: "Usou sildenafila ou tadalafila", termos: ["sildenafila", "tadalafila", "viagra", "cialis"] },
+  { perg: "asma", t: "Tem asma", termos: ["asma", "asmatico", "asmatica"] },
+  { g: "hipo", t: "Hipotensão", termos: ["hipotenso", "hipotensa", "hipotensao", "pressao baixa"] },
+  { g: "conf", t: "Confusão aguda", termos: ["confuso", "confusa", "confusao", "desorientado", "desorientada"] },
+  { g: "choque", t: "Sinais de choque", termos: ["choque", "chocado", "chocada", "ma perfusao", "mal perfundido"] }];
+FLUXO.semProtocolo = { trauma: { t: "Trauma", txt: "Ainda sem protocolo no aplicativo: nenhum dos PDFs enviados traz avaliação primária no trauma. Envie o protocolo de trauma (por exemplo, o de Suporte Avançado de Vida do SAMU 192) para entrar aqui." } };
 FLUXO.temas.unshift(SIND);
 FLUXO.temas.forEach(function (t) { t.perguntar = PERG[t.id]; });
 if (typeof module !== "undefined") module.exports = FLUXO;

@@ -126,5 +126,12 @@ F.temas.forEach(function (t) { t.perguntar.paciente.concat(t.perguntar.familia).
 Object.keys(M).forEach(function (k) { if (!M[k].plano || !M[k].plano.q || !M[k].plano.rep) falt.push("med " + k + " sem plano");
   if (M[k].plano.maxN && M[k].doses && M[k].doses.length > 1 && M[k].doses.length !== M[k].plano.maxN) falt.push("med " + k + ": nº de doses diferente do máximo"); });
 Object.keys(M).forEach(function (k) { if (!M[k].ref) falt.push("med " + k + " sem ref"); if (!M[k].ind) falt.push("med " + k + " sem indicação"); });
+var sind = F.temas.filter(function (t) { return t.id === "sind"; })[0];
+F.sintomas.forEach(function (x) {
+  if (x.g && !sind.gravidade.itens.some(function (i) { return i.id === x.g; })) falt.push("sintoma " + x.t + ": sinal " + x.g + " inexistente");
+  if (x.l && !sind.investigar.some(function (i) { return i.id === x.l && i.itens.some(function (o) { return o.k === x.k; }); })) falt.push("sintoma " + x.t + ": item " + x.l + "." + x.k + " inexistente");
+  if (x.perg && !F.temas.some(function (t) { return t.perguntar.paciente.concat(t.perguntar.familia).some(function (q) { return q.id === x.perg; }); })) falt.push("sintoma " + x.t + ": pergunta " + x.perg + " inexistente");
+  x.termos.forEach(function (w) { if (w !== w.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()) falt.push("termo com acento ou maiúscula: " + w); }); });
+F.temas.forEach(function (t) { (t.pedeVitais || []).forEach(function (v) { if (!v.ref) falt.push(t.id + " vital " + v.k + " sem ref"); if (!F.vitais.some(function (x) { return x.k === v.k; })) falt.push(t.id + " vital " + v.k + " inexistente"); }); });
 eq("todo item tem fonte e todo medicamento citado existe", falt, []);
 console.log("\n" + ok + " passaram, " + fail + " falharam");
