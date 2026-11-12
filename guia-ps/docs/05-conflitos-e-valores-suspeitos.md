@@ -43,6 +43,11 @@ PSZ2 recebido em 12/11/2026 (texto extraível, mas com as colunas intercaladas).
 
 ## Valores e trechos suspeitos no próprio PDF
 
+| CNP 153, 158, 164 | Manitol 20% "Frasco 250 ml – 50mg" (conferido pela imagem) | São 50 g. Nota vermelha |
+| CNP 170 | Midazolam no estado de mal refratário: manutenção "0,05 – 2 mg/kg", sem unidade de tempo | Nota vermelha pedindo conferência |
+| CNP 23 e 29 | Heparina 25.000 UI + SG 5% 250 mL "concentração: 50 unidades/mL" | A conta dá cerca de 100 UI/mL. Nota vermelha |
+| PSZ1 21-22 × CNP 169 | Fenitoína 5-10 mg/kg e fenobarbital 10 mg/kg (PSZ1) × 15-20 (até 30) mg/kg e 20 mg/kg (CNP) | O alerta da crise convulsiva agora mostra a dose do CNP e liga para "Crise epiléptica e estado de mal" |
+
 | CNP 121 | TEP: "Enoxaparina 1 mg/Kg SC 12/12 h ou 1,5 mg SC 1xd" (conferido pela imagem) | Falta "/kg" na segunda opção. Nota vermelha pedindo conferência |
 | CNP 123 | TEP: estreptoquinase "Diluir 1.500.00 Ui" e "1,5 mi UI EV em 2 horas" | Erro de digitação na diluição; usado 1.500.000 UI, igual ao PSZ2 p. 27 |
 | CNP 121 × 132 | HNF: TEP traz ataque 80 UI/kg e manutenção 18 UI/kg/h; TVP traz 60 a 80 e 12 a 18; a p. 122 traz 60 e 12 | Cada entrada mostra o que a sua página traz |

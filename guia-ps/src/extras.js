@@ -28,10 +28,16 @@ var EXTRAS = {
     { doenca: "insuficiencia-cardiaca-descompensada-e-edema-agudo-de-pulmao", med: /^Dobutamina/i, t: "SBC 2026: começar com 0,5 a 1 mcg/kg/min; manter 2 a 20 mcg/kg/min.", ref: "SBC 2026, Quadro 7.5 (p. 77)" },
     { doenca: "taquicardia-ventricular", med: /^Amiodarona/i, t: "AHA 2025: ataque de 150 mg EV em 10 minutos; repetir se a TV voltar. Manutenção 1 mg/min por 6 h e 0,5 mg/min por 18 h.", ref: "AHA 2025, Figura 6 (ACLS-F p. 4)" },
     { doenca: "fibrilacao-atrial-e-flutter", med: /^Metoprolol/i, t: "AHA 2025: 2,5 a 5 mg EV em 2 minutos, até 3 doses. Não usar na IC descompensada nem na pré-excitação.", ref: "AHA 2025, Tabela 2 (ACLS-T p. 11)" },
-    { doenca: "crise-convulsiva", med: /^Fenito[ií]na/i, t: "Atenção: a dose impressa no guia (5 a 10 mg/kg) é menor que a usada em diretrizes de estado de mal epiléptico. Conferir antes de usar.", ref: "Conferido pela imagem do PSZ1 p. 21; diretriz não acessível nesta versão", alerta: 1 },
-    { doenca: "crise-convulsiva", med: /^Fenobarbital/i, t: "Atenção: a dose impressa no guia (10 mg/kg) é menor que a usada em diretrizes de estado de mal epiléptico. Conferir antes de usar.", ref: "Conferido pela imagem do PSZ1 p. 22; diretriz não acessível nesta versão", alerta: 1 },
+    { doenca: "crise-convulsiva", med: /^Fenito[ií]na/i, t: "Atenção: a dose impressa aqui (5 a 10 mg/kg) é menor que a do Cardiologia na Prática: 15 a 20 mg/kg (até 30 mg/kg) a 50 mg/min.", ref: "PSZ1 p. 21 (imagem) · CNP p. 169 (imagem)", alerta: 1, ver: "crise-epileptica" },
+    { doenca: "crise-convulsiva", med: /^Fenobarbital/i, t: "Atenção: a dose impressa aqui (10 mg/kg) é menor que a do Cardiologia na Prática: 20 mg/kg a 50 a 75 mg/min.", ref: "PSZ1 p. 22 (imagem) · CNP p. 169 (imagem)", alerta: 1, ver: "crise-epileptica" },
     { doenca: "tep-cardiologia-na-pratica", med: /^Enoxaparina$/i, t: "O livro imprime também \"ou 1,5 mg SC 1 vez ao dia (se estável)\", sem \"/kg\". Provável 1,5 mg/kg; conferir antes de usar.", ref: "Conferido pela imagem do CNP p. 121", alerta: 1 },
     { doenca: "tep-cardiologia-na-pratica", med: /^Estreptoquinase/i, t: "O livro imprime \"1.500.00 UI\" na diluição e \"1,5 mi UI\" na posologia; o PS Zerado traz 1.500.000 UI em 2 horas.", ref: "CNP p. 123 (imagem) · PSZ2 p. 27" },
+    { doenca: "avc-isquemico", med: /^Manitol/i, t: "O livro imprime \"frasco 250 mL – 50 mg\"; manitol 20% em 250 mL tem 50 g.", ref: "CNP p. 153 (imagem)", alerta: 1 },
+    { doenca: "avc-hemorragico", med: /^Manitol/i, t: "O livro imprime \"frasco 250 mL – 50 mg\"; manitol 20% em 250 mL tem 50 g.", ref: "CNP p. 158 (imagem)", alerta: 1 },
+    { doenca: "hemorragia-subaracnoidea", med: /^Manitol/i, t: "O livro imprime \"frasco 250 mL – 50 mg\"; manitol 20% em 250 mL tem 50 g.", ref: "CNP p. 164 (imagem)", alerta: 1 },
+    { doenca: "crise-epileptica", med: /^Midazolam \(ampola 50/i, t: "O livro imprime a manutenção como \"0,05 – 2 mg/kg\", sem a unidade de tempo. Conferir (provável mg/kg/h) antes de usar.", ref: "CNP p. 170 (imagem)", alerta: 1 },
+    { doenca: "iam-de-ventriculo-direito", med: /^Heparina não fracionada/i, t: "O livro diz que 25.000 UI em SG 5% 250 mL dão 50 UI/mL; a conta dá cerca de 100 UI/mL (25.000 ÷ 255 mL). Conferir a diluição antes de usar.", ref: "CNP p. 23 (imagem)", alerta: 1 },
+    { doenca: "minoca", med: /^Heparina não fracionada/i, t: "O livro diz que 25.000 UI em SG 5% 250 mL dão 50 UI/mL; a conta dá cerca de 100 UI/mL (25.000 ÷ 255 mL). Conferir a diluição antes de usar.", ref: "CNP p. 29 (imagem)", alerta: 1 },
     { doenca: "sepse-e-choque-septico", med: /^Noradrenalina/i, t: "O guia não traz a diluição aqui: ver \"Aminas vasoativas\".", ref: "PSZ2 p. 155 e 193-194", ver: "aminas-vasoativas" }
   ],
   // Doença que não está no PS Zerado: montada com as fontes do lote 1.
@@ -152,7 +158,12 @@ var EXTRAS = {
     "cetoacidose-diabetica-e-estado-hiperglicemico-hiperosmolar": "cad ehh cetoacidose diabetes hiperglicemia", "hemorragia-digestiva-alta": "hda hematemese melena sangramento",
     "hemorragia-digestiva-baixa": "hdb hematoquezia enterorragia sangramento", "sepse-e-choque-septico": "sepse choque septico infeccao",
     "parada-cardiorrespiratoria": "pcr parada rcp fv assistolia aesp", "choque-anafilatico": "anafilaxia alergia choque", "crise-convulsiva": "convulsao epilepsia estado de mal crise",
+    "crise-epileptica": "convulsao epilepsia estado de mal crise status fenitoina", "avc-hemorragico": "avch avc hemorragico derrame hemorragia intraparenquimatosa",
+    "hemorragia-subaracnoidea": "hsa aneurisma cefaleia subita nimodipino", "avc-isquemico": "avc avci derrame trombolise alteplase tenecteplase",
+    "choque-cardiogenico": "choque cardiogenico", "iam-de-ventriculo-direito": "iam vd infarto ventriculo direito", "minoca": "minoca infarto vasoespasmo", "miocardite": "miocardite",
     "ureterolitiase-colica-nefretica": "calculo renal colica renal litiase", "intoxicacao-alcoolica": "alcool embriaguez", "abstinencia-alcoolica": "alcool abstinencia delirium tremens"
   }
 };
+if (typeof CNP_DOENCAS === "undefined" && typeof require !== "undefined") var CNP_DOENCAS = require("./cnp.js");
+EXTRAS.doencas = EXTRAS.doencas.concat(CNP_DOENCAS);
 if (typeof module !== "undefined") module.exports = EXTRAS;

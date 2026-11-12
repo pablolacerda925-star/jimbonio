@@ -2,7 +2,7 @@
 var D = require("../src/doencas.js"), X = require("../src/extras.js"), ok = 0, fail = 0;
 function eq(nome, got, exp) { var p = JSON.stringify(got) === JSON.stringify(exp); (p ? ok++ : fail++); console.log((p ? "OK   " : "FALHA") + " " + nome + (p ? "" : "  obtido=" + JSON.stringify(got).slice(0, 300) + " esperado=" + JSON.stringify(exp))); }
 var T = D.concat(X.doencas), ids = T.map(function (d) { return d.id; });
-eq("114 doenças geradas dos PDFs + 4 escritas à mão", [D.length, X.doencas.length], [114, 4]);
+eq("114 doenças geradas dos PDFs + 12 escritas à mão", [D.length, X.doencas.length], [114, 12]);
 eq("ids únicos", ids.length, new Set(ids).size);
 eq("ids só com letras, números e hífen", ids.filter(function (i) { return !/^[a-z0-9-]+$/.test(i); }), []);
 eq("toda doença tem itens", T.filter(function (d) { return d.itens.length < 1 && !d.semFonte; }).map(function (d) { return d.id; }), []);
@@ -28,4 +28,7 @@ eq("seções que juntam doenças apontam para doenças existentes", Object.keys(
 eq("TEP (CNP): rivaroxabana 15 mg 12/12 h por 3 semanas, depois 20 mg (imagem p. 118)", tem("tep-cardiologia-na-pratica", /15 mg VO de 12\/12 h por 3 semanas; depois 20 mg/), true);
 eq("TVP (CNP): HNF ataque 60 a 80 UI/kg, manutenção 12 a 18 UI/kg/h (imagem p. 132)", tem("tvp-cardiologia-na-pratica", /Ataque 60 a 80 UI\/kg EV; manutenção inicial 12 a 18 UI\/kg\/h/), true);
 eq("Anticoagulantes (MED): HNF 25.000 UI + 245 mL = 100 U/mL (p. 33)", tem("anticoagulantes-antiagregantes-e-fibrinoliticos", /25\.000 UI \(5mL\) \+ 245 mL SF0\.9% = 100U\/mL/), true);
+eq("crise epiléptica (CNP): fenitoína 15 a 20 mg/kg a 50 mg/min (imagem p. 169)", tem("crise-epileptica", /15 a 20 mg\/kg em SF 0,9% 250 mL, a 50 mg\/min/), true);
+eq("HSA (CNP): nimodipino 60 mg de 4/4 h por 21 dias (imagem p. 163)", tem("hemorragia-subaracnoidea", /60 mg VO ou SNE de 4\/4 h, do 1º dia até 21 dias/), true);
+eq("choque cardiogênico (CNP): vasopressina 2 ampolas em 98 mL, 2 a 6 mL/h (imagem p. 64)", tem("choque-cardiogenico", /SF 0,9% 98 mL \+ 2 ampolas \(2 mL\) em bomba de infusão. Iniciar com 2 mL\/h; máximo 6 mL\/h/), true);
 console.log("\n" + ok + " passaram, " + fail + " falharam");

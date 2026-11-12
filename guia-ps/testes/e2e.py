@@ -13,7 +13,7 @@ async def main():
         await pg.goto(URL); T = lambda: pg.inner_text('#app')
         await pg.goto(URL + '#tetano'); ck('tétano: tabela da vacina desenhada como tabela', await pg.locator('.tabw table tr').count() == 3)
         await pg.goto(URL)
-        ck('lista abre com 118 doenças agrupadas por sistema', len(set(await pg.evaluate("Array.from(document.querySelectorAll('.dz')).map(a=>a.getAttribute('href'))"))) == 118 and 'CARDIOVASCULAR' in (await T()).upper() and 'INTOXICAÇÕES' in (await T()).upper())
+        ck('lista abre com 126 doenças agrupadas por sistema', len(set(await pg.evaluate("Array.from(document.querySelectorAll('.dz')).map(a=>a.getAttribute('href'))"))) == 126 and 'CARDIOVASCULAR' in (await T()).upper() and 'INTOXICAÇÕES' in (await T()).upper())
         await pg.fill('#q', 'tep'); ck('busca por sigla: TEP', await pg.locator('.dz').count() >= 1 and 'tromboembolismo' in (await pg.inner_text('#lista')).lower())
         await pg.fill('#q', 'itu'); ck('busca por sigla: ITU', 'Infecção do trato urinário' in await pg.inner_text('#lista'))
         await pg.fill('#q', 'ceftriaxona'); t = await pg.inner_text('#lista'); ck('busca por medicamento mostra as doenças que o usam', 'Apendicite aguda' in t and 'tem ceftriaxona na prescrição' in t)
@@ -35,7 +35,7 @@ async def main():
         await pg.goto(URL + '#doenca-arterial-obstrutiva-periferica'); ck('DAOP avisa que falta fonte, sem inventar', 'Ainda sem prescrição' in await T() and 'SBACV' in await T())
         await pg.goto(URL + '#tep-cardiologia-na-pratica'); t = await T(); ck('TEP do Cardiologia na Prática com alerta da enoxaparina', 'Rivaroxabana' in t and 'Cardiologia na Prática 3.0, p. 116 a 123' in t and 'conferir antes de usar' in t)
         await pg.goto(URL + '#gota'); await pg.click('[data-aba=ex]'); ck('sem exames nos documentos: avisa, não inventa', 'não trazem exames' in await T())
-        await pg.goto(URL + '#crise-convulsiva'); t = await T(); ck('crise convulsiva vem da edição anterior, com alerta na fenitoína', 'edição anterior' in t and 'menor que a usada em diretrizes' in t)
+        await pg.goto(URL + '#crise-convulsiva'); t = await T(); ck('crise convulsiva vem da edição anterior, com alerta e a dose do Cardiologia na Prática', 'edição anterior' in t and '15 a 20 mg/kg' in t)
         await pg.goto(URL + '#parada-cardiorrespiratoria'); t = await T(); ck('parada cardiorrespiratória pela AHA 2025', 'Amiodarona 150 mg/3 mL' in t and '300 mg' in t and 'Diretriz AHA 2025' in t)
         await ctx.grant_permissions(['clipboard-read', 'clipboard-write']); await pg.goto(URL + '#pneumonia'); await pg.click('[data-copiar]'); await pg.wait_for_timeout(200)
         ck('copiar prescrição', (await pg.inner_text('[data-copiar]')) == 'Copiado')
@@ -46,7 +46,7 @@ async def main():
         n = 0; todas = sorted(set(await pg.evaluate("Array.from(document.querySelectorAll('.dz')).map(a=>a.getAttribute('href'))")))
         for i in todas:
             await pg.goto(URL + i); n += await pg.locator('.conteudo li, .conteudo h3, .semex').count() > 0
-        ck('todas as 118 doenças abrem com conteúdo', n == len(todas) == 118)
+        ck('todas as 126 doenças abrem com conteúdo', n == len(todas) == 126)
         ck('sem erros de JavaScript', not errs); print(errs[:3])
         await b.close()
     print(f"\n{sum(R)} passaram, {len(R)-sum(R)} falharam")

@@ -6,6 +6,7 @@ import os
 rd = lambda n: open(os.path.join('src', n), encoding='utf-8').read()
 corpo = f"""<div id="app"></div>
 <script id="doencas">{rd('doencas.js')}</script>
+<script id="cardiologia-na-pratica">{rd('cnp.js')}</script>
 <script id="complementos">{rd('extras.js')}</script>
 <script id="interface">{rd('ui.js')}</script>"""
 html = f"""<!DOCTYPE html>
