@@ -31,4 +31,14 @@ eq("Anticoagulantes (MED): HNF 25.000 UI + 245 mL = 100 U/mL (p. 33)", tem("anti
 eq("crise epiléptica (CNP): fenitoína 15 a 20 mg/kg a 50 mg/min (imagem p. 169)", tem("crise-epileptica", /15 a 20 mg\/kg em SF 0,9% 250 mL, a 50 mg\/min/), true);
 eq("HSA (CNP): nimodipino 60 mg de 4/4 h por 21 dias (imagem p. 163)", tem("hemorragia-subaracnoidea", /60 mg VO ou SNE de 4\/4 h, do 1º dia até 21 dias/), true);
 eq("choque cardiogênico (CNP): vasopressina 2 ampolas em 98 mL, 2 a 6 mL/h (imagem p. 64)", tem("choque-cardiogenico", /SF 0,9% 98 mL \+ 2 ampolas \(2 mL\) em bomba de infusão. Iniciar com 2 mL\/h; máximo 6 mL\/h/), true);
+// busca por medicamento: só nomes, cada nome acha ao menos uma doença, sem confundir parecidos
+function nm(s) { return String(s).replace(/\*\*/g, "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase(); }
+var MEDS = []; T.forEach(function (d) { d.itens.forEach(function (x) { if (x.tipo === "med") MEDS.push(nm(x.t)); }); });
+function usa(nome) { var f = X.farmacos.filter(function (f) { return f[0] === nome; })[0], re = new RegExp(f[1]); return MEDS.filter(function (t) { return re.test(t); }); }
+eq("nomes de medicamento únicos", X.farmacos.length, new Set(X.farmacos.map(function (f) { return f[0]; })).size);
+eq("todo nome de medicamento aparece em alguma prescrição", X.farmacos.filter(function (f) { return !usa(f[0]).length; }).map(function (f) { return f[0]; }), []);
+eq("lista de nomes não traz dose", X.farmacos.filter(function (f) { return /\d\s*(mg|mcg|ui|ml|g)\b/i.test(f[0]); }).map(function (f) { return f[0]; }), []);
+eq("adrenalina não pega noradrenalina; loratadina não pega desloratadina; aciclovir não pega valaciclovir", [usa("Adrenalina").some(function (t) { return /noradrenalina/.test(t); }), usa("Loratadina").some(function (t) { return /desloratadina/.test(t); }), usa("Aciclovir").some(function (t) { return /valaciclovir/.test(t); })], [false, false, false]);
+eq("amoxicilina sozinha separada de amoxicilina + clavulanato", usa("Amoxicilina").some(function (t) { return /clavulanato/.test(t); }), false);
+eq("enoxaparina inclui o cabeçalho 'heparina de baixo peso molecular'; HNF não", [usa("Enoxaparina").some(function (t) { return /baixo peso/.test(t); }), usa("Heparina não fracionada").some(function (t) { return /baixo peso/.test(t); })], [true, false]);
 console.log("\n" + ok + " passaram, " + fail + " falharam");

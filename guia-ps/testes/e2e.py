@@ -16,7 +16,19 @@ async def main():
         ck('lista abre com 126 doenças agrupadas por sistema', len(set(await pg.evaluate("Array.from(document.querySelectorAll('.dz')).map(a=>a.getAttribute('href'))"))) == 126 and 'CARDIOVASCULAR' in (await T()).upper() and 'INTOXICAÇÕES' in (await T()).upper())
         await pg.fill('#q', 'tep'); ck('busca por sigla: TEP', await pg.locator('.dz').count() >= 1 and 'tromboembolismo' in (await pg.inner_text('#lista')).lower())
         await pg.fill('#q', 'itu'); ck('busca por sigla: ITU', 'Infecção do trato urinário' in await pg.inner_text('#lista'))
-        await pg.fill('#q', 'ceftriaxona'); t = await pg.inner_text('#lista'); ck('busca por medicamento mostra as doenças que o usam', 'Apendicite aguda' in t and 'tem ceftriaxona na prescrição' in t)
+        await pg.fill('#q', 'ceftriaxona'); t = await pg.inner_text('#lista'); ck('busca por medicamento mostra as doenças que o usam', 'Apendicite aguda' in t and 'tem Ceftriaxona na prescrição' in t)
+        ck('busca por medicamento também mostra o atalho para a página do remédio', await pg.locator('.chip[href="#med-ceftriaxona"]').count() == 1)
+        await pg.fill('#q', ''); await pg.click('.modos a[href="#medicamentos"]'); await pg.wait_for_timeout(150); t = await T(); ck('aba Medicamentos lista os mais usados primeiro, com o número de doenças', (await pg.inner_text('.dz.fm >> nth=0')).startswith('Dipirona') and 'doenças' in t)
+        await pg.fill('#q', 'furo'); ck('busca de medicamento filtra pelo nome, quem começa com o termo primeiro', (await pg.inner_text('.dz.fm >> nth=0')).startswith('Furosemida') and 'Dipirona' not in await pg.inner_text('#lista'))
+        await pg.click('.dz.fm >> nth=0'); await pg.wait_for_timeout(150); t = await T()
+        ck('página do medicamento: dose e diluição em cada doença, com a fonte', 'Furosemida' in await pg.inner_text('h1') and 'Insuficiência cardíaca descompensada' in t and 'Dose de ataque:' in t and 'PS Zerado, 2ª edição, p.' in t)
+        ck('página do medicamento traz a nota da diretriz mais recente', 'SBC 2026: sem uso prévio' in t)
+        await pg.goto(URL + '#med-noradrenalina'); t = await T(); ck('noradrenalina: diluição das aminas vasoativas primeiro e a de cada doença depois', t.index('Aminas vasoativas') < t.index('Choque cardiogênico') and 'Diluir 4 ampolas (16 mg) em 234 ml' in t and 'Diluir 5 ampolas (20 mL) em 180 mL' in t)
+        await pg.goto(URL + '#med-ceftriaxona'); t = await T(); ck('associação fica junto do remédio certo (ceftriaxona + metronidazol no abdome perfurativo)', '+ Metronidazol 5 mg/mL' in t and 'ANTIBIÓTICOS' in t.upper())
+        await pg.goto(URL + '#med-noradrenalina')
+        await pg.click('.uh a >> nth=1'); await pg.wait_for_timeout(150); ck('nome da doença leva à prescrição completa', 'Abdome agudo hemorrágico' in await pg.inner_text('h1'))
+        await pg.goto(URL + '#insuficiencia-cardiaca-descompensada-e-edema-agudo-de-pulmao'); await pg.click('.outras a >> nth=0'); await pg.wait_for_timeout(150); ck('na doença, o medicamento leva às outras doenças que o usam', 'Furosemida' in await pg.inner_text('h1'))
+        await pg.goto(URL)
         await pg.fill('#q', 'xyzw'); ck('sem resultado diz o que fazer', 'Nenhuma doença encontrada' in await T())
         await pg.fill('#q', 'insuficiencia'); await pg.click('.dz >> nth=0'); await pg.wait_for_timeout(150); t = await T()
         ck('doença abre com título, sistema e páginas da fonte', 'Insuficiência cardíaca descompensada' in t and 'PS Zerado, 2ª edição, p. 18 a 23' in t)
@@ -47,6 +59,11 @@ async def main():
         for i in todas:
             await pg.goto(URL + i); n += await pg.locator('.conteudo li, .conteudo h3, .semex').count() > 0
         ck('todas as 126 doenças abrem com conteúdo', n == len(todas) == 126)
+        m = 0; await pg.goto(URL + '#medicamentos'); await pg.wait_for_timeout(150); await pg.fill('#q', ''); meds = sorted(set(await pg.evaluate("Array.from(document.querySelectorAll('.dz.fm')).map(a=>a.getAttribute('href'))")))
+        for i in meds:
+            await pg.goto(URL + i); m += await pg.locator('.uso .med h3').count() > 0
+        ck('todos os medicamentos abrem com ao menos uma doença', m == len(meds) > 150)
+        await pg.goto(URL + '#med-dipirona'); ck('celular: página do medicamento sem rolagem para o lado', await pg.evaluate('document.documentElement.scrollWidth') <= 392)
         ck('sem erros de JavaScript', not errs); print(errs[:3])
         await b.close()
     print(f"\n{sum(R)} passaram, {len(R)-sum(R)} falharam")

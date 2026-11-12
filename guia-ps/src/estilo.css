@@ -46,6 +46,14 @@ a{color:inherit}
 .semex{background:var(--card);border:1px dashed var(--li);border-radius:14px;padding:16px}.semex p{color:var(--mu);margin:6px 0 0}
 .tabw{overflow-x:auto;background:var(--card);border:1px solid var(--li);border-radius:14px;box-shadow:var(--sh)}
 .tabw table{border-collapse:collapse;width:100%;font-size:.88rem;min-width:520px}.tabw th,.tabw td{border:1px solid var(--li);padding:7px 9px;text-align:left;vertical-align:top}.tabw th{background:var(--vdc);color:var(--vd2)}
+/* medicamentos */
+.modos{display:flex;gap:4px;margin-bottom:10px}.modos a{text-decoration:none;font-weight:700;color:var(--mu);padding:7px 14px;border-radius:20px;border:1px solid var(--li);background:var(--card)}.modos a.on{background:var(--vd);border-color:var(--vd);color:#fff}
+.chips{display:flex;flex-wrap:wrap;gap:6px}.chip{display:inline-flex;gap:6px;align-items:center;text-decoration:none;font-weight:600;background:var(--card);border:1px solid var(--vdb);border-radius:20px;padding:6px 12px;color:var(--vd2)}.chip span{background:var(--vdc);border-radius:20px;padding:0 7px;font-size:.78rem}
+.outras{margin:4px 0 0;display:flex;flex-wrap:wrap;gap:6px}.outras a{font-size:.8rem;font-weight:600;color:var(--vd2);text-decoration:none;background:var(--vdc);border-radius:20px;padding:1px 9px}
+.uso{display:flex;flex-direction:column;gap:8px;padding-bottom:16px;border-bottom:1px solid var(--li)}.uso:last-child{border-bottom:0}
+.uh{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}.uh a{font-weight:700;font-size:1.05rem;color:var(--vd2);text-decoration:none}.uh small{color:var(--mu);font-size:.8rem}
+.ctx{margin:0;font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;color:var(--lar);font-weight:700}
+.uso>.fonte{margin-top:-2px}
 #copia{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
 :focus-visible{outline:2px solid var(--vd);outline-offset:2px}
 @media (max-width:520px){.dh h1{font-size:1.25rem}.copiar{margin-left:0}.doencas{grid-template-columns:1fr}}

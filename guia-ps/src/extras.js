@@ -164,6 +164,57 @@ var EXTRAS = {
     "ureterolitiase-colica-nefretica": "calculo renal colica renal litiase", "intoxicacao-alcoolica": "alcool embriaguez", "abstinencia-alcoolica": "alcool abstinencia delirium tremens"
   }
 };
+// Nomes dos medicamentos para a busca por medicamento (só nomes e grafias do guia; nenhuma dose).
+// [nome mostrado, expressão sobre o texto sem acento e em minúsculas do cabeçalho do medicamento]
+EXTRAS.farmacos = [
+  ["AAS (ácido acetilsalicílico)", "\\baas\\b|acido acetilsalicilico"], ["Aciclovir", "(^|[^a-z])aciclovir"], ["Ácido mefenâmico", "acido ?mefenamico"],
+  ["Ácido tranexâmico", "tranexamico"], ["Ácido valproico", "valproico"], ["Ácido zoledrônico", "zoledronico"], ["Adenosina", "adenosina"],
+  ["Adrenalina", "(^|[^a-z])adrenalina|epinefrina"], ["Albumina", "albumina"], ["Alopurinol", "alopurinol"], ["Alprazolam", "alprazolam"],
+  ["Alteplase", "alteplase|rtpa"], ["Amiodarona", "amiodarona"], ["Amoxicilina", "amoxicilina(?! ?\\+)"], ["Amoxicilina + clavulanato", "amoxicilina ?\\+ ?clavulanato|clavulin"],
+  ["Ampicilina + sulbactam", "ampicilina"], ["Anlodipino", "anlodipino"], ["Apixabana", "apixabana"], ["Atorvastatina", "atorvastatina"], ["Atropina", "atropina"],
+  ["Azitromicina", "azitromicina"], ["Biperideno", "biperideno"], ["Bromoprida", "bromoprida|plamet"], ["Budesonida", "budesonida"], ["Butoconazol", "butoconazol"],
+  ["Carbamazepina", "carbamazepina"], ["Carboximaltose férrica", "carboximaltose"], ["Carvão ativado", "carvao ativado"], ["Cefadroxila", "cefadroxila"],
+  ["Cefalexina", "cefalexina"], ["Cefazolina", "cefazolina"], ["Cefepima", "cefepim"], ["Ceftazidima", "ceftazidima"], ["Ceftriaxona", "ceftriaxona|rocef"],
+  ["Cefuroxima", "cefuroxima|zinnat"], ["Celecoxibe", "cel[eo]coxibe"], ["Cetamina / escetamina", "cetamina"], ["Cetoconazol", "cetoconazol"],
+  ["Cetoprofeno", "cetoprofeno|profenid"], ["Ciclobenzaprina", "ciclobenzaprina|miosan"], ["Cinarizina", "cinarizina"], ["Ciproeptadina", "ciproeptadina"],
+  ["Ciprofloxacino", "ciprofloxacin"], ["Claritromicina", "claritromicina"], ["Clindamicina", "clindamicina"], ["Clobazam", "clobazam"], ["Clonazepam", "clonazepam"],
+  ["Clopidogrel", "clopidogrel"], ["Cloreto de potássio (KCl)", "\\bkc[il]\\b|cloreto de potassio"], ["Clotrimazol", "clotrimazol"], ["Codeína", "codeina"], ["Colchicina", "colchicina"],
+  ["Dabigatrana", "dabigatrana"], ["Deslanosídeo", "deslanosideo"], ["Desloratadina", "desloratadina"], ["Dexametasona", "dexametasona"], ["Dexmedetomidina", "dexmedetomidina"],
+  ["Diazepam", "diazepam"], ["Diclofenaco", "diclofenaco"], ["Difenidramina", "difenidramina"], ["Dimenidrinato", "dimenidr"], ["Diosmina + hesperidina", "diosmina"],
+  ["Dipirona", "dipirona|novalgina"], ["Dobutamina", "dobutamina"], ["Domperidona", "domperidona"], ["Dopamina", "dopamina"], ["Doxiciclina", "doxiciclina"],
+  ["Edoxabana", "edoxabana"], ["Enoxaparina", "enoxaparina|clexane|heparina de baixo peso"], ["Escopolamina", "escopolamina|buscopan"], ["Esmolol", "esmolol"],
+  ["Esomeprazol", "esomeprazol"], ["Espironolactona", "espironolactona"], ["Estreptoquinase", "estreptoquinase"], ["Estrogênio conjugado", "estrogenio conjugado|premarin"],
+  ["Etomidato", "etomidato"], ["Fanciclovir", "fanciclovir"], ["Fenazopiridina", "fenazopiridina|pyridium"], ["Fenitoína", "fenitoina|hidantal"], ["Fenobarbital", "fenobarbital"],
+  ["Fenoterol", "fenoterol"], ["Fentanil", "fentanil"], ["Fluconazol", "fluconazol"], ["Flumazenil", "flumazenil"], ["Fondaparinux", "fondaparinux"], ["Fosfomicina", "fosfomicina|monouril"],
+  ["Furosemida", "furosemida"], ["Gluconato de cálcio", "gluconato de calcio"], ["Haloperidol", "haloperidol"], ["Heparina não fracionada", "heparina nao.?fracionada"],
+  ["Hidrocortisona", "hidrocortisona"], ["Hidróxido férrico", "hidroxido ferrico|noripurum"], ["Hidroxizina", "hidroxizina"], ["Ibuprofeno", "ibuprofeno"],
+  ["Imipenem + cilastatina", "imipenem"], ["Insulina regular", "insulina"], ["Ipratrópio", "ipratropio|atrovent"], ["Isossorbida (nitrato)", "isossorbida|isordil"],
+  ["Itraconazol", "itraconazol"], ["Ivermectina", "ivermectina"], ["Lactulose", "lactulose"], ["Levofloxacino", "levofloxacin|alevo"], ["Lidocaína", "lidocaina"],
+  ["Linezolida", "linezolida"], ["Loratadina", "(^|[^a-z])loratadina"], ["Lorazepam", "lorazepam"], ["Manitol", "manitol"], ["Meclizina", "meclozina|meclizina|meclin"],
+  ["Medroxiprogesterona", "medroxiprogesterona"], ["Meloxicam", "meloxica[mn]"], ["Meropenem", "meropen"], ["Metilprednisolona", "metilprednisolona"],
+  ["Metoclopramida", "metoclopramida"], ["Metoprolol", "metoprolol"], ["Metronidazol", "metronidazol"], ["Miconazol", "miconazol"], ["Midazolam", "midazolam"],
+  ["Milrinona", "milrinon"], ["Morfina", "morfina"], ["Mupirocina", "mupirocina"], ["N-acetilcisteína", "acetilcisteina"], ["Nalbufina", "nalbufina"], ["Naloxona", "naloxona"],
+  ["Naproxeno", "naproxeno|flanax"], ["Nimesulida", "nimesulid|nimesulina"], ["Nimodipino", "nimodipino"], ["Nistatina", "nistatina"], ["Nitrofurantoína", "nitrofurantoina|macrodantina"],
+  ["Nitroglicerina", "nitroglicerina|tridil"], ["Nitroprussiato de sódio", "nitroprussiato|nipride"], ["Noradrenalina", "noradrenalina"], ["Norfloxacino", "norfloxacin"],
+  ["Octreotida", "octreot"], ["Olanzapina", "olanzapina"], ["Omeprazol", "omeprazol"], ["Ondansetrona", "ondansetrona|vonau"], ["Ornitina (aspartato)", "ornitina"],
+  ["Oxacilina", "oxacilina"], ["Pamidronato", "pamidronato"], ["Pantoprazol", "pantoprazol"], ["Paracetamol", "paracetamol|tylenol"], ["Penicilina benzatina", "benzatina|benzetacil"],
+  ["Penicilina G cristalina", "penicilina g\\b"], ["Penicilina procaína", "procaina"], ["Permetrina", "permetrina"], ["Piperacilina + tazobactam", "piperacilina|tazocin"],
+  ["Poliestirenossulfonato de cálcio", "poliesti|sorcal"], ["Prasugrel", "prasugrel"], ["Prednisolona", "prednisolona"], ["Prednisona", "pred(i?n)isona"],
+  ["Prometazina", "prometazina"], ["Propofol", "propofol"], ["Propranolol", "propranolol"], ["Quetiapina", "quetiapina"], ["Racecadotrila", "racecadotrila|tiorfan"],
+  ["Rifaximina", "rifaximina"], ["Risperidona", "risperidona"], ["Rivaroxabana", "rivaroxabana"], ["Rocurônio", "rocuronio"], ["Salbutamol", "salbutamol|aerolin"],
+  ["Secnidazol", "secnidazol"], ["Simeticona", "simeticona"], ["Succinilcolina", "succini.?colina|suxametonio"], ["Sulfametoxazol + trimetoprima", "sulfametoxazol|bactrim"],
+  ["Sulfato de magnésio", "sulfato de magnesio"], ["Sumatriptano", "sumatriptano|sumax"], ["Tansulosina", "tansulosina"], ["Tenecteplase", "tenecteplase"], ["Tenoxicam", "tenoxicam"],
+  ["Terbinafina", "terbinafina"], ["Terconazol", "terconazol"], ["Terlipressina", "terlipressina"], ["Tiamina", "tiamina"], ["Ticagrelor", "ticagrelor"], ["Tinidazol", "tinidazol"],
+  ["Tiopental", "tiopental"], ["Tramadol", "tramadol"], ["Valaciclovir", "valaciclovir"], ["Vancomicina", "vancomicina"], ["Varfarina", "varfarina"], ["Vasopressina", "vasopressina"],
+  ["Vecurônio", "vecuronio"], ["Verapamil", "verapamil"], ["Vitamina K", "vitamina k"],
+  ["SF 0,9% / Ringer lactato", "^(\\d+\\. ?)?(soro )?(ringer|rl\\b|sf 0,9|soro fisiologico|cloreto de sodio 0,9)"], ["Glicose hipertônica 50%", "glicose hipertonica"], ["Salina hipertônica 3%", "salina hipertonica"],
+  ["Óxido de magnésio", "oxido de magnesio"], ["Polietilenoglicol", "polietilenoglicol"], ["Óleo mineral", "oleo mineral"], ["Policresuleno + cinchocaína", "policresuleno"],
+  ["Floratil®", "floratil"], ["Sais de reidratação oral", "reidratacao oral|rehidrat"], ["Hialuronato de sódio colírio", "hialuronato"], ["Anticoncepcional oral combinado", "anticoncepcional"],
+  ["Concentrado de hemácias", "concentrado de hemacias"], ["Plasma fresco", "plasma fresco"], ["Crioprecipitado", "crioprecipitado"],
+  ["Soro antitetânico (SAT)", "soro antitetanico"], ["Imunoglobulina antitetânica", "imunoglobulina humana antitetanica"], ["Vacina dT", "vacina dt"],
+  ["Soro antibotrópico", "antibotropico"], ["Soro anticrotálico", "anticrotalico"], ["Soro antielapídico", "antielapidico"], ["Soro antilaquético", "laquetico"],
+  ["Soro antiescorpiônico", "antiescorpionico"], ["Soro antiaracnídico", "antiaracnidico"], ["Soro antilatrodectus", "antilatrodectus"]
+];
 if (typeof CNP_DOENCAS === "undefined" && typeof require !== "undefined") var CNP_DOENCAS = require("./cnp.js");
 EXTRAS.doencas = EXTRAS.doencas.concat(CNP_DOENCAS);
 if (typeof module !== "undefined") module.exports = EXTRAS;

@@ -2,11 +2,12 @@
 
 Site em HTML, em português do Brasil: o médico escolhe a doença e vê a **prescrição** e os **exames**. É apoio à decisão, não substituto. O dono do projeto usa no plantão, no tablet e no celular; talvez compartilhe com colegas depois.
 
-**Estado atual:** v1.0 (12/11/2026). O usuário pediu: "Muda tudo, só quero escolher a doença e que você me fale a prescrição e exames dela, todas as doenças que mandei" (`docs/11-pedido-v1.md`). Os formatos anteriores (perguntas por tela, fluxograma de cartões com pacientes e texto livre) foram abandonados e estão em `legado/v06/`. Hoje são 126 entradas: 110 do PS Zerado 2ª edição, 8 capítulos só do Cardiologia na Prática (choque cardiogênico, IAM de VD, MINOCA, miocardite, AVC isquêmico completo, AVC hemorrágico, hemorragia subaracnóidea, crise epiléptica), 3 do PS Zerado anterior (crise convulsiva, delirium, síndrome serotoninérgica), anticoagulantes, antiagregantes e fibrinolíticos (Medway), parada cardiorrespiratória (AHA 2025), TEP e TVP (Cardiologia na Prática) e DAOP (sem fonte ainda). A seção "Trombose e doença vascular" junta DAOP, TEP, TVP, anticoagulantes, isquemia mesentérica, dissecção de aorta e trombólise no AVC (pedido de 12/11: "Coloca DAOP também, é trombose e derivados"). Ainda sem "aprovado".
+**Estado atual:** v1.0 (12/11/2026). O usuário pediu: "Muda tudo, só quero escolher a doença e que você me fale a prescrição e exames dela, todas as doenças que mandei" (`docs/11-pedido-v1.md`). Os formatos anteriores (perguntas por tela, fluxograma de cartões com pacientes e texto livre) foram abandonados e estão em `legado/v06/`. Hoje são 126 entradas: 110 do PS Zerado 2ª edição, 8 capítulos só do Cardiologia na Prática (choque cardiogênico, IAM de VD, MINOCA, miocardite, AVC isquêmico completo, AVC hemorrágico, hemorragia subaracnóidea, crise epiléptica), 3 do PS Zerado anterior (crise convulsiva, delirium, síndrome serotoninérgica), anticoagulantes, antiagregantes e fibrinolíticos (Medway), parada cardiorrespiratória (AHA 2025), TEP e TVP (Cardiologia na Prática) e DAOP (sem fonte ainda). A seção "Trombose e doença vascular" junta DAOP, TEP, TVP, anticoagulantes, isquemia mesentérica, dissecção de aorta e trombólise no AVC (pedido de 12/11: "Coloca DAOP também, é trombose e derivados"). Busca por medicamento (pedido de 12/11: "Coloque a opção de pesquisar o medicamento e como fazer a posologia / diluição em cada doença que é mais usada"): aba **Medicamentos** com 208 nomes, do mais usado ao menos usado; a página do remédio (`#med-<nome>`) mostra, para cada doença, o trecho do guia daquela doença (cabeçalho, dose, diluição, tempo, dica colada e nota da diretriz), com a página. Ainda sem "aprovado".
 
 ## Regras de produto
 
 1. **Escolher a doença e ver o que fazer.** Lista por sistema, com busca por nome, sigla (TEP, ITU, IC) e medicamento. Sem pacientes, sem formulário, sem fluxograma.
+1b. **Ou escolher o medicamento** e ver a dose e a diluição em cada doença que o usa. A página do remédio só junta trechos do guia; não resume nem unifica doses de doenças diferentes.
 2. **Duas abas: Prescrição e Exames.** A prescrição é a do guia, na ordem e com as doses do guia. As dicas ("Bizus") ficam recolhidas.
 3. **Fidelidade ao documento.** A prescrição é transcrita do texto nativo do PDF por programa (`ferramentas/`), com a página de origem. Não reescrever doses à mão em `doencas.js`.
 4. **Diretriz mais recente aparece como nota azul** abaixo do medicamento, quando difere do guia (`EXTRAS.notas`). Valor suspeito no guia: nota vermelha pedindo conferência.
@@ -25,8 +26,8 @@ Site em HTML, em português do Brasil: o médico escolhe a doença e vê a **pre
 
 ```bash
 python3 build.py                  # gera dist/guia-ps.html (arquivo único, offline) e dist/guia-ps-online.html (página publicada)
-node testes/conteudo.test.js      # 26 checagens do conteúdo (ids, fontes, licenciado, amostras conferidas no PDF)
-python3 testes/e2e.py             # 31 casos no navegador (precisa de playwright)
+node testes/conteudo.test.js      # 32 checagens do conteúdo (ids, fontes, licenciado, amostras conferidas no PDF)
+python3 testes/e2e.py             # 42 casos no navegador (precisa de playwright)
 CHROME=/opt/pw-browsers/chromium python3 testes/e2e.py   # na nuvem
 ```
 
@@ -38,8 +39,8 @@ Para regenerar `src/doencas.js` a partir dos PDFs, ver o cabeçalho de `ferramen
 | --- | --- |
 | `src/doencas.js` | Gerado. Uma entrada por doença: `id`, `nome`, `sistema`, `fonte`, `paginas`, `itens[]` (`tipo`: med, rot, sub, forte, li, seta, p, tab; `ind` = recuo; `pg` = página do livro). |
 | `src/cnp.js` | À mão: os 8 capítulos do Cardiologia na Prática, com cada número conferido pela imagem da página (sem dieta, glicemia e antiemético, que se repetem). |
-| `src/extras.js` | À mão: `exames` com fonte, `notas` (diretriz mais recente ou alerta), doenças fora do PS Zerado (parada, TEP e TVP do CNP com números conferidos pela imagem, DAOP com `semFonte`), `grupos` (seções que juntam doenças de sistemas diferentes), `busca` (siglas). |
-| `src/ui.js`, `src/estilo.css` | Lista com busca, página da doença com abas, copiar prescrição. Navegação pelo endereço (`#id-da-doenca`). |
+| `src/extras.js` | À mão: `exames` com fonte, `notas` (diretriz mais recente ou alerta), doenças fora do PS Zerado (parada, TEP e TVP do CNP com números conferidos pela imagem, DAOP com `semFonte`), `grupos` (seções que juntam doenças de sistemas diferentes), `busca` (siglas), `farmacos` (só nomes dos medicamentos e a expressão que acha cada um no cabeçalho do medicamento; um nome novo que não casar com nenhuma prescrição quebra o teste). |
+| `src/ui.js`, `src/estilo.css` | Lista com busca, página da doença com abas, copiar prescrição, aba Medicamentos e página do remédio. Navegação pelo endereço (`#id-da-doenca`, `#medicamentos`, `#med-<nome>`). O trecho de cada remédio vai do cabeçalho até o próximo medicamento, subtítulo ou rótulo; rótulos curtos antes do remédio ("Uso oral:", "OU", "+") passam para o remédio seguinte. |
 | `ferramentas/` | Extratores: `extrai_psz2.py` (o PDF comprimido tem 4 páginas por folha; lê fonte, cor, marcadores e tabelas), `monta_psz2.py` (corta pelo sumário), `extrai_psz1.py`, `extrai_med.py` (anticoagulantes, p. 30-37), `gera_doencas.py`. |
 | `legado/` | v0.1 e v0.6 (fluxograma com pacientes, calculadoras e testes de dose). Conteúdo e contas continuam úteis como referência. |
 | `docs/` | Decisões (`02`), fontes (`03`), conflitos e valores suspeitos (`05`), roteiro (`07`), pedidos do usuário (`08` a `11`). |
